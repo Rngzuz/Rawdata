@@ -22,11 +22,11 @@ select * from searches where user_id = 2;
 
 -- filter_by_words
 select * from searches where user_id = 1;
-select * from filter_by_words(1, 'testing unit', array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]);
+select title from filter_by_words(1, 'testing unit', array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]) limit 20;
 select * from searches where user_id = 1;
 
 -- filter_by_tags
-select * from filter_by_tags(array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]);
+select title from filter_by_tags(array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]) limit 20;
 
 -- favorite_comment
 select * from favorite_comments where user_id = 2 and comment_id = 31044642;
@@ -84,19 +84,19 @@ select delete_users();
 select * from deactivated_users where id = 3;
 
 -- get_favorite_comments
-select * from get_favorite_comments(2);
+select comment_id from get_favorite_comments(2);
 
 -- get_favorite_deactivated_comments
 select deactivate_user(2);
-select * from get_favorite_deactivated_comments(2);
+select comment_id from get_favorite_deactivated_comments(2);
 select reactivate_user(2);
 
 -- get_favorite_posts
-select * from get_favorite_posts(2);
+select title from get_favorite_posts(2);
 
 -- get_favorite_deactivated_posts
 select deactivate_user(2);
-select * from get_favorite_deactivated_posts(2);
+select title from get_favorite_deactivated_posts(2);
 select reactivate_user(2);
 
 
@@ -105,4 +105,4 @@ select * from get_users_search_history(1);
 select * from get_users_search_history(2);
 
 -- get_posts_with_links
-select * from get_posts_with_links(19);
+select title from get_posts_with_links(19);
