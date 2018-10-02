@@ -1,3 +1,12 @@
+truncate table deactivated_favorite_comments;
+truncate table deactivated_favorite_posts;
+truncate table deactivated_searches;
+truncate table favorite_comments;
+truncate table favorite_posts;
+truncate table searches;
+truncate table users cascade;
+truncate table deactivated_users cascade;
+
 -- insert dummy users
 insert into users
     (display_name, creation_date, email, "password", deactivation_date)
