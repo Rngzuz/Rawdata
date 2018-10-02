@@ -1,3 +1,5 @@
+drop function if exists get_user_by_email(text);
+drop view if exists posts_with_tags;
 drop table if exists deactivated_favorite_posts;
 drop table if exists deactivated_favorite_comments;
 drop table if exists deactivated_searches;
