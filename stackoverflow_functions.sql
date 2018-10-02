@@ -24,7 +24,6 @@ returns setof posts_with_tags as $$
 
         if not _flag and _user_id is not null then
             perform add_to_search_history(_user_id, _search);
-            raise notice 'should: insert into search_history values(user_id, search_string)';
         end if;
 
         if _tags is not null then
