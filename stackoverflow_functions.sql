@@ -163,3 +163,69 @@ begin
 end;
 $$
 language plpgsql;
+
+create or replace function delete_users() 
+returns void as
+$$
+begin
+	delete from deactivated_users
+	where deactivation_date < (now()::timestamp(0) - interval '14 days');
+	
+end;
+$$ 
+language plpgsql;
+
+-- Get favorite comments
+
+create or replace function get_favorite_comments(arg_user_id integer)
+returns table(comment_id integer, score integer, post_id integer, "text" text, creation_date timestamp without time zone, author_id integer, note text) as
+$$
+begin 
+	return query 
+	select comments.id, comments.score, comments.post_id, comments.text, comments.creation_date, comments.author_id, favorite_comments.note
+	from comments 
+	join favorite_comments on favorite_comments.comment_id = comments.id
+	where favorite_comments.user_id = arg_user_id;
+end;
+$$ 
+language plpgsql;
+
+create or replace function get_favorite_deactivated_comments(arg_user_id integer)
+returns table(comment_id integer, score integer, post_id integer, "text" text, creation_date timestamp without time zone, author_id integer, note text) as
+$$
+begin 
+	return query 
+	select comments.id, comments.score, comments.post_id, comments.text, comments.creation_date, comments.author_id, deactivated_favorite_comments.note
+	from comments 
+	join deactivated_favorite_comments on deactivated_favorite_comments.comment_id = comments.id
+	where deactivated_favorite_comments.user_id = arg_user_id;
+end;
+$$ 
+language plpgsql;
+
+-- Get favorite posts
+create or replace function get_favorite_posts(arg_user_id integer)
+returns table(post_id integer, "type" integer, answer_id integer, parent_id integer, score integer,title text, body text, creation_date timestamp without time zone, closed_date timestamp without time zone, author_id integer, note text) as
+$$
+begin 
+	return query 
+	select posts.id, posts.type_id, posts.accepted_answer_id, posts.parent_id, posts.score, posts.title, posts.body, posts.creation_date, posts.closed_date, posts.author_id, favorite_posts.note
+	from posts 
+	join favorite_posts on favorite_posts.post_id = posts.id
+	where favorite_posts.user_id = arg_user_id;
+end;
+$$ 
+language plpgsql;
+
+create or replace function get_favorite_deactivated_posts(arg_user_id integer)
+returns table(post_id integer, "type" integer, answer_id integer, parent_id integer, score integer,title text, body text, creation_date timestamp without time zone, closed_date timestamp without time zone, author_id integer, note text) as
+$$
+begin 
+	return query 
+	select posts.id, posts.type_id, posts.accepted_answer_id, posts.parent_id, posts.score, posts.title, posts.body, posts.creation_date, posts.closed_date, posts.author_id, deactivated_favorite_posts.note
+	from posts 
+	join deactivated_favorite_posts on deactivated_favorite_posts.post_id = posts.id
+	where deactivated_favorite_posts.user_id = arg_user_id;
+end;
+$$ 
+language plpgsql;

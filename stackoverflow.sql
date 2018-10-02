@@ -177,7 +177,7 @@ create table searches(
 
 create table deactivated_searches(
 		id serial primary key,
-		user_id integer references deactivated_users(id),  
+		user_id integer references deactivated_users(id) ON DELETE CASCADE,  
 		search_text text)
 ;
 
@@ -190,7 +190,7 @@ create table favorite_posts(
 );
 
 create table deactivated_favorite_posts(
-		user_id integer not null references deactivated_users(id),
+		user_id integer not null references deactivated_users(id) ON DELETE CASCADE,
 		post_id integer not null references posts(id),
 		note text,
 		unique(user_id, post_id)
@@ -205,7 +205,7 @@ create table favorite_comments(
 );
 
 create table deactivated_favorite_comments(
-		user_id integer not null references deactivated_users(id),
+		user_id integer not null references deactivated_users(id) ON DELETE CASCADE,
 		comment_id integer not null references comments(id),
 		note text,
 		unique(user_id, comment_id)
