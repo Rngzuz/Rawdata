@@ -93,7 +93,7 @@ end;
 $$
 language plpgsql;
 
-create or replace function get_user_by_email( mail text)
+create or replace function get_user_by_email(mail text)
 returns setof users as
 $$
 begin 
@@ -104,18 +104,32 @@ end;
 $$ 
 language plpgsql;
 
+create or replace function get_deactivated_user_by_email(mail text)
+returns setof users as
+$$
+begin 
+	return query select *
+	from deactivated_users
+	where email=mail;
+end;
+$$ 
+language plpgsql;
+
 
 create or replace function deactivate_user(arg_user_id integer)
 returns void as $$
 begin
+	-- Copy data into deactivated_users
 	insert into deactivated_users (id, display_name, creation_date, email, password)
 	select id, display_name, creation_date, email, password 
 	from users where users.id = arg_user_id;
 
+	--create deactivation timestamp
 	update deactivated_users 
 	set deactivation_date = now()::timestamp(0)
 	where deactivated_users.id = arg_user_id;
 
+	-- copy data into deactivated searches, comments and posts
 	insert into deactivated_searches 
 	select * from searches where searches.user_id = arg_user_id;
 	insert into deactivated_favorite_comments
@@ -123,7 +137,7 @@ begin
 	insert into deactivated_favorite_posts
 	select * from favorite_posts where favorite_posts.user_id = arg_user_id;
 
-	
+	-- delete data from original tables
 	delete from searches where searches.user_id = arg_user_id;
 	delete from favorite_comments where favorite_comments.user_id = arg_user_id;
 	delete from favorite_posts where favorite_posts.user_id = arg_user_id;
@@ -136,18 +150,20 @@ language plpgsql;
 create or replace function reactivate_user(arg_user_id integer)
 returns void as $$
 begin
+	-- move deactivated user into active users
 	insert into users (id, display_name, creation_date, email, password)
 	select id, display_name, creation_date, email, password 
 	from deactivated_users where deactivated_users.id = arg_user_id;
 
+	-- copy deactivated data into active user data
 	insert into searches 
 	select * from deactivated_searches where deactivated_searches.user_id = arg_user_id;
 	insert into favorite_comments
 	select * from deactivated_favorite_comments where deactivated_favorite_comments.user_id = arg_user_id;
 	insert into favorite_posts
 	select * from deactivated_favorite_posts where deactivated_favorite_posts.user_id = arg_user_id;
-
 	
+	--delete deactivated data
 	delete from deactivated_searches where deactivated_searches.user_id = arg_user_id;
 	delete from deactivated_favorite_comments where deactivated_favorite_comments.user_id = arg_user_id;
 	delete from deactivated_favorite_posts where deactivated_favorite_posts.user_id = arg_user_id;
