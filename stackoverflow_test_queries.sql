@@ -18,3 +18,10 @@ select * from filter_by_words(null /*user_id*/, 'testing unit');
 select * from filter_by_tags(
     array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]
 );
+
+select * from get_posts_with_links(array['.net', '.htaccess', 'ajax', 'javascript', 'c#', 'sql']::text[]);
+
+insert into searches (user_id, search_text) values (1,'Null pointer');
+insert into searches (user_id, search_text) values (2,'exception');
+
+select * from get_users_search_history(1);
