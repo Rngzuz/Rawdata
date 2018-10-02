@@ -1,11 +1,11 @@
-truncate table deactivated_favorite_comments;
-truncate table deactivated_favorite_posts;
-truncate table deactivated_searches;
-truncate table favorite_comments;
-truncate table favorite_posts;
-truncate table searches;
-truncate table users cascade;
-truncate table deactivated_users cascade;
+truncate table deactivated_favorite_comments restart identity;
+truncate table deactivated_favorite_posts restart identity;
+truncate table deactivated_searches restart identity;
+truncate table favorite_comments restart identity;
+truncate table favorite_posts restart identity;
+truncate table searches restart identity;
+truncate table users restart identity cascade;
+truncate table deactivated_users restart identity cascade;
 
 -- insert dummy users
 insert into users
