@@ -154,7 +154,7 @@ create table users(
     display_name text,
     creation_date timestamp without time zone,
     email text,
-    password text,
+    "password" text,
     deactivation_date timestamp without time zone
 );
 
@@ -163,7 +163,7 @@ create table deactivated_users (
 	display_name text,
 	creation_date timestamp without time zone,
 	email text, 
-	password text,
+	"password" text,
 	deactivation_date timestamp without time zone,
 	unique (email)
 );
@@ -210,3 +210,11 @@ create table deactivated_favorite_comments(
 		note text,
 		unique(user_id, comment_id)
 );
+
+-- View which include post tags
+create view posts_with_tags as
+select posts.*, array_agg(post_tags.name) tags
+from posts
+join post_tags
+on posts.id = post_tags.post_id
+group by posts.id;
