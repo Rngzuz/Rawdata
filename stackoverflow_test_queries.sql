@@ -42,7 +42,9 @@ select * from users where id = 2;
 select * from searches where user_id = 2;
 select * from favorite_comments where user_id = 2;
 select * from favorite_posts where user_id = 2;
+
 select deactivate_user(2);
+
 select * from deactivated_users where id = 2;
 select * from deactivated_searches where user_id = 2;
 select * from deactivated_favorite_comments where user_id = 2;
@@ -53,18 +55,45 @@ select * from deactivated_users where id = 2;
 select * from deactivated_searches where user_id = 2;
 select * from deactivated_favorite_comments where user_id = 2;
 select * from deactivated_favorite_posts where user_id = 2;
+
 select reactivate_user(2);
+
 select * from users where id = 2;
 select * from searches where user_id = 2;
 select * from favorite_comments where user_id = 2;
 select * from favorite_posts where user_id = 2;
 
+-- delete_users
+select deactivate_user(3);
+
+update deactivated_users 
+set deactivation_date = '2018-09-02 09:31:42'
+where id = 3;
+
+select delete_users();
+
+select * from deactivated_users where id = 3;
+
+-- get_favorite_comments
+select * from get_favorite_comments(2);
+
+-- get_favorite_deactivated_comments
+select deactivate_user(2);
+select * from get_favorite_deactivated_comments(2);
+select reactivate_user(2);
+
+-- get_favorite_posts
+select * from get_favorite_posts(2);
+
+-- get_favorite_deactivated_posts
+select deactivate_user(2);
+select * from get_favorite_deactivated_posts(2);
+select reactivate_user(2);
 
 
-
-select * from get_posts_with_links1(19);
-
-insert into searches (user_id, search_text) values (1,'Null pointer');
-insert into searches (user_id, search_text) values (2,'exception');
-
+-- get_users_search_history
 select * from get_users_search_history(1);
+select * from get_users_search_history(2);
+
+-- get_posts_with_links
+select * from get_posts_with_links(19);
