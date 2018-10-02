@@ -123,6 +123,13 @@ add primary key("id");
 alter table "comments"
 add foreign key (author_id) references authors("id");
 
+-- alter table comments
+-- add column text_tokens TSVECTOR;
+
+-- update comments c1
+-- set text_tokens = to_tsvector(c1.text)
+-- from comments c2;
+
 
 -- Create tags table
 select distinct unnest(string_to_array(pu.tags, '::')) "name"
