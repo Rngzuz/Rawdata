@@ -465,15 +465,16 @@ language plpgsql;
 
 --- Get all the posts with  links
 
-create or replace function get_posts_with_links(_tags text[])
+create or replace function get_posts_with_links(postid integer)
 returns setof posts_with_tags as $$
     begin
        return query
-            select distinct posts.*,array_agg(post_tags.name) tags
+            select distinct posts.*, array_agg(post_tags.name) tags
             from posts
             join post_links on posts.id = post_links.post_id
             join post_tags on posts.id = post_tags.post_id
             where post_links.link_id is not null
+		and posts.id=postid
             group by posts.id;
     end
 $$ language plpgsql;
