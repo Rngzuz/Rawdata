@@ -163,3 +163,31 @@ begin
 end;
 $$
 language plpgsql;
+
+--- Get all the posts with  links
+
+create or replace function get_posts_with_links(_tags text[])
+returns setof posts_with_tags as $$
+    begin
+       return query
+            select distinct posts.*,array_agg(post_tags.name) tags
+            from posts
+            join post_links on posts.id = post_links.post_id
+            join post_tags on posts.id = post_tags.post_id
+            where post_links.link_id is not null
+            group by posts.id;
+    end
+$$ language plpgsql;
+
+--- Get the users history
+create or replace function get_users_search_history(userid integer)
+returns setof searches as $$
+	begin
+	   return query
+		select searches.*
+		from searches 
+			join users on searches.user_id=users.id
+		where users.id=userid
+		group by searches.id,users.id;
+	end
+$$ language plpgsql;
