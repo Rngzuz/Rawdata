@@ -58,3 +58,13 @@ select * from users where id = 2;
 select * from searches where user_id = 2;
 select * from favorite_comments where user_id = 2;
 select * from favorite_posts where user_id = 2;
+
+
+
+
+select * from get_posts_with_links1(19);
+
+insert into searches (user_id, search_text) values (1,'Null pointer');
+insert into searches (user_id, search_text) values (2,'exception');
+
+select * from get_users_search_history(1);
