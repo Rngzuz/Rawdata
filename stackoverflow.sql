@@ -1,3 +1,18 @@
+drop table if exists deactivated_favorite_posts;
+drop table if exists deactivated_favorite_comments;
+drop table if exists deactivated_searches;
+drop table if exists deactivated_users;
+drop table if exists favorite_comments; 
+drop table if exists favorite_posts;
+drop table if exists searches;
+drop table if exists users; 
+drop table if exists post_links;
+drop table if exists post_tags;
+drop table if exists comments;
+drop table if exists posts;
+drop table if exists tags;
+drop table if exists authors;
+
 -- Create and insert into posts from posts_universal
 select distinct on ("id")
     pu."id",
@@ -133,9 +148,7 @@ add foreign key ("name") references tags("name");
 alter table post_tags
 add foreign key (post_id) references posts("id");
 
-
--- TODO - Author number is wrong
---
+-- Create users table
 create table users(
     "id" serial primary key,
     display_name text,
@@ -145,12 +158,30 @@ create table users(
     deactivation_date timestamp without time zone
 );
 
+create table deactivated_users (
+	id serial primary key, 
+	display_name text,
+	creation_date timestamp without time zone,
+	email text, 
+	password text,
+	deactivation_date timestamp without time zone,
+	unique (email)
+);
+
+-- Create searches table
 create table searches(
     "id" serial primary key,
     "user_id" integer references users(id),
     search_text text
 );
 
+create table deactivated_searches(
+		id serial primary key,
+		user_id integer references deactivated_users(id),  
+		search_text text)
+;
+
+-- Create favorite_posts table
 create table favorite_posts(
     "user_id" integer not null references users(id),
     post_id integer not null references posts(id),
@@ -158,9 +189,24 @@ create table favorite_posts(
     unique("user_id", post_id)
 );
 
+create table deactivated_favorite_posts(
+		user_id integer not null references deactivated_users(id),
+		post_id integer not null references posts(id),
+		note text,
+		unique(user_id, post_id)
+);
+
+-- Create favorite_comments table
 create table favorite_comments(
     "user_id" integer not null references users("id"),
     comment_id integer not null references comments("id"),
     note text,
     unique("user_id", comment_id)
+);
+
+create table deactivated_favorite_comments(
+		user_id integer not null references deactivated_users(id),
+		comment_id integer not null references comments(id),
+		note text,
+		unique(user_id, comment_id)
 );
