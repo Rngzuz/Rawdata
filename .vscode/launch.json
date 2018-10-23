@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // {
+        //     "name": "Debug Assignment4.Web",
+        //     "type": "coreclr",
+        //     "request": "launch",
+        //     "preLaunchTask": "build",
+        //     "program": "${workspaceFolder}/Assignment4.Web/bin/Debug/netcoreapp2.1/Assignment4.Web.dll",
+        //     "args": [],
+        //     "cwd": "${workspaceFolder}/Assignment4.Web",
+        //     "console": "internalConsole",
+        //     "stopAtEntry": false,
+        //     "internalConsoleOptions": "openOnSessionStart"
+        // }
+    ]
+}
