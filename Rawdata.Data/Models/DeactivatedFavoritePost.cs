@@ -1,6 +1,6 @@
 ﻿namespace Rawdata.Data.Models
 {
-    public class DeactivatedPosts
+    public class DeactivatedFavoritePost : FavoritePost
     {
         
     }
