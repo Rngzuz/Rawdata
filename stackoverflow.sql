@@ -1,13 +1,14 @@
-drop function if exists get_user_by_email(text);
+drop function if exists filter_by_word;
+drop function if exists filter_by_tags;
 drop view if exists posts_with_tags;
 drop table if exists deactivated_favorite_posts;
 drop table if exists deactivated_favorite_comments;
 drop table if exists deactivated_searches;
 drop table if exists deactivated_users;
-drop table if exists favorite_comments; 
+drop table if exists favorite_comments;
 drop table if exists favorite_posts;
 drop table if exists searches;
-drop table if exists users; 
+drop table if exists users;
 drop table if exists post_links;
 drop table if exists post_tags;
 drop table if exists comments;
@@ -168,10 +169,10 @@ create table users(
 );
 
 create table deactivated_users (
-	id serial primary key, 
+	id serial primary key,
 	display_name text,
 	creation_date timestamp without time zone,
-	email text, 
+	email text,
 	"password" text,
 	deactivation_date timestamp without time zone,
 	unique (email)
@@ -186,7 +187,7 @@ create table searches(
 
 create table deactivated_searches(
 		id serial primary key,
-		user_id integer references deactivated_users(id) ON DELETE CASCADE,  
+		user_id integer references deactivated_users(id) ON DELETE CASCADE,
 		search_text text)
 ;
 
