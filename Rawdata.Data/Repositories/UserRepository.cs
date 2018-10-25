@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Rawdata.Data.Models;
 using Rawdata.Data.Repositories.Generic;
 using Rawdata.Data.Repositories.Interfaces;
@@ -49,8 +50,18 @@ namespace Rawdata.Data.Repositories
             throw new System.NotImplementedException();
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
+            var db = Context.Database.GetDbConnection();
+
+            using (var cmd  = db.CreateCommand())
+            {
+                cmd.CommandText = "select * from get_user_by_email(@email)";
+                cmd.Parameters.Add(new NpgsqlParameter("email", email));
+                
+                await cmd.ExecuteNonQueryAsync();
+            }
+
             throw new System.NotImplementedException();
         }
 
