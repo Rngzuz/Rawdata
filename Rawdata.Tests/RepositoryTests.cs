@@ -16,7 +16,7 @@ namespace Rawdata.Tests
          * AUTHOR TESTS
         **/
         [Fact]
-        public void Author_GetAll_ReturnsNonZero()
+        public void Author_GetAll_ReturnsNonZero_And_CorrectFirstValues()
         {
             DataContext db = new DataContext();
             AuthorRepository repo = new AuthorRepository(db);
@@ -24,22 +24,14 @@ namespace Rawdata.Tests
             IEnumerable<Author> authors = repo.GetAllAsync().Result;
 
             Assert.True(authors.Count() != 0);
-        }
-
-        [Fact]
-        public void Author_GetAll_CorrectFirstValues()
-        {
-            DataContext db = new DataContext();
-            AuthorRepository repo = new AuthorRepository(db);
 
             Author author = repo.GetAllAsync().Result.First();
             Assert.Equal(3719, author.Id);
             Assert.Equal("Daemin", author.DisplayName);
             Assert.Equal("Australia", author.Location);
             Assert.Equal(32, author.Age);
-            
-            Assert.True(author.Posts.Count != 0);
 
+            Assert.True(author.Posts.Count != 0);
         }
         
         /**
@@ -69,6 +61,27 @@ namespace Rawdata.Tests
 
             Assert.True(posts.Count() != 0);
         }
+
+        /**
+        * USER TESTS
+        */
+        [Fact]
+        public void User_GetAll_ReturnsNonZero_And_CorrectFirstValues()
+        {
+            DataContext db = new DataContext();
+            UserRepository repo = new UserRepository(db);
+
+            IEnumerable<User> users = repo.GetAllAsync().Result;
+
+            Assert.True(users.Count() != 0);
+
+            User user = users.First();
+
+            Assert.Equal(1, user.Id);
+            Assert.Equal("Bob", user.DisplayName);
+            Assert.Equal("Bob@Bob.com", user.Email);
+        }
+       
     }
     
 }

@@ -9,10 +9,10 @@ namespace Rawdata.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<User> Users { get; set; }
+//        public DbSet<Tag> Tags { get; set; }
         //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
         //        public DbSet<Search> Searches { get; set; }
-        //        public DbSet<Tag> Tags { get; set; }
-        //        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,6 +27,7 @@ namespace Rawdata.Data
             BuildAuthorConfig(modelBuilder);
             BuildCommentConfig(modelBuilder);
             BuildPostConfig(modelBuilder);
+            BuildUserConfig(modelBuilder);
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -99,5 +100,19 @@ namespace Rawdata.Data
             builder.Entity<Post>()
                 .HasOne(p => p.AcceptedAnswer);
         }
+
+        private void BuildUserConfig(ModelBuilder builder)
+        {
+            builder.Entity<User>().ToTable("users");
+            builder.Entity<User>().HasKey(u => u.Id);
+
+            builder.Entity<User>().Property(u => u.Id).HasColumnName("id");
+            builder.Entity<User>().Property(u => u.DisplayName).HasColumnName("display_name");
+            builder.Entity<User>().Property(u => u.CreationDate).HasColumnName("creation_date");
+            builder.Entity<User>().Property(u => u.Email).HasColumnName("email");
+            builder.Entity<User>().Property(u => u.Password).HasColumnName("password");
+        }
+
+     
     }
 }
