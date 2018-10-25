@@ -172,8 +172,21 @@ namespace Rawdata.Tests
             PostRepository repo = new PostRepository(db);
 
             IEnumerable<Post> posts = repo.GetAllAsync().Result;
-
             Assert.True(posts.Count() != 0);
+
+            Post post = posts.First();
+            Assert.Equal(19, post.Id);
+            Assert.True(post.ChildrenPosts.Count() != 0);
+            Assert.Equal(531, post.AcceptedAnswer.Id);
+
+            Assert.True(post.PostTags.Count() != 0);
+            Assert.Equal("algorithm", post.PostTags.First().TagName);
+
+            Assert.True(post.LinkedToPosts.Count() != 0);
+            Assert.Equal(1053, post.LinkedToPosts.First().LinkedId);
+
+            Assert.True(post.LinkedByPosts.Count() != 0);
+            Assert.Equal(841646, post.LinkedByPosts.First().PostId);
         }
 
         public void Add_New_Post()
@@ -264,7 +277,7 @@ namespace Rawdata.Tests
             Assert.Equal("Bob", user.DisplayName);
             Assert.Equal("Bob@Bob.com", user.Email);
         }
-
+        
         public void Add_New_User()
         {
             DataContext db = new DataContext();
@@ -321,6 +334,31 @@ namespace Rawdata.Tests
             Assert.Null(user);
         }
        
+        [Fact]
+        public void Authentication_Passing_Validate()
+        {
+            var value = "HelL0W0rLd";
+            var salt = Authentication.CreateSalt();
+
+            var hash = Authentication.CreateHash(value, salt);
+
+            var isValueValid = Authentication.Validate(value, salt, hash);
+
+            Assert.True(isValueValid);
+        }
+
+        [Fact]
+        public void Authentication_Failing_Validate()
+        {
+            var value1 = "HelL0W0rLd";
+            var value2 = "My#passW0rd";
+            var salt = Authentication.CreateSalt();
+
+            var hash = Authentication.CreateHash(value1, salt);
+
+            var isValueValid = Authentication.Validate(value2, salt, hash);
+
+            Assert.False(isValueValid);
+        }
     }
-    
 }
