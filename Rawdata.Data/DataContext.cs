@@ -11,6 +11,7 @@ namespace Rawdata.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<DeactivatedUser> DeactivatedUsers { get; set; }
         public DbSet<Tag> Tags { get; set; }
         //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
         //        public DbSet<Search> Searches { get; set; }
@@ -36,6 +37,7 @@ namespace Rawdata.Data
 
             //Application DB
             BuildUserConfig(modelBuilder);
+            BuildDeactivatedUserConfig(modelBuilder);
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -161,7 +163,19 @@ namespace Rawdata.Data
             builder.Entity<User>().Property(u => u.Email).HasColumnName("email");
             builder.Entity<User>().Property(u => u.Password).HasColumnName("password");
         }
-       
 
+        private void BuildDeactivatedUserConfig(ModelBuilder builder)
+        {
+            builder.Entity<DeactivatedUser>().ToTable("deactivated_users");
+            builder.Entity<DeactivatedUser>().HasKey(u => u.Id);
+
+            builder.Entity<DeactivatedUser>().Property(u => u.Id).HasColumnName("id");
+            builder.Entity<DeactivatedUser>().Property(u => u.DisplayName).HasColumnName("display_name");
+            builder.Entity<DeactivatedUser>().Property(u => u.CreationDate).HasColumnName("creation_date");
+            builder.Entity<DeactivatedUser>().Property(u => u.Email).HasColumnName("email");
+            builder.Entity<DeactivatedUser>().Property(u => u.Password).HasColumnName("password");
+            builder.Entity<DeactivatedUser>().Property(u => u.DeactivationDate).HasColumnName("deactivation_date");
+        }
+        
     }
 }
