@@ -14,6 +14,11 @@ namespace Rawdata.Data.Repositories
 
         }
 
+        public virtual Task<Comment> GetById(int id)
+        {
+            return Context.Comments.SingleOrDefaultAsync(a => a.Id == id);
+        }
+
         public virtual void Add(Comment comment)
         {
             Context.Set<Comment>().Add(comment);

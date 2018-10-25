@@ -13,6 +13,10 @@ namespace Rawdata.Data.Repositories
         {
         }
 
+        public virtual Task<User> GetById(int id)
+        {
+            return Context.Users.SingleOrDefaultAsync(a => a.Id == id);
+        }
         public virtual void Add(User user)
         {
             Context.Set<User>().Add(user);
