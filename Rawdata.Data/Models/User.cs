@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Rawdata.Data.Models
 {
@@ -9,5 +10,7 @@ namespace Rawdata.Data.Models
         public DateTime CreationDate { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+
+        public ICollection<FavoriteComment> FavoriteComments { get; set; }
     }
 }
