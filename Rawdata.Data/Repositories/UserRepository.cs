@@ -69,5 +69,10 @@ namespace Rawdata.Data.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+        public virtual async Task<IEnumerable<DeactivatedUser>> GetAllDeactivatedUsersAsync()
+        {
+            return await Context.DeactivatedUsers.ToListAsync();
+        }
     }
 }
