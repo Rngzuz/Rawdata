@@ -10,5 +10,27 @@ namespace Rawdata.Data.Repositories
         {
 
         }
+
+        public virtual void Add(Author author)
+        {
+            Context.Set<Author>().Add(author);
+        }
+
+        public virtual async Task<IEnumerable<Author>> GetAllAsync()
+        {
+            return await Context.Authors.Include(a => a.Posts).Include(a => a.Comments).ToListAsync();
+        }
+
+        public virtual void Update(Author author)
+        {
+            Context.Set<Author>().Update(author);
+        }
+
+        public virtual void Remove(Author author)
+        {
+            Context.Set<Author>().Remove(author);
+        }
+
+
     }
 }

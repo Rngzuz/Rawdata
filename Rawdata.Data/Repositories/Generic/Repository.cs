@@ -13,27 +13,7 @@ namespace Rawdata.Data.Repositories.Generic
         {
             Context = context;
         }
-
-        public virtual void Add(T entity)
-        {
-            Context.Set<T>().Add(entity);
-        }
-
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await Context.Set<T>().ToListAsync();
-        }
-
-        public virtual void Update(T entity)
-        {
-            Context.Set<T>().Update(entity);
-        }
-
-        public virtual void Remove(T entity)
-        {
-            Context.Set<T>().Remove(entity);
-        }
-
+        
         public virtual async Task SaveChangesAsync()
         {
             await Context.SaveChangesAsync();
