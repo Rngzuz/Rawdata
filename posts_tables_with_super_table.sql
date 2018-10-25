@@ -1,5 +1,5 @@
 CREATE TABLE posts (
-    "id"                SERIAL PRIMARY KEY,
+    "id"                INTEGER PRIMARY KEY,
     creation_date       TIMESTAMP WITHOUT TIME ZONE,
     score               INTEGER,
     body                TEXT,
@@ -7,14 +7,14 @@ CREATE TABLE posts (
 );
 
 CREATE TABLE posts_question (
-    "id"                SERIAL PRIMARY KEY,
+    "id"                INTEGER PRIMARY KEY,
     accepted_answer_id  INTEGER,
     closed_date         TIMESTAMP WITHOUT TIME ZONE,
     title               TEXT
 );
 
 CREATE TABLE posts_answer (
-    "id"                SERIAL PRIMARY KEY,
+    "id"                INTEGER PRIMARY KEY,
     parent_id           INTEGER
 );
 
