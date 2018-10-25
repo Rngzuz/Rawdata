@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Rawdata.Data.Models.Relationships;
 
 namespace Rawdata.Data.Models
 {
@@ -25,5 +26,10 @@ namespace Rawdata.Data.Models
         public Author Author { get; set; }
 
         public ICollection<Comment> Comments { get; set; }
+
+        public ICollection<PostTag> PostTags { get; set; }
+
+        public ICollection<PostLink> LinkedToPosts { get; set; }
+        public ICollection<PostLink> LinkedByPosts { get; set; }
     }
 }
