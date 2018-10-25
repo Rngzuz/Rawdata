@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Repositories.Generic;
 using Rawdata.Data.Repositories.Interfaces;
@@ -18,8 +20,15 @@ namespace Rawdata.Data.Repositories
 
         public virtual async Task<IEnumerable<Post>> GetAllAsync()
         {
-            
-            return await Context.Posts.Include(p => p.ChildrenPosts).Include(p => p.Comments).ToListAsync();
+            return await Context.Posts
+                .Include(p => p.ChildrenPosts)
+                .Include(p => p.Parent)
+                .Include(p => p.Comments)
+                .Include(p => p.AcceptedAnswer)
+                .Include(p => p.PostTags)
+                .Include(p => p.LinkedByPosts)
+                .Include(p => p.LinkedToPosts)
+                .ToListAsync();
         }
 
         public virtual void Update(Post post)

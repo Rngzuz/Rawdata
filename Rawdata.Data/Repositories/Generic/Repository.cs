@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Rawdata.Data.Repositories.Generic
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> where T : class
     {
         protected readonly DataContext Context;
 
@@ -13,7 +13,7 @@ namespace Rawdata.Data.Repositories.Generic
         {
             Context = context;
         }
-        
+
         public virtual async Task SaveChangesAsync()
         {
             await Context.SaveChangesAsync();

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
+using Rawdata.Data.Models.Relationships;
 
 namespace Rawdata.Data
 {
@@ -10,7 +11,7 @@ namespace Rawdata.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<User> Users { get; set; }
-//        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
         //        public DbSet<Search> Searches { get; set; }
 
@@ -24,9 +25,16 @@ namespace Rawdata.Data
         {
             
             base.OnModelCreating(modelBuilder);
+
+            //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
             BuildCommentConfig(modelBuilder);
             BuildPostConfig(modelBuilder);
+            BuildTagConfig(modelBuilder);
+            BuildPostTagConfig(modelBuilder);
+            BuildPostLinkConfig(modelBuilder);
+
+            //Application DB
             BuildUserConfig(modelBuilder);
         }
 
@@ -96,9 +104,50 @@ namespace Rawdata.Data
                 .WithMany(p => p.ChildrenPosts)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+            
+        }
 
-            builder.Entity<Post>()
-                .HasOne(p => p.AcceptedAnswer);
+        private void BuildTagConfig(ModelBuilder builder)
+        {
+            builder.Entity<Tag>().ToTable("tags");
+            builder.Entity<Tag>().HasKey(t => t.Name);
+        }
+
+        private void BuildPostTagConfig(ModelBuilder builder)
+        {
+            builder.Entity<PostTag>().ToTable("post_tags");
+            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.PostId});
+
+            builder.Entity<PostTag>().Property(pt => pt.PostId).HasColumnName("post_id");
+            builder.Entity<PostTag>().Property(pt => pt.TagName).HasColumnName("name");
+
+            builder.Entity<PostTag>()
+                .HasOne(pt => pt.Post)
+                .WithMany(p => p.PostTags)
+                .HasForeignKey(pt => pt.PostId);
+
+            builder.Entity<PostTag>()
+                .HasOne(pt => pt.Tag)
+                .WithMany(t => t.PostTags)
+                .HasForeignKey(pt => pt.TagName);
+        }
+
+        private void BuildPostLinkConfig(ModelBuilder builder)
+        {
+            builder.Entity<PostLink>().ToTable("post_links");
+            builder.Entity<PostLink>().HasKey(pl => new { pl.PostId, pl.LinkedId});
+            builder.Entity<PostLink>().Property(pl => pl.PostId).HasColumnName("post_id");
+            builder.Entity<PostLink>().Property(pl => pl.LinkedId).HasColumnName("link_id");
+
+            builder.Entity<PostLink>()
+                .HasOne(pl => pl.Post)
+                .WithMany(p => p.LinkedToPosts)
+                .HasForeignKey(pl => pl.PostId);
+
+            builder.Entity<PostLink>()
+                .HasOne(pl => pl.LinkedPost)
+                .WithMany(p => p.LinkedByPosts)
+                .HasForeignKey(pl => pl.LinkedId);
         }
 
         private void BuildUserConfig(ModelBuilder builder)
@@ -112,7 +161,7 @@ namespace Rawdata.Data
             builder.Entity<User>().Property(u => u.Email).HasColumnName("email");
             builder.Entity<User>().Property(u => u.Password).HasColumnName("password");
         }
+       
 
-     
     }
 }

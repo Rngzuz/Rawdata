@@ -58,8 +58,21 @@ namespace Rawdata.Tests
             PostRepository repo = new PostRepository(db);
 
             IEnumerable<Post> posts = repo.GetAllAsync().Result;
-
             Assert.True(posts.Count() != 0);
+
+            Post post = posts.First();
+            Assert.Equal(19, post.Id);
+            Assert.True(post.ChildrenPosts.Count() != 0);
+            Assert.Equal(531, post.AcceptedAnswer.Id);
+
+            Assert.True(post.PostTags.Count() != 0);
+            Assert.Equal("algorithm", post.PostTags.First().TagName);
+
+            Assert.True(post.LinkedToPosts.Count() != 0);
+            Assert.Equal(1053, post.LinkedToPosts.First().LinkedId);
+
+            Assert.True(post.LinkedByPosts.Count() != 0);
+            Assert.Equal(841646, post.LinkedByPosts.First().PostId);
         }
 
         /**
