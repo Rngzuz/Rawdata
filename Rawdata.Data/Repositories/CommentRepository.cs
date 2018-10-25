@@ -11,5 +11,25 @@ namespace Rawdata.Data.Repositories
         {
 
         }
+
+        public virtual void Add(Comment comment)
+        {
+            Context.Set<Comment>().Add(comment);
+        }
+
+        public virtual async Task<IEnumerable<Comment>> GetAllAsync()
+        {
+            return await Context.Comments.ToListAsync();
+        }
+
+        public virtual void Update(Comment comment)
+        {
+            Context.Set<Comment>().Update(comment);
+        }
+
+        public virtual void Remove(Comment comment)
+        {
+            Context.Set<Comment>().Remove(comment);
+        }
     }
 }

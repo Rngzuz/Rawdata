@@ -10,6 +10,27 @@ namespace Rawdata.Data.Repositories
         {
         }
 
+        public virtual void Add(User user)
+        {
+            Context.Set<User>().Add(user);
+        }
+
+        public virtual async Task<IEnumerable<User>> GetAllAsync()
+        {
+            
+            return await Context.Users.ToListAsync();
+        }
+
+        public virtual void Update(User user)
+        {
+            Context.Set<User>().Update(user);
+        }
+
+        public virtual void Remove(User user)
+        {
+            Context.Set<User>().Remove(user);
+        }
+
         public User RegisterUser(string name, string email, string password)
         {
             throw new System.NotImplementedException();

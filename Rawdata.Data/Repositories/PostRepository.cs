@@ -11,6 +11,26 @@ namespace Rawdata.Data.Repositories
         {
         }
 
+        public virtual void Add(Post post)
+        {
+            Context.Set<Post>().Add(post);
+        }
+
+        public virtual async Task<IEnumerable<Post>> GetAllAsync()
+        {
+            
+            return await Context.Posts.Include(p => p.ChildrenPosts).Include(p => p.Comments).ToListAsync();
+        }
+
+        public virtual void Update(Post post)
+        {
+            Context.Set<Post>().Update(post);
+        }
+
+        public virtual void Remove(Post post)
+        {
+            Context.Set<Post>().Remove(post);
+        }
         public IEnumerable<Post> FilterByTags(IList<string> tags)
         {
             throw new System.NotImplementedException();
