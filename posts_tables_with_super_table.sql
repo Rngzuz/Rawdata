@@ -1,5 +1,6 @@
 CREATE TABLE posts (
     "id"                INTEGER PRIMARY KEY,
+    "type_id"           SMALLINT,
     creation_date       TIMESTAMP WITHOUT TIME ZONE,
     score               INTEGER,
     body                TEXT,
@@ -21,6 +22,7 @@ CREATE TABLE posts_answer (
 INSERT INTO posts
 SELECT DISTINCT ON (p.id)
     p.id,
+    p.posttypeid,
     p.creationdate,
     p.score,
     p.body,
@@ -62,39 +64,38 @@ ALTER TABLE posts_answer
     ADD FOREIGN KEY (parent_id)
     REFERENCES posts ("id");
 
-ALTER TABLE posts_question
-    ADD COLUMN title_tokens TSVECTOR;
+-- ALTER TABLE posts_question
+--     ADD COLUMN title_tokens TSVECTOR;
 
-UPDATE posts_question p1
-    SET title_tokens = to_tsvector(p1.title)
-    FROM posts_question p2;
+-- UPDATE posts_question p1
+--     SET title_tokens = to_tsvector(p1.title)
+--     FROM posts_question p2;
+
+-- SELECT DISTINCT
+--     pu."id" post_id,
+-- 	pu.linkpostid link_id
+-- INTO posts_link
+-- FROM posts_universal pu
+-- WHERE pu.linkpostid IS NOT NULL
+-- AND pu.linkpostid NOT IN (
+--     SELECT linkpostid
+--     FROM posts_universal
+--     WHERE linkpostid IS NOT NULL
+--     except (
+--         SELECT id FROM posts_universal
+--     )
+-- );
+
+-- ALTER TABLE posts_link
+--     ADD FOREIGN KEY (post_id)
+--     REFERENCES posts(id);
+
+-- ALTER TABLE posts_link
+--     ADD FOREIGN KEY (link_id)
+--     REFERENCES posts(id);
 
 --
 -- SELECT TESTS
 --
 SELECT * FROM posts join posts_question using("id");
 SELECT * FROM posts join posts_answer using("id");
-
-
-SELECT DISTINCT
-    pu."id" post_id,
-	pu.linkpostid link_id
-INTO posts_link
-FROM posts_universal pu
-WHERE pu.linkpostid IS NOT NULL
-AND pu.linkpostid NOT IN (
-    SELECT linkpostid
-    FROM posts_universal
-    WHERE linkpostid IS NOT NULL
-    except (
-        SELECT id FROM posts_universal
-    )
-);
-
-ALTER TABLE posts_link
-    ADD FOREIGN KEY (post_id)
-    REFERENCES posts(id);
-
-ALTER TABLE posts_link
-    ADD FOREIGN KEY (link_id)
-    REFERENCES posts(id);
