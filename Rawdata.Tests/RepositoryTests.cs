@@ -7,6 +7,7 @@ using Rawdata.Data.Models;
 using Rawdata.Data.Repositories;
 using Xunit;
 
+namespace Rawdata.Tests
 {
     public class RepositoryTests
     {

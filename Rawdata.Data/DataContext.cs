@@ -14,7 +14,7 @@ namespace Rawdata.Data
         public DbSet<DeactivatedUser> DeactivatedUsers { get; set; }
         public DbSet<Tag> Tags { get; set; }
         //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
-        //        public DbSet<Search> Searches { get; set; }
+        public DbSet<Search> Searches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,6 +41,7 @@ namespace Rawdata.Data
             BuildFavoriteCommentConfig(modelBuilder);
 
             BuildDeactivatedUserConfig(modelBuilder);
+            BuildSearchConfig(modelBuilder);
 
         }
 
@@ -208,6 +209,22 @@ namespace Rawdata.Data
             builder.Entity<DeactivatedUser>().Property(u => u.Password).HasColumnName("password");
             builder.Entity<DeactivatedUser>().Property(u => u.DeactivationDate).HasColumnName("deactivation_date");
         }
-        
+
+        private void BuildSearchConfig(ModelBuilder builder)
+        {
+            builder.Entity<Search>().ToTable("searches");
+            builder.Entity<Search>().HasKey(s => s.Id);
+
+            builder.Entity<Search>().Property(u => u.Id).HasColumnName("id");
+            builder.Entity<Search>().Property(u => u.UserId).HasColumnName("user_id");
+            builder.Entity<Search>().Property(u => u.SearchText).HasColumnName("search_text");
+
+            builder.Entity<Search>()
+                .HasOne(s => s.User)
+                .WithMany(s => s.Searches)
+                .HasForeignKey(s => s.UserId);
+        }
+
+
     }
 }

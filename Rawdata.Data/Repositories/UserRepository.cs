@@ -54,7 +54,12 @@ namespace Rawdata.Data.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public User GetUserByEmail(string email)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /*  public async Task<User> GetUserByEmail(string email)
         {
             var db = Context.Database.GetDbConnection();
 
@@ -68,7 +73,7 @@ namespace Rawdata.Data.Repositories
 
             throw new System.NotImplementedException();
         }
-
+        */
         public DeactivatedUser GetDeactivatedUserByEmail(string email)
         {
             throw new System.NotImplementedException();
@@ -78,5 +83,22 @@ namespace Rawdata.Data.Repositories
         {
             return await Context.DeactivatedUsers.ToListAsync();
         }
+
+        public virtual async Task<IEnumerable<Search>> GetSearches(User user)
+        {
+            var db = Context.Database.GetDbConnection();
+
+            int userId = user.Id;
+            using (var cmd = db.CreateCommand())
+            {
+                cmd.CommandText = "select * from get_users_search_history(@userId)";
+                cmd.Parameters.Add(new NpgsqlParameter("userId", userId));
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            throw new System.NotImplementedException();
+        }
+
     }
 }

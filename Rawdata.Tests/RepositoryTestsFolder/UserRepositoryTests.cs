@@ -79,7 +79,50 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 
             repo.Remove(user);
             repo.SaveChangesAsync().Wait();
+
         }
 
+        [Fact]
+        public void get_users_search()
+        {
+            DataContext db = new DataContext();
+            UserRepository repo = new UserRepository(db);
+
+            SearchRepository repo2 = new SearchRepository(db);
+            
+            Search search = new Search()
+            {
+                Id=1,
+                UserId= null,
+                SearchText = "Null pointer"
+            };
+            repo2.Add(search);
+            repo2.SaveChangesAsync().Wait();
+            
+
+            User user = new User()
+            {
+                Id = 999789999,
+                DisplayName = "bego",
+                Email = "begosut@gmail.com",
+                Password = "1234",
+                Searches = new[] {search}
+            };
+
+           repo.Add(user);
+           repo.SaveChangesAsync().Wait();
+            
+           user = repo.GetById(999789999).Result;
+           search = user.Searches.First();
+           Assert.Equal(1, search.Id);
+           Assert.Equal("Null pointer", search.SearchText);
+            
+           repo.Remove(user);
+           repo.SaveChangesAsync().Wait();
+
+           repo2.Remove(search);
+           repo2.SaveChangesAsync().Wait();
+
+        }
     }
 }
