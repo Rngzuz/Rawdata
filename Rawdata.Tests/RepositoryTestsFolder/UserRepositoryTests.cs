@@ -92,7 +92,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
             
             Search search = new Search()
             {
-                Id=1,
+                Id=10,
                 UserId= null,
                 SearchText = "Null pointer"
             };
@@ -114,7 +114,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
             
            user = repo.GetById(999789999).Result;
            search = user.Searches.First();
-           Assert.Equal(1, search.Id);
+           Assert.Equal(10, search.Id);
            Assert.Equal("Null pointer", search.SearchText);
             
            repo.Remove(user);
