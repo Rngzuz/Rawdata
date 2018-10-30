@@ -1,5 +1,5 @@
 --
--- AUTHORS
+-- authors
 --
 SELECT
     t1.ownerid              "id",
@@ -18,8 +18,7 @@ FROM (
     FROM posts_universal
 ) t1;
 
-ALTER TABLE authors
-ADD PRIMARY KEY ("id");
+ALTER TABLE authors ADD PRIMARY KEY ("id");
 
 INSERT INTO authors (
     "id",
@@ -48,105 +47,36 @@ WHERE t2.authorid NOT IN (
 );
 
 --
--- POSTS
+-- posts
 --
-CREATE TABLE posts (
-    "id"                INTEGER PRIMARY KEY,
-    "type_id"           SMALLINT,
-    creation_date       TIMESTAMP WITHOUT TIME ZONE,
-    score               INTEGER,
-    body                TEXT,
-    author_id           INTEGER
-);
-
-CREATE TABLE posts_question (
-    "id"                INTEGER PRIMARY KEY,
-    accepted_answer_id  INTEGER,
-    closed_date         TIMESTAMP WITHOUT TIME ZONE,
-    title               TEXT
-);
-
-CREATE TABLE posts_answer (
-    "id"                INTEGER PRIMARY KEY,
-    parent_id           INTEGER
-);
-
-INSERT INTO posts
-SELECT DISTINCT ON (p.id)
-    p.id,
-    p.posttypeid,
-    p.creationdate,
+SELECT DISTINCT ON ("id")
+    p."id",
+    (CASE WHEN (p.posttypeid = 1) THEN 'Question' ELSE 'Answer' END) discriminator,
+    p.parentid parent_id,
+    p.acceptedanswerid accepted_answer_id,
+    p.creationdate creation_date,
     p.score,
     p.body,
-    p.ownerid
+    p.closeddate closed_date,
+    p.title,
+    to_tsvector(p.title) title_tokens,
+    p.ownerid author_id,
+    p.linkpostid link_id
+INTO posts
 FROM posts_universal p;
 
-INSERT INTO posts_question
-SELECT DISTINCT ON (p.id)
-    p.id,
-    p.acceptedanswerid,
-    p.closeddate,
-    p.title
-FROM posts_universal p
-WHERE p.posttypeid = 1;
-
-INSERT INTO posts_answer
-SELECT DISTINCT ON (p.id)
-    p.id,
-    p.parentid
-FROM posts_universal p
-WHERE p.posttypeid = 2;
-
--- set "accepted_answer_id" that does not exist to null
-UPDATE posts_question
-    SET accepted_answer_id = null
-WHERE accepted_answer_id NOT IN (SELECT "id" FROM posts);
+UPDATE posts SET accepted_answer_id = null WHERE accepted_answer_id NOT IN (SELECT "id" FROM posts);
+UPDATE posts SET link_id = null WHERE link_id NOT IN (SELECT "id" FROM posts);
 
 ALTER TABLE posts
-    ADD FOREIGN KEY (author_id)
-    REFERENCES authors ("id");
-
-ALTER TABLE posts_question
-    ADD FOREIGN KEY (accepted_answer_id)
-    REFERENCES posts ("id");
-
-ALTER TABLE posts_answer
-    ADD FOREIGN KEY (parent_id)
-    REFERENCES posts ("id");
-
-ALTER TABLE posts_question
-    ADD COLUMN title_tokens TSVECTOR;
-
-UPDATE posts_question p1
-    SET title_tokens = to_tsvector(p1.title)
-    FROM posts_question p2;
+    ADD PRIMARY KEY ("id"),
+    ADD FOREIGN KEY (parent_id) REFERENCES posts ("id") ON DELETE CASCADE,
+    ADD FOREIGN KEY (accepted_answer_id) REFERENCES posts ("id") ON DELETE SET NULL,
+    ADD FOREIGN KEY (author_id) REFERENCES authors ("id") ON DELETE SET NULL,
+    ADD FOREIGN KEY (link_id) REFERENCES posts ("id") ON DELETE SET NULL;
 
 --
--- POSTS_LINK
---
-SELECT DISTINCT
-    p."id"              post_id,
-	p.linkpostid        link_id
-INTO posts_link
-FROM posts_universal p
-WHERE p.linkpostid IS NOT NULL
-AND p.linkpostid NOT IN (
-    SELECT linkpostid
-    FROM posts_universal
-    WHERE linkpostid IS NOT NULL
-    except (SELECT id FROM posts_universal)
-);
-
-ALTER TABLE posts_link
-    ADD FOREIGN KEY (post_id)
-    REFERENCES posts(id);
-
-ALTER TABLE posts_link
-    ADD FOREIGN KEY (link_id)
-    REFERENCES posts(id);
-
---
--- COMMENTS
+-- comments
 --
 SELECT
     c.commentid         "id",
@@ -159,18 +89,12 @@ INTO "comments"
 FROM comments_universal c;
 
 ALTER TABLE "comments"
-    ADD PRIMARY KEY ("id");
-
-ALTER TABLE "comments"
-    ADD FOREIGN KEY (post_id)
-    REFERENCES posts ("id");
-
-ALTER TABLE "comments"
-    ADD FOREIGN KEY (author_id)
-    REFERENCES authors ("id");
+    ADD PRIMARY KEY ("id"),
+    ADD FOREIGN KEY (post_id) REFERENCES posts ("id"),
+    ADD FOREIGN KEY (author_id) REFERENCES authors ("id");
 
 --
--- TAGS
+-- tags
 --
 SELECT DISTINCT
     UNNEST(string_to_array(p.tags, '::')) "name"
@@ -178,58 +102,42 @@ INTO tags
 FROM posts_universal p
 WHERE p.tags IS NOT NULL;
 
-ALTER TABLE tags
-    ADD PRIMARY KEY ("name");
+ALTER TABLE tags ADD PRIMARY KEY ("name");
 
 --
--- POSTS_TAG
+-- posts_tags
 --
 SELECT DISTINCT
-    p."id"                                post_id,
+    p."id" post_id,
     UNNEST(string_to_array(p.tags, '::')) "name"
-INTO posts_tag
+INTO posts_tags
 FROM posts_universal p
 WHERE p.tags IS NOT NULL;
 
-ALTER TABLE posts_tag
-    ADD FOREIGN KEY ("name")
-    REFERENCES tags ("name");
-
-ALTER TABLE posts_tag
-    ADD FOREIGN KEY (post_id)
-    REFERENCES posts ("id");
+ALTER TABLE posts_tags
+    ADD FOREIGN KEY ("name") REFERENCES tags ("name"),
+    ADD FOREIGN KEY (post_id) REFERENCES posts ("id");
 
 --
--- USERS
+-- users
 --
 CREATE TABLE users (
-    "id"                SERIAL PRIMARY KEY,
-    display_name        TEXT,
-    creation_date       TIMESTAMP WITHOUT TIME ZONE,
-    email               TEXT,
-    "password"          TEXT,
+    "id" SERIAL PRIMARY KEY,
+    display_name TEXT,
+    creation_date TIMESTAMP WITHOUT TIME ZONE,
+    email TEXT,
+    "password" TEXT,
 
     UNIQUE(email)
 );
 
 --
--- MARKED_POSTS_QUESTION
+-- marked_posts
 --
-CREATE TABLE marked_posts_question (
-    "user_id"           INTEGER REFERENCES users ("id"),
-    posts_question_id   INTEGER REFERENCES posts_question ("id"),
-    note                TEXT,
+CREATE TABLE marked_posts (
+    "user_id" INTEGER REFERENCES users ("id"),
+    post_id INTEGER REFERENCES posts ("id"),
+    note TEXT,
 
-    UNIQUE ("user_id", posts_question_id)
-);
-
---
--- MARKED_POSTS_ANSWER
---
-CREATE TABLE marked_posts_answer (
-    "user_id"           INTEGER REFERENCES users ("id"),
-    posts_answer_id     INTEGER REFERENCES posts_answer ("id"),
-    note                TEXT,
-
-    UNIQUE ("user_id", posts_answer_id)
+    UNIQUE ("user_id", post_id)
 );

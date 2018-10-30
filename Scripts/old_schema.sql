@@ -1,230 +1,235 @@
-drop function if exists filter_by_word;
-drop function if exists filter_by_tags;
-drop view if exists posts_with_tags;
-drop table if exists deactivated_favorite_posts;
-drop table if exists deactivated_favorite_comments;
-drop table if exists deactivated_searches;
-drop table if exists deactivated_users;
-drop table if exists favorite_comments;
-drop table if exists favorite_posts;
-drop table if exists searches;
-drop table if exists users;
-drop table if exists post_links;
-drop table if exists post_tags;
-drop table if exists comments;
-drop table if exists posts;
-drop table if exists tags;
-drop table if exists authors;
+--
+-- AUTHORS
+--
+SELECT
+    t1.ownerid              "id",
+    t1.ownerdisplayname     display_name,
+    t1.ownercreationdate    creation_date,
+    t1.ownerlocation        "location",
+    t1.ownerage             age
+INTO authors
+FROM (
+    SELECT DISTINCT ON (ownerid)
+        ownerid,
+        ownerdisplayname,
+        ownercreationdate,
+        ownerlocation,
+        ownerage
+    FROM posts_universal
+) t1;
 
--- Create and insert into posts from posts_universal
-select distinct on ("id")
-    pu."id",
-    pu.posttypeid type_id,
-    pu.parentid parent_id,
-    pu.acceptedanswerid accepted_answer_id,
-    pu.creationdate creation_date,
-    pu.score,
-    pu.body,
-    pu.closeddate closed_date,
-    pu.title,
-    pu.ownerid author_id
-into posts
-from posts_universal pu;
+ALTER TABLE authors
+ADD PRIMARY KEY ("id");
 
-alter table posts
-add primary key("id");
-
--- alter table posts
--- add column title_tokens TSVECTOR;
-
--- update posts p1
--- set title_tokens = to_tsvector(p1.title)
--- from posts p2;
-
--- Create pivot table link_posts
-select distinct
-    pu."id" post_id,
-	pu.linkpostid link_id
-into post_links
-from posts_universal pu
-where pu.linkpostid is not null
-and pu.linkpostid not in (
-    select linkpostid from posts_universal where linkpostid is not null
-    except (select id from posts_universal)
-);
-
-alter table post_links
-add foreign key (post_id) references posts(id);
-
-alter table post_links
-add foreign key (link_id) references posts(id);
-
-
--- Create table authors
-create table authors (
-    "id" int,
-    display_name text,
-    creation_date timestamp,
-    "location" text,
-    age int,
-
-    primary key("id")
-);
-
--- Insert unique owners into authors
-insert into authors (
+INSERT INTO authors (
     "id",
     display_name,
     creation_date,
     "location",
     age
 )
-select distinct
-    ownerid,
-    ownerdisplayname,
-    ownercreationdate,
-    ownerlocation,
-    ownerage
-from posts_universal;
-
-
--- Insert unique authors into authors that are not there already
-insert into authors(
-    "id",
-    display_name,
-    creation_date,
-    "location",
-    age
-)
-select distinct
-    authorid,
-    authordisplayname,
-    authorcreationdate,
-    authorlocation,
-    authorage
-from comments_universal
-where not exists (
-    select * from authors
-    where authors.id = authorid
+SELECT
+    t2.authorid             "id",
+    t2.authordisplayname    display_name,
+    t2.authorcreationdate   creation_date,
+    t2.authorlocation       "location",
+    t2.authorage            age
+FROM (
+    SELECT DISTINCT ON (authorid)
+        authorid,
+        authordisplayname,
+        authorcreationdate,
+        authorlocation,
+        authorage
+    FROM comments_universal
+) t2
+WHERE t2.authorid NOT IN (
+    SELECT id FROM authors
 );
 
+--
+-- POSTS
+--
+CREATE TABLE posts (
+    "id"                INTEGER PRIMARY KEY,
+    "type_id"           SMALLINT,
+    creation_date       TIMESTAMP WITHOUT TIME ZONE,
+    score               INTEGER,
+    body                TEXT,
+    author_id           INTEGER
+);
 
--- Create comments table
-select
-    c.commentid "id",
-    c.commentscore score,
-    c.postid post_id,
-    c.commenttext "text",
+CREATE TABLE posts_question (
+    "id"                INTEGER PRIMARY KEY,
+    accepted_answer_id  INTEGER,
+    closed_date         TIMESTAMP WITHOUT TIME ZONE,
+    title               TEXT
+);
+
+CREATE TABLE posts_answer (
+    "id"                INTEGER PRIMARY KEY,
+    parent_id           INTEGER
+);
+
+INSERT INTO posts
+SELECT DISTINCT ON (p.id)
+    p.id,
+    p.posttypeid,
+    p.creationdate,
+    p.score,
+    p.body,
+    p.ownerid
+FROM posts_universal p;
+
+INSERT INTO posts_question
+SELECT DISTINCT ON (p.id)
+    p.id,
+    p.acceptedanswerid,
+    p.closeddate,
+    p.title
+FROM posts_universal p
+WHERE p.posttypeid = 1;
+
+INSERT INTO posts_answer
+SELECT DISTINCT ON (p.id)
+    p.id,
+    p.parentid
+FROM posts_universal p
+WHERE p.posttypeid = 2;
+
+-- set "accepted_answer_id" that does not exist to null
+UPDATE posts_question
+    SET accepted_answer_id = null
+WHERE accepted_answer_id NOT IN (SELECT "id" FROM posts);
+
+ALTER TABLE posts
+    ADD FOREIGN KEY (author_id)
+    REFERENCES authors ("id");
+
+ALTER TABLE posts_question
+    ADD FOREIGN KEY (accepted_answer_id)
+    REFERENCES posts ("id");
+
+ALTER TABLE posts_answer
+    ADD FOREIGN KEY (parent_id)
+    REFERENCES posts ("id");
+
+ALTER TABLE posts_question
+    ADD COLUMN title_tokens TSVECTOR;
+
+UPDATE posts_question p1
+    SET title_tokens = to_tsvector(p1.title)
+    FROM posts_question p2;
+
+--
+-- POSTS_LINK
+--
+SELECT DISTINCT
+    p."id"              post_id,
+	p.linkpostid        link_id
+INTO posts_link
+FROM posts_universal p
+WHERE p.linkpostid IS NOT NULL
+AND p.linkpostid NOT IN (
+    SELECT linkpostid
+    FROM posts_universal
+    WHERE linkpostid IS NOT NULL
+    except (SELECT id FROM posts_universal)
+);
+
+ALTER TABLE posts_link
+    ADD FOREIGN KEY (post_id)
+    REFERENCES posts(id);
+
+ALTER TABLE posts_link
+    ADD FOREIGN KEY (link_id)
+    REFERENCES posts(id);
+
+--
+-- COMMENTS
+--
+SELECT
+    c.commentid         "id",
+    c.commentscore      score,
+    c.postid            post_id,
+    c.commenttext       "text",
     c.commentcreatedate creation_date,
-    c.authorid author_id
-into "comments"
-from comments_universal c;
+    c.authorid          author_id
+INTO "comments"
+FROM comments_universal c;
 
-alter table "comments"
-add primary key("id");
+ALTER TABLE "comments"
+    ADD PRIMARY KEY ("id");
 
-alter table "comments"
-add foreign key (author_id) references authors("id");
+ALTER TABLE "comments"
+    ADD FOREIGN KEY (post_id)
+    REFERENCES posts ("id");
 
--- alter table comments
--- add column text_tokens TSVECTOR;
+ALTER TABLE "comments"
+    ADD FOREIGN KEY (author_id)
+    REFERENCES authors ("id");
 
--- update comments c1
--- set text_tokens = to_tsvector(c1.text)
--- from comments c2;
+--
+-- TAGS
+--
+SELECT DISTINCT
+    UNNEST(string_to_array(p.tags, '::')) "name"
+INTO tags
+FROM posts_universal p
+WHERE p.tags IS NOT NULL;
 
+ALTER TABLE tags
+    ADD PRIMARY KEY ("name");
 
--- Create tags table
-select distinct unnest(string_to_array(pu.tags, '::')) "name"
-into tags
-from posts_universal pu
-where pu.tags is not null;
+--
+-- POSTS_TAG
+--
+SELECT DISTINCT
+    p."id"                                post_id,
+    UNNEST(string_to_array(p.tags, '::')) "name"
+INTO posts_tag
+FROM posts_universal p
+WHERE p.tags IS NOT NULL;
 
-alter table tags
-add primary key("name");
+ALTER TABLE posts_tag
+    ADD FOREIGN KEY ("name")
+    REFERENCES tags ("name");
 
+ALTER TABLE posts_tag
+    ADD FOREIGN KEY (post_id)
+    REFERENCES posts ("id");
 
--- Create pivot table post_tags
-select distinct
-    unnest(string_to_array(pu.tags, '::')) "name",
-    pu."id" post_id
-into post_tags
-from posts_universal pu
-where pu.tags is not null;
+--
+-- USERS
+--
+CREATE TABLE users (
+    "id"                SERIAL PRIMARY KEY,
+    display_name        TEXT,
+    creation_date       TIMESTAMP WITHOUT TIME ZONE,
+    email               TEXT,
+    "password"          TEXT,
 
-alter table post_tags
-add foreign key ("name") references tags("name");
-
-alter table post_tags
-add foreign key (post_id) references posts("id");
-
--- Create users table
-create table users(
-    "id" serial primary key,
-    display_name text,
-    creation_date timestamp without time zone,
-    email text,
-    "password" text,
-    deactivation_date timestamp without time zone
+    UNIQUE(email)
 );
 
-create table deactivated_users (
-	id serial primary key,
-	display_name text,
-	creation_date timestamp without time zone,
-	email text,
-	"password" text,
-	deactivation_date timestamp without time zone,
-	unique (email)
+--
+-- MARKED_POSTS_QUESTION
+--
+CREATE TABLE marked_posts_question (
+    "user_id"           INTEGER REFERENCES users ("id"),
+    posts_question_id   INTEGER REFERENCES posts_question ("id"),
+    note                TEXT,
+
+    UNIQUE ("user_id", posts_question_id)
 );
 
--- Create searches table
-create table searches(
-    "id" serial primary key,
-    "user_id" integer references users(id),
-    search_text text
+--
+-- MARKED_POSTS_ANSWER
+--
+CREATE TABLE marked_posts_answer (
+    "user_id"           INTEGER REFERENCES users ("id"),
+    posts_answer_id     INTEGER REFERENCES posts_answer ("id"),
+    note                TEXT,
+
+    UNIQUE ("user_id", posts_answer_id)
 );
-
-create table deactivated_searches(
-		id serial primary key,
-		user_id integer references deactivated_users(id) ON DELETE CASCADE,
-		search_text text)
-;
-
--- Create favorite_posts table
-create table favorite_posts(
-    "user_id" integer not null references users(id),
-    post_id integer not null references posts(id),
-    note text,
-    unique("user_id", post_id)
-);
-
-create table deactivated_favorite_posts(
-		user_id integer not null references deactivated_users(id) ON DELETE CASCADE,
-		post_id integer not null references posts(id),
-		note text,
-		unique(user_id, post_id)
-);
-
--- Create favorite_comments table
-create table favorite_comments(
-    "user_id" integer not null references users("id"),
-    comment_id integer not null references comments("id"),
-    note text,
-    unique("user_id", comment_id)
-);
-
-create table deactivated_favorite_comments(
-		user_id integer not null references deactivated_users(id) ON DELETE CASCADE,
-		comment_id integer not null references comments(id),
-		note text,
-		unique(user_id, comment_id)
-);
-
--- View which include post tags
-create view posts_with_tags as
-select posts.*, array_agg(post_tags.name) tags
-from posts
-join post_tags
-on posts.id = post_tags.post_id
-group by posts.id;
