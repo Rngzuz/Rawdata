@@ -12,6 +12,7 @@ namespace Rawdata.Data.Models
         public string Password { get; set; }
 
         public ICollection<FavoriteComment> FavoriteComments { get; set; }
+        public ICollection<FavoritePost> FavoritePosts { get; set; }
         public ICollection<Search> Searches { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -19,14 +20,14 @@ namespace Rawdata.Data.Repositories
             return Context.Users.SingleOrDefaultAsync(a => a.Id == id);
         }
 
-        public Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
+        public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int userId)
         {
-            throw new System.NotImplementedException();
+            return await Context.FavoriteComments.Where(com => com.UserId == userId).ToListAsync();
         }
 
-        public ICollection<FavoritePost> GetFavoritePosts(int id)
+        public virtual async Task<ICollection<FavoritePost>> GetFavoritePosts(int userId)
         {
-            throw new System.NotImplementedException();
+            return await Context.FavoritePosts.Where(post => post.UserId == userId).ToListAsync();
         }
 
         public virtual void Add(User user)
@@ -36,7 +37,6 @@ namespace Rawdata.Data.Repositories
 
         public virtual async Task<IEnumerable<User>> GetAllAsync()
         {
-            
             return await Context.Users.ToListAsync();
         }
 

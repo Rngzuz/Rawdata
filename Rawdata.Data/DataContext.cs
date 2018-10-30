@@ -14,8 +14,9 @@ namespace Rawdata.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
         public DbSet<Search> Searches { get; set; }
+        public DbSet<FavoriteComment> FavoriteComments { get; set; }
+        public DbSet<FavoritePost> FavoritePosts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,11 +38,10 @@ namespace Rawdata.Data
             BuildPostLinkConfig(modelBuilder);
 
             //Application DB
-
             BuildUserConfig(modelBuilder);
             BuildFavoriteCommentConfig(modelBuilder);
+            BuildFavoritePostConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
-            
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -192,16 +192,16 @@ namespace Rawdata.Data
 
         private void BuildFavoritePostConfig(ModelBuilder builder)
         {
-            builder.Entity<FavoriteComment>().ToTable("favorite_posts");
-            builder.Entity<FavoriteComment>().HasKey(c => new { c.UserId, c.CommentId });
+            builder.Entity<FavoritePost>().ToTable("favorite_posts");
+            builder.Entity<FavoritePost>().HasKey(p => new { p.UserId, p.PostId });
 
-            builder.Entity<FavoriteComment>().Property(c => c.UserId).HasColumnName("user_id");
-            builder.Entity<FavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
+            builder.Entity<FavoritePost>().Property(p => p.UserId).HasColumnName("user_id");
+            builder.Entity<FavoritePost>().Property(p => p.PostId).HasColumnName("post_id");
 
-            builder.Entity<FavoriteComment>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.FavoriteComments)
-                .HasForeignKey(c => c.CommentId);
+            builder.Entity<FavoritePost>()
+                .HasOne(p => p.User)
+                .WithMany(p => p.FavoritePosts)
+                .HasForeignKey(c => c.PostId);
         }
         
         private void BuildSearchConfig(ModelBuilder builder)

@@ -13,9 +13,9 @@ namespace Rawdata.Data.Repositories.Interfaces
         
         User GetUserByEmail(string email);
 
-        Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id);
+        Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int userId);
 
-        ICollection<FavoritePost> GetFavoritePosts(int id);
+        Task<ICollection<FavoritePost>> GetFavoritePosts(int userId);
         
     }
 }

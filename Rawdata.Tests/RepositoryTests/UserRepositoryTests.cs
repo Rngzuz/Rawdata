@@ -10,24 +10,9 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 {
     public class UserRepositoryTests
     {
+        
         [Fact]
-        public void User_GetAll_ReturnsNonZero_And_CorrectFirstValues()
-        {
-            DataContext db = new DataContext();
-            UserRepository repo = new UserRepository(db);
-        
-            IEnumerable<User> users = repo.GetAllAsync().Result;
-        
-            Assert.True(users.Count() != 0);
-        
-            User user = repo.GetById(1).Result;
-        
-            Assert.Equal("Begoña", user.DisplayName);
-            Assert.Equal("begona@test.local", user.Email);
-        }
-
-        [Fact]
-        public async void add_new_userAsync_and_remove()
+        public void User_Add_And_Remove()
         {
             DataContext db = new DataContext();
             UserRepository repo = new UserRepository(db);
@@ -55,7 +40,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
         }
 
         [Fact]
-        public void update_user()
+        public void User_Update_Success()
         {
             DataContext db = new DataContext();
             UserRepository repo = new UserRepository(db);
@@ -84,7 +69,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
         }
 
         [Fact]
-        public void get_users_search()
+        public void User_Search_Add_Search()
         {
             DataContext db = new DataContext();
             UserRepository repo = new UserRepository(db);
