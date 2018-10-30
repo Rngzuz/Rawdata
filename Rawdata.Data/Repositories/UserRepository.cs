@@ -21,7 +21,7 @@ namespace Rawdata.Data.Repositories
 
         public Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
         {
-            return Context.Users.Include(p => p.FavoriteComments).ToListAsync();
+            throw new System.NotImplementedException();
         }
 
         public ICollection<FavoritePost> GetFavoritePosts(int id)
@@ -54,15 +54,13 @@ namespace Rawdata.Data.Repositories
         {
             throw new System.NotImplementedException();
         }
-        
 
         public void Remove(int userId)
         {
-            Context.
+            throw new System.NotImplementedException();
         }
 
 
-        
         public User GetUserByEmail(string email)
         {
             throw new System.NotImplementedException();

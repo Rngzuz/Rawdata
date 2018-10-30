@@ -6,6 +6,8 @@ namespace Rawdata.Data.Repositories.Generic
 {
     public interface IRepository<T> where T : class
     {
+        Task<T> GetById(int entityId);
+
         void Add(T entity);
 
         Task<IEnumerable<T>> GetAllAsync();

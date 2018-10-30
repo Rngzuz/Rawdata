@@ -10,6 +10,8 @@ namespace Rawdata.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<DeactivatedUser> DeactivatedUsers { get; set; }
         public DbSet<Tag> Tags { get; set; }
@@ -89,19 +91,18 @@ namespace Rawdata.Data
 
         private void BuildPostConfig(ModelBuilder builder)
         {
-            builder.Entity<Post>().ToTable("posts");
-            builder.Entity<Post>().HasKey(p => p.Id);
+            builder.Entity<Post>()
+                .ToTable("posts")
+                .HasDiscriminator<int>("type_id")
+                .HasValue<Question>(1)
+                .HasValue<Answer>(2); 
 
+            builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
-            builder.Entity<Post>().Property(p => p.TypeId).HasColumnName("type_id");
             builder.Entity<Post>().Property(p => p.CreationDate).HasColumnName("creation_date");
-            builder.Entity<Post>().Property(p => p.ClosedDate).HasColumnName("closed_date");
             builder.Entity<Post>().Property(p => p.Score).HasColumnName("score");
             builder.Entity<Post>().Property(p => p.Body).HasColumnName("body");
-            builder.Entity<Post>().Property(p => p.Title).HasColumnName("title");
-            builder.Entity<Post>().Property(p => p.ParentId).HasColumnName("parent_id");
             builder.Entity<Post>().Property(p => p.AuthorId).HasColumnName("author_id");
-            builder.Entity<Post>().Property(p => p.AcceptedAnswerId).HasColumnName("accepted_answer_id");
 
             builder.Entity<Post>()
                 .HasOne(p => p.Author)
@@ -110,9 +111,18 @@ namespace Rawdata.Data
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("posts_author_id_fkey");
 
-            builder.Entity<Post>()
+            //Question post config
+
+            builder.Entity<Question>().Property(q => q.Title).HasColumnName("title");
+            builder.Entity<Question>().Property(q => q.ClosedDate).HasColumnName("closed_date");
+            builder.Entity<Question>().Property(q => q.AcceptedAnswerId).HasColumnName("accepted_answer_id");
+            
+            //Answer post config
+            builder.Entity<Answer>().Property(a => a.ParentId).HasColumnName("parent_id");
+
+            builder.Entity<Answer>()
                 .HasOne(p => p.Parent)
-                .WithMany(p => p.ChildrenPosts)
+                .WithMany(p => p.Answers)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
             
@@ -127,15 +137,15 @@ namespace Rawdata.Data
         private void BuildPostTagConfig(ModelBuilder builder)
         {
             builder.Entity<PostTag>().ToTable("post_tags");
-            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.PostId});
+            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId});
 
-            builder.Entity<PostTag>().Property(pt => pt.PostId).HasColumnName("post_id");
+            builder.Entity<PostTag>().Property(pt => pt.QuestionId).HasColumnName("post_id");
             builder.Entity<PostTag>().Property(pt => pt.TagName).HasColumnName("name");
 
             builder.Entity<PostTag>()
-                .HasOne(pt => pt.Post)
+                .HasOne(pt => pt.Question)
                 .WithMany(p => p.PostTags)
-                .HasForeignKey(pt => pt.PostId);
+                .HasForeignKey(pt => pt.QuestionId);
 
             builder.Entity<PostTag>()
                 .HasOne(pt => pt.Tag)
