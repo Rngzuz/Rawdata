@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Database
 {
@@ -22,37 +23,12 @@ namespace Database
                 .Take(5)
                 .ToList();
 
-            PrintTable<Question>(questions);
-        }
+            var jsonSettings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
-        static void PrintTable<T>(IList<T> list) where T : class
-        {
-            foreach (var obj in list)
-            {
-                var props = obj.GetType().GetProperties();
-                Console.WriteLine("{");
+            var json = JsonConvert
+                .SerializeObject(questions, Formatting.Indented, jsonSettings);
 
-                foreach (var prop in props)
-                {
-                    string value;
-
-                    try {
-                        value = prop
-                            .GetValue(obj, null)
-                            .ToString();
-                    } catch {
-                        continue;
-                    }
-
-                    Console.WriteLine(
-                        "    {0}: {1}",
-                        prop.Name,
-                        value.Length > 40 ? value.Substring(0, 37) + "..." : value
-                    );
-                }
-
-                Console.WriteLine("}\n");
-            }
+            Console.WriteLine(json);
         }
     }
 }

@@ -11,12 +11,14 @@ namespace Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder
-                .UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres");
+            base.OnConfiguring(builder);
+            builder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder
                 .Entity<Post>()
                 .ToTable("posts")
@@ -25,10 +27,11 @@ namespace Database
                 .HasValue<Answer>("Answer");
 
             builder
-                .Entity<Answer>()
-                .HasOne(e => e.Parent)
-                .WithMany(e => e.Answers)
+                .Entity<Question>()
+                .HasMany(e => e.Answers)
+                .WithOne(e => e.Parent)
                 .HasForeignKey(e => e.ParentId);
+
 
             builder
                 .Entity<Question>()

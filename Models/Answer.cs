@@ -6,6 +6,7 @@ namespace Database.Models
     {
         [Column("parent_id")]
         public int ParentId { get; set; }
+
         public Question Parent { get; set; }
     }
 }
