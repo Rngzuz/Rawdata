@@ -2,11 +2,11 @@
 -- authors
 --
 SELECT
-    t1.ownerid              "id",
-    t1.ownerdisplayname     display_name,
-    t1.ownercreationdate    creation_date,
-    t1.ownerlocation        "location",
-    t1.ownerage             age
+    t1.ownerid "id",
+    t1.ownerdisplayname display_name,
+    t1.ownercreationdate creation_date,
+    t1.ownerlocation "location",
+    t1.ownerage age
 INTO authors
 FROM (
     SELECT DISTINCT ON (ownerid)
@@ -28,11 +28,11 @@ INSERT INTO authors (
     age
 )
 SELECT
-    t2.authorid             "id",
-    t2.authordisplayname    display_name,
-    t2.authorcreationdate   creation_date,
-    t2.authorlocation       "location",
-    t2.authorage            age
+    t2.authorid "id",
+    t2.authordisplayname display_name,
+    t2.authorcreationdate creation_date,
+    t2.authorlocation "location",
+    t2.authorage age
 FROM (
     SELECT DISTINCT ON (authorid)
         authorid,
@@ -79,12 +79,12 @@ ALTER TABLE posts
 -- comments
 --
 SELECT
-    c.commentid         "id",
-    c.commentscore      score,
-    c.postid            post_id,
-    c.commenttext       "text",
+    c.commentid "id",
+    c.commentscore score,
+    c.postid post_id,
+    c.commenttext "text",
     c.commentcreatedate creation_date,
-    c.authorid          author_id
+    c.authorid author_id
 INTO "comments"
 FROM comments_universal c;
 

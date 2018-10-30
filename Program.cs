@@ -14,52 +14,44 @@ namespace Database
             var db = new Context();
 
             // Translate raw SQL query to a linq query for the collection Answers
-            var query = db.Answers.FromSql("SELECT * FROM posts join posts_answer using(\"id\")");
+            // var query = db.Answers.FromSql("SELECT * FROM posts join posts_answer using(\"id\")");
 
-            // Limit to 20 entities and execute
-            var answers = query.Take(20).ToList();
+            var questions = db.Questions
+                .Include(e => e.Answers)
+                .AsNoTracking()
+                .Take(5)
+                .ToList();
 
-            // Print shit to console for testing
-            PrintTable<Answer>(answers);
+            PrintTable<Question>(questions);
         }
 
         static void PrintTable<T>(IList<T> list) where T : class
         {
-            var charCount = 0;
-
-            foreach (var prop in list[0].GetType().GetProperties())
-            {
-                var text = string.Format($"| {{0,{prop.Name.Length + 10}}} ", prop.Name);
-                Console.Write(text);
-                charCount += text.Length;
-            }
-            Console.Write("|\n");
-
-            for (var i = 0; i < charCount + 1; i++)
-            {
-                Console.Write("-");
-            }
-
-            Console.Write("\n");
-
             foreach (var obj in list)
             {
                 var props = obj.GetType().GetProperties();
+                Console.WriteLine("{");
 
                 foreach (var prop in props)
                 {
-                    var value = prop.GetValue(obj, null)
-                        .ToString();
+                    string value;
 
+                    try {
+                        value = prop
+                            .GetValue(obj, null)
+                            .ToString();
+                    } catch {
+                        continue;
+                    }
 
-                    if (value.Length > prop.Name.Length + 10)
-                        value = value
-                            .Substring(0, prop.Name.Length + 10);
-
-                    Console.Write(string.Format($"| {{0,{prop.Name.Length + 10}}} ", value));
+                    Console.WriteLine(
+                        "    {0}: {1}",
+                        prop.Name,
+                        value.Length > 40 ? value.Substring(0, 37) + "..." : value
+                    );
                 }
 
-                Console.Write("|\n");
+                Console.WriteLine("}\n");
             }
         }
     }

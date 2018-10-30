@@ -9,9 +9,6 @@ namespace Database.Models
         [Key, Column("id")]
         public int Id { get; set; }
 
-        [Column("type_id")]
-        public int TypeId { get; set; }
-
         [Column("creation_date")]
         public DateTime CreationDate { get; set; }
 
