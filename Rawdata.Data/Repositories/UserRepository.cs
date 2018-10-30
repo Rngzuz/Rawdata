@@ -18,6 +18,17 @@ namespace Rawdata.Data.Repositories
         {
             return Context.Users.SingleOrDefaultAsync(a => a.Id == id);
         }
+
+        public Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
+        {
+            return Context.Users.Include(p => p.FavoriteComments).ToListAsync();
+        }
+
+        public ICollection<FavoritePost> GetFavoritePosts(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public virtual void Add(User user)
         {
             Context.Set<User>().Add(user);
@@ -37,23 +48,21 @@ namespace Rawdata.Data.Repositories
         public virtual void Remove(User user)
         {
             Context.Set<User>().Remove(user);
-        }
+            }
 
         public User RegisterUser(string name, string email, string password)
         {
             throw new System.NotImplementedException();
         }
+        
 
-        public void ReactivateUser(int deactivatedUserId)
+        public void Remove(int userId)
         {
-            throw new System.NotImplementedException();
+            Context.
         }
 
-        public void DeactivateUser(int userId)
-        {
-            throw new System.NotImplementedException();
-        }
 
+        
         public User GetUserByEmail(string email)
         {
             throw new System.NotImplementedException();
@@ -74,16 +83,7 @@ namespace Rawdata.Data.Repositories
             throw new System.NotImplementedException();
         }
         */
-        public DeactivatedUser GetDeactivatedUserByEmail(string email)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public virtual async Task<IEnumerable<DeactivatedUser>> GetAllDeactivatedUsersAsync()
-        {
-            return await Context.DeactivatedUsers.ToListAsync();
-        }
-
+        
         public virtual async Task<IEnumerable<Search>> GetSearches(User user)
         {
             var db = Context.Database.GetDbConnection();

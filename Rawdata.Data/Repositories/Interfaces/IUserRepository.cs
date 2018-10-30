@@ -1,4 +1,6 @@
-﻿using Rawdata.Data.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rawdata.Data.Models;
 using Rawdata.Data.Repositories.Generic;
 
 namespace Rawdata.Data.Repositories.Interfaces
@@ -7,12 +9,15 @@ namespace Rawdata.Data.Repositories.Interfaces
     {
         User RegisterUser(string name, string email, string password);
 
-        void ReactivateUser(int deactivatedUserId);
-
-        void DeactivateUser(int userId);
+        void Remove(int userId);
         
         User GetUserByEmail(string email);
 
-        DeactivatedUser GetDeactivatedUserByEmail(string email);
+        Task<User> GetById(int id);
+
+        Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id);
+
+        ICollection<FavoritePost> GetFavoritePosts(int id);
+        
     }
 }
