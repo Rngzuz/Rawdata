@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Rawdata.Data;
 using Rawdata.Data.Models;
 using Rawdata.Data.Repositories;
@@ -26,7 +27,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task add_new_userAsync_and_remove()
+        public async void add_new_userAsync_and_remove()
         {
             DataContext db = new DataContext();
             UserRepository repo = new UserRepository(db);

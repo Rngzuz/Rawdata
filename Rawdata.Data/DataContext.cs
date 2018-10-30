@@ -13,12 +13,9 @@ namespace Rawdata.Data
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<DeactivatedUser> DeactivatedUsers { get; set; }
         public DbSet<Tag> Tags { get; set; }
         //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
         public DbSet<Search> Searches { get; set; }
-        public DbSet<DeactivatedSearch> DeactivatedSearches { get; set; }
-        //public DbSet<DeactivatedFavoriteComment> DeactivatedFavoriteComments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,12 +40,8 @@ namespace Rawdata.Data
 
             BuildUserConfig(modelBuilder);
             BuildFavoriteCommentConfig(modelBuilder);
-
-            BuildDeactivatedUserConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
-            BuildDeactivatedSearchConfig(modelBuilder);
-            //BuildDeactivatedFavoriteCommentConfig(modelBuilder);
-
+            
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -210,20 +203,7 @@ namespace Rawdata.Data
                 .WithMany(u => u.FavoriteComments)
                 .HasForeignKey(c => c.CommentId);
         }
-
-        private void BuildDeactivatedUserConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedUser>().ToTable("deactivated_users");
-            builder.Entity<DeactivatedUser>().HasKey(u => u.Id);
-
-            builder.Entity<DeactivatedUser>().Property(u => u.Id).HasColumnName("id");
-            builder.Entity<DeactivatedUser>().Property(u => u.DisplayName).HasColumnName("display_name");
-            builder.Entity<DeactivatedUser>().Property(u => u.CreationDate).HasColumnName("creation_date");
-            builder.Entity<DeactivatedUser>().Property(u => u.Email).HasColumnName("email");
-            builder.Entity<DeactivatedUser>().Property(u => u.Password).HasColumnName("password");
-            builder.Entity<DeactivatedUser>().Property(u => u.DeactivationDate).HasColumnName("deactivation_date");
-        }
-
+        
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
@@ -238,36 +218,6 @@ namespace Rawdata.Data
                 .WithMany(s => s.Searches)
                 .HasForeignKey(s => s.UserId);
         }
-
-        private void BuildDeactivatedSearchConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedSearch>().ToTable("deactivated_searches");
-            builder.Entity<DeactivatedSearch>().HasKey(s => s.Id);
-
-            builder.Entity<DeactivatedSearch>().Property(u => u.Id).HasColumnName("id");
-            builder.Entity<DeactivatedSearch>().Property(u => u.UserId).HasColumnName("user_id");
-            builder.Entity<DeactivatedSearch>().Property(u => u.SearchText).HasColumnName("search_text");
-
-            builder.Entity<DeactivatedSearch>()
-                .HasOne(s => s.DeactivatedUser)
-                .WithMany(s => s.DeactivatedSearches)
-                .HasForeignKey(s => s.UserId);
-        }
-
-        private void BuildDeactivatedFavoriteCommentConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedFavoriteComment>().ToTable("deactivated_favorite_comments");
-            builder.Entity<DeactivatedFavoriteComment>().HasKey(c => new { c.UserId, c.CommentId });
-
-            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.UserId).HasColumnName("user_id");
-            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
-
-            builder.Entity<DeactivatedFavoriteComment>()
-                .HasOne(c => c.DeactivatedUser)
-                .WithMany(u => u.DeactivatedFavoriteComments)
-                .HasForeignKey(c => c.CommentId);
-        }
-
-
+        
     }
 }

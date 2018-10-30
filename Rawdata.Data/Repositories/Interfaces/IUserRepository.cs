@@ -13,8 +13,6 @@ namespace Rawdata.Data.Repositories.Interfaces
         
         User GetUserByEmail(string email);
 
-        Task<User> GetById(int id);
-
         Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id);
 
         ICollection<FavoritePost> GetFavoritePosts(int id);
