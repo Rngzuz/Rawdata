@@ -9,7 +9,7 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
-    public class UserController : ControllerBase 
+    public class UserController : ControllerBase
     {
         protected readonly IMapper DtoMapper;
         protected readonly IUserRepository Service;
@@ -38,26 +38,29 @@ namespace Rawdata.Service.Controllers
         [HttpGet("{id}")]
         public IActionResult GetFavoriteComments(int id)
         {
-            var fComments = Service.GetFavoriteComments(id);
-            if (fComments.Count <= 0)
-            {
-                return NotFound(fComments);
-            }
-            var fCommentsDto = DtoMapper.Map<ICollection<FavoriteCommentDTO>>(fComments);
+            // var fComments = Service.GetFavoriteComments(id);
 
-            return Ok(fCommentsDto);
+            // if (fComments.Count <= 0)
+            // {
+            //     return NotFound(fComments);
+            // }
+            // var fCommentsDto = DtoMapper.Map<ICollection<FavoriteCommentDTO>>(fComments);
+
+            // return Ok(fCommentsDto);
+            throw new NotImplementedException();
         }
 
         public IActionResult GetFavoritePosts(int id)
         {
-            var fPosts = Service.GetFavoritePosts(id);
-            if (fPosts.Count <= 0)
-            {
-                return NotFound(fPosts);
-            }
-            var fPostDto = DtoMapper.Map<ICollection<FavoritePostDTO>>(fPosts);
+            // var fPosts = Service.GetFavoritePosts(id);
+            // if (fPosts.Count <= 0)
+            // {
+            //     return NotFound(fPosts);
+            // }
+            // var fPostDto = DtoMapper.Map<ICollection<FavoritePostDTO>>(fPosts);
 
-            return Ok(fPostDto);
+            // return Ok(fPostDto);
+            throw new NotImplementedException();
         }
 
         [HttpGet("{id}")]
@@ -72,6 +75,6 @@ namespace Rawdata.Service.Controllers
 
             return Ok(fPostDto);
         }
-        
+
     }
 }

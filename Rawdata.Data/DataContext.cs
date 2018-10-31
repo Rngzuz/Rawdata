@@ -17,11 +17,6 @@ namespace Rawdata.Data
         public DbSet<FavoriteComment> FavoriteComments { get; set; }
         public DbSet<FavoritePost> FavoritePosts { get; set; }
         public DbSet<Search> Searches { get; set; }
-<<<<<<< HEAD
-        
-        
-=======
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,7 +26,7 @@ namespace Rawdata.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+
             base.OnModelCreating(modelBuilder);
 
             //Stackover flow DB
@@ -46,16 +41,8 @@ namespace Rawdata.Data
 
             BuildUserConfig(modelBuilder);
             BuildFavoriteCommentConfig(modelBuilder);
-<<<<<<< HEAD
-            BuildFavoritePostConfig(modelBuilder);
-
             BuildSearchConfig(modelBuilder);
-            
 
-=======
-            BuildSearchConfig(modelBuilder);
-            
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -102,7 +89,7 @@ namespace Rawdata.Data
                 .ToTable("posts")
                 .HasDiscriminator<int>("type_id")
                 .HasValue<Question>(1)
-                .HasValue<Answer>(2); 
+                .HasValue<Answer>(2);
 
             builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
@@ -123,7 +110,7 @@ namespace Rawdata.Data
             builder.Entity<Question>().Property(q => q.Title).HasColumnName("title");
             builder.Entity<Question>().Property(q => q.ClosedDate).HasColumnName("closed_date");
             builder.Entity<Question>().Property(q => q.AcceptedAnswerId).HasColumnName("accepted_answer_id");
-            
+
             //Answer post config
             builder.Entity<Answer>().Property(a => a.ParentId).HasColumnName("parent_id");
 
@@ -132,7 +119,7 @@ namespace Rawdata.Data
                 .WithMany(p => p.Answers)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-            
+
         }
 
         private void BuildTagConfig(ModelBuilder builder)
@@ -217,7 +204,7 @@ namespace Rawdata.Data
                 .WithMany(u => u.FavoritePosts)
                 .HasForeignKey(c => c.PostId);
         }
-        
+
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
@@ -232,40 +219,5 @@ namespace Rawdata.Data
                 .WithMany(s => s.Searches)
                 .HasForeignKey(s => s.UserId);
         }
-<<<<<<< HEAD
-
-        private void BuildDeactivatedSearchConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedSearch>().ToTable("deactivated_searches");
-            builder.Entity<DeactivatedSearch>().HasKey(s => s.Id);
-
-            builder.Entity<DeactivatedSearch>().Property(u => u.Id).HasColumnName("id");
-            builder.Entity<DeactivatedSearch>().Property(u => u.UserId).HasColumnName("user_id");
-            builder.Entity<DeactivatedSearch>().Property(u => u.SearchText).HasColumnName("search_text");
-
-            builder.Entity<DeactivatedSearch>()
-                .HasOne(s => s.DeactivatedUser)
-                .WithMany(s => s.DeactivatedSearches)
-                .HasForeignKey(s => s.UserId);
-        }
-
-        private void BuildDeactivatedFavoriteCommentConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedFavoriteComment>().ToTable("deactivated_favorite_comments");
-                builder.Entity<DeactivatedFavoriteComment>().HasKey(c => new { c.DeactivatedUser, c.CommentId });
-
-            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.DeactivatedUser).HasColumnName("user_id");
-            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
-
-            builder.Entity<DeactivatedFavoriteComment>()
-                .HasOne(c => c.DeactivatedUser)
-                .WithMany(u => u.DeactivatedFavoriteComments)
-                .HasForeignKey(c => c.CommentId);
-        }
-
-
-=======
-        
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
     }
 }

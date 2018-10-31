@@ -22,11 +22,7 @@ namespace Rawdata.Data.Repositories
 
         public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
         {
-<<<<<<< HEAD
             return await Context.FavoriteComments.Where(a => a.UserId == id).ToListAsync();
-=======
-            throw new System.NotImplementedException();
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
         }
 
         public virtual async Task<IEnumerable<FavoritePost>> GetFavoritePosts(int id)
@@ -36,67 +32,51 @@ namespace Rawdata.Data.Repositories
 
         public virtual void Add(User user)
         {
-            Context.Set<User>().Add(user);
+            Context.Users.Add(user);
         }
 
         public virtual async Task<IEnumerable<User>> GetAllAsync()
         {
-            
+
             return await Context.Users.ToListAsync();
         }
 
         public virtual void Update(User user)
         {
-            Context.Set<User>().Update(user);
+            Context.Users.Update(user);
         }
 
         public virtual void Remove(User user)
         {
-            Context.Set<User>().Remove(user);
+            Context.Users.Remove(user);
         }
 
         public async Task<User> RegisterUser(string name, string email, string password)
         {
-<<<<<<< HEAD
-            var db = Context.Database.GetDbConnection();
+            var newUser = new User { DisplayName = name, Email = email, Password = password };
 
-            using (var cmd = db.CreateCommand())
-            {
-                cmd.CommandText = "insert into users (display_name,email,password)values( @name, @email, @pssword)";
-                cmd.Parameters.Add(new NpgsqlParameter("name", name));
-                cmd.Parameters.Add(new NpgsqlParameter("email", email));
-                cmd.Parameters.Add(new NpgsqlParameter("password", password));
-=======
-            throw new System.NotImplementedException();
+            Context.Users.Add(newUser);
+
+            await Context.SaveChangesAsync();
+
+            return newUser;
         }
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
 
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-<<<<<<< HEAD
-=======
-        public User GetUserByEmail(string email)
-        {
->>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
-            throw new System.NotImplementedException();
-        }
-        
         public async Task<User> GetUserByEmail(string email)
         {
             var db = Context.Database.GetDbConnection();
 
-            using (var cmd  = db.CreateCommand())
+            using (var cmd = db.CreateCommand())
             {
                 cmd.CommandText = "select * from get_user_by_email(@email)";
                 cmd.Parameters.Add(new NpgsqlParameter("email", email));
-                
+
                 await cmd.ExecuteNonQueryAsync();
             }
 
             throw new System.NotImplementedException();
         }
-        
+
         public virtual async Task<IEnumerable<Search>> GetSearches(User user)
         {
             var db = Context.Database.GetDbConnection();
@@ -112,6 +92,5 @@ namespace Rawdata.Data.Repositories
 
             throw new System.NotImplementedException();
         }
-
     }
 }
