@@ -11,12 +11,12 @@ namespace Rawdata.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<DeactivatedUser> DeactivatedUsers { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        //        public DbSet<FavoriteComment> FavoriteComments { get; set; }
+        public DbSet<FavoriteComment> FavoriteComments { get; set; }
+        public DbSet<FavoritePost> FavoritePosts { get; set; }
         public DbSet<Search> Searches { get; set; }
-        public DbSet<DeactivatedSearch> DeactivatedSearches { get; set; }
-        //public DbSet<DeactivatedFavoriteComment> DeactivatedFavoriteComments { get; set; }
+        
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,11 +41,10 @@ namespace Rawdata.Data
 
             BuildUserConfig(modelBuilder);
             BuildFavoriteCommentConfig(modelBuilder);
+            BuildFavoritePostConfig(modelBuilder);
 
-            BuildDeactivatedUserConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
-            BuildDeactivatedSearchConfig(modelBuilder);
-            //BuildDeactivatedFavoriteCommentConfig(modelBuilder);
+            
 
         }
 
@@ -189,16 +188,16 @@ namespace Rawdata.Data
 
         private void BuildFavoritePostConfig(ModelBuilder builder)
         {
-            builder.Entity<FavoriteComment>().ToTable("favorite_posts");
-            builder.Entity<FavoriteComment>().HasKey(c => new { c.UserId, c.CommentId });
+            builder.Entity<FavoritePost>().ToTable("favorite_posts");
+            builder.Entity<FavoritePost>().HasKey(c => new { c.UserId, c.PostId });
 
-            builder.Entity<FavoriteComment>().Property(c => c.UserId).HasColumnName("user_id");
-            builder.Entity<FavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
+            builder.Entity<FavoritePost>().Property(c => c.UserId).HasColumnName("user_id");
+            builder.Entity<FavoritePost>().Property(c => c.PostId).HasColumnName("post_id");
 
-            builder.Entity<FavoriteComment>()
+            builder.Entity<FavoritePost>()
                 .HasOne(c => c.User)
-                .WithMany(u => u.FavoriteComments)
-                .HasForeignKey(c => c.CommentId);
+                .WithMany(u => u.FavoritePosts)
+                .HasForeignKey(c => c.PostId);
         }
 
         private void BuildDeactivatedUserConfig(ModelBuilder builder)
@@ -247,9 +246,9 @@ namespace Rawdata.Data
         private void BuildDeactivatedFavoriteCommentConfig(ModelBuilder builder)
         {
             builder.Entity<DeactivatedFavoriteComment>().ToTable("deactivated_favorite_comments");
-            builder.Entity<DeactivatedFavoriteComment>().HasKey(c => new { c.UserId, c.CommentId });
+                builder.Entity<DeactivatedFavoriteComment>().HasKey(c => new { c.DeactivatedUser, c.CommentId });
 
-            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.UserId).HasColumnName("user_id");
+            builder.Entity<DeactivatedFavoriteComment>().Property(c => c.DeactivatedUser).HasColumnName("user_id");
             builder.Entity<DeactivatedFavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
 
             builder.Entity<DeactivatedFavoriteComment>()
