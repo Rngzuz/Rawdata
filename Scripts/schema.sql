@@ -1,3 +1,17 @@
+DROP VIEW IF EXISTS posts_with_tags CASCADE;
+
+DROP TABLE IF EXISTS
+    authors,
+    comments,
+    marked_comments,
+    marked_posts,
+    posts,
+    posts_tags,
+    searches,
+    tags,
+    users
+    CASCADE;
+
 --
 -- authors
 --
@@ -51,12 +65,13 @@ WHERE t2.authorid NOT IN (
 --
 SELECT DISTINCT ON ("id")
     p."id",
-    (CASE WHEN (p.posttypeid = 1) THEN 'Question' ELSE 'Answer' END) discriminator,
+    p.posttypeid "type_id",
     p.parentid parent_id,
     p.acceptedanswerid accepted_answer_id,
     p.creationdate creation_date,
     p.score,
     p.body,
+    to_tsvector(strip_tags(p.body)) body_tokens,
     p.closeddate closed_date,
     p.title,
     to_tsvector(p.title) title_tokens,
@@ -83,6 +98,7 @@ SELECT
     c.commentscore score,
     c.postid post_id,
     c.commenttext "text",
+    to_tsvector(c.commenttext) text_tokens,
     c.commentcreatedate creation_date,
     c.authorid author_id
 INTO "comments"
@@ -141,3 +157,35 @@ CREATE TABLE marked_posts (
 
     UNIQUE ("user_id", post_id)
 );
+
+--
+-- marked_comments
+--
+CREATE TABLE marked_comments (
+    "user_id" INTEGER REFERENCES users ("id"),
+    comment_id INTEGER REFERENCES comments ("id"),
+    note TEXT,
+
+    UNIQUE ("user_id", comment_id)
+);
+
+--
+-- searches
+--
+CREATE TABLE searches (
+    "id" SERIAL PRIMARY KEY,
+    "user_id" INTEGER REFERENCES users (id),
+    search_text TEXT,
+
+    UNIQUE ("user_id", search_text)
+);
+
+--
+-- posts_with_tags
+--
+CREATE VIEW posts_with_tags AS
+SELECT posts.*, array_agg(posts_tags.name) tags
+FROM posts
+JOIN posts_tags
+ON posts.id = posts_tags.post_id
+GROUP BY posts.id;
