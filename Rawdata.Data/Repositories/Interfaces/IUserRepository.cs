@@ -7,17 +7,17 @@ namespace Rawdata.Data.Repositories.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-        User RegisterUser(string name, string email, string password);
+        Task<User> RegisterUser(string name, string email, string password);
 
-        void Remove(int userId);
-        
-        User GetUserByEmail(string email);
+        void Remove(User user);
+
+        Task<User> GetUserByEmail(string email);
 
         Task<User> GetById(int id);
 
-        Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id);
+        Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int userId);
 
-        ICollection<FavoritePost> GetFavoritePosts(int id);
+        Task<IEnumerable<FavoritePost>> GetFavoritePosts(int userId);
         
     }
 }
