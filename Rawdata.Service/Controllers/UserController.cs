@@ -36,31 +36,30 @@ namespace Rawdata.Service.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetFavoriteComments(int id)
+        public async Task<IActionResult> GetFavoriteComments(int id)
         {
-            // var fComments = Service.GetFavoriteComments(id);
+            var fComments = await Service.GetFavoriteComments(id);
 
-            // if (fComments.Count <= 0)
-            // {
-            //     return NotFound(fComments);
-            // }
-            // var fCommentsDto = DtoMapper.Map<ICollection<FavoriteCommentDTO>>(fComments);
+            if (fComments.Count() <= 0)
+            {
+                return NotFound(fComments);
+            }
+            var fCommentsDto = DtoMapper.Map<ICollection<FavoriteCommentDTO>>(fComments);
 
-            // return Ok(fCommentsDto);
-            throw new NotImplementedException();
+            return Ok(fCommentsDto);
         }
 
-        public IActionResult GetFavoritePosts(int id)
+        public async Task<IActionResult> GetFavoritePosts(int id)
         {
-            // var fPosts = Service.GetFavoritePosts(id);
-            // if (fPosts.Count <= 0)
-            // {
-            //     return NotFound(fPosts);
-            // }
-            // var fPostDto = DtoMapper.Map<ICollection<FavoritePostDTO>>(fPosts);
+            var fPosts = await Service.GetFavoritePosts(id);
 
-            // return Ok(fPostDto);
-            throw new NotImplementedException();
+            if (fPosts.Count() <= 0)
+            {
+                return NotFound(fPosts);
+            }
+            var fPostDto = DtoMapper.Map<ICollection<FavoritePostDTO>>(fPosts);
+
+            return Ok(fPostDto);
         }
 
         [HttpGet("{id}")]
