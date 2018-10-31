@@ -22,7 +22,11 @@ namespace Rawdata.Data.Repositories
 
         public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
         {
+<<<<<<< HEAD
             return await Context.FavoriteComments.Where(a => a.UserId == id).ToListAsync();
+=======
+            throw new System.NotImplementedException();
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
         }
 
         public virtual async Task<IEnumerable<FavoritePost>> GetFavoritePosts(int id)
@@ -53,6 +57,7 @@ namespace Rawdata.Data.Repositories
 
         public async Task<User> RegisterUser(string name, string email, string password)
         {
+<<<<<<< HEAD
             var db = Context.Database.GetDbConnection();
 
             using (var cmd = db.CreateCommand())
@@ -61,10 +66,19 @@ namespace Rawdata.Data.Repositories
                 cmd.Parameters.Add(new NpgsqlParameter("name", name));
                 cmd.Parameters.Add(new NpgsqlParameter("email", email));
                 cmd.Parameters.Add(new NpgsqlParameter("password", password));
+=======
+            throw new System.NotImplementedException();
+        }
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
 
                 await cmd.ExecuteNonQueryAsync();
             }
 
+<<<<<<< HEAD
+=======
+        public User GetUserByEmail(string email)
+        {
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
             throw new System.NotImplementedException();
         }
         

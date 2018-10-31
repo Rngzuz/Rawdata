@@ -10,13 +10,18 @@ namespace Rawdata.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<FavoriteComment> FavoriteComments { get; set; }
         public DbSet<FavoritePost> FavoritePosts { get; set; }
         public DbSet<Search> Searches { get; set; }
+<<<<<<< HEAD
         
         
+=======
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,11 +46,16 @@ namespace Rawdata.Data
 
             BuildUserConfig(modelBuilder);
             BuildFavoriteCommentConfig(modelBuilder);
+<<<<<<< HEAD
             BuildFavoritePostConfig(modelBuilder);
 
             BuildSearchConfig(modelBuilder);
             
 
+=======
+            BuildSearchConfig(modelBuilder);
+            
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -88,19 +98,18 @@ namespace Rawdata.Data
 
         private void BuildPostConfig(ModelBuilder builder)
         {
-            builder.Entity<Post>().ToTable("posts");
-            builder.Entity<Post>().HasKey(p => p.Id);
+            builder.Entity<Post>()
+                .ToTable("posts")
+                .HasDiscriminator<int>("type_id")
+                .HasValue<Question>(1)
+                .HasValue<Answer>(2); 
 
+            builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
-            builder.Entity<Post>().Property(p => p.TypeId).HasColumnName("type_id");
             builder.Entity<Post>().Property(p => p.CreationDate).HasColumnName("creation_date");
-            builder.Entity<Post>().Property(p => p.ClosedDate).HasColumnName("closed_date");
             builder.Entity<Post>().Property(p => p.Score).HasColumnName("score");
             builder.Entity<Post>().Property(p => p.Body).HasColumnName("body");
-            builder.Entity<Post>().Property(p => p.Title).HasColumnName("title");
-            builder.Entity<Post>().Property(p => p.ParentId).HasColumnName("parent_id");
             builder.Entity<Post>().Property(p => p.AuthorId).HasColumnName("author_id");
-            builder.Entity<Post>().Property(p => p.AcceptedAnswerId).HasColumnName("accepted_answer_id");
 
             builder.Entity<Post>()
                 .HasOne(p => p.Author)
@@ -109,9 +118,18 @@ namespace Rawdata.Data
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("posts_author_id_fkey");
 
-            builder.Entity<Post>()
+            //Question post config
+
+            builder.Entity<Question>().Property(q => q.Title).HasColumnName("title");
+            builder.Entity<Question>().Property(q => q.ClosedDate).HasColumnName("closed_date");
+            builder.Entity<Question>().Property(q => q.AcceptedAnswerId).HasColumnName("accepted_answer_id");
+            
+            //Answer post config
+            builder.Entity<Answer>().Property(a => a.ParentId).HasColumnName("parent_id");
+
+            builder.Entity<Answer>()
                 .HasOne(p => p.Parent)
-                .WithMany(p => p.ChildrenPosts)
+                .WithMany(p => p.Answers)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
             
@@ -126,15 +144,15 @@ namespace Rawdata.Data
         private void BuildPostTagConfig(ModelBuilder builder)
         {
             builder.Entity<PostTag>().ToTable("post_tags");
-            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.PostId});
+            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId});
 
-            builder.Entity<PostTag>().Property(pt => pt.PostId).HasColumnName("post_id");
+            builder.Entity<PostTag>().Property(pt => pt.QuestionId).HasColumnName("post_id");
             builder.Entity<PostTag>().Property(pt => pt.TagName).HasColumnName("name");
 
             builder.Entity<PostTag>()
-                .HasOne(pt => pt.Post)
+                .HasOne(pt => pt.Question)
                 .WithMany(p => p.PostTags)
-                .HasForeignKey(pt => pt.PostId);
+                .HasForeignKey(pt => pt.QuestionId);
 
             builder.Entity<PostTag>()
                 .HasOne(pt => pt.Tag)
@@ -199,20 +217,7 @@ namespace Rawdata.Data
                 .WithMany(u => u.FavoritePosts)
                 .HasForeignKey(c => c.PostId);
         }
-
-        private void BuildDeactivatedUserConfig(ModelBuilder builder)
-        {
-            builder.Entity<DeactivatedUser>().ToTable("deactivated_users");
-            builder.Entity<DeactivatedUser>().HasKey(u => u.Id);
-
-            builder.Entity<DeactivatedUser>().Property(u => u.Id).HasColumnName("id");
-            builder.Entity<DeactivatedUser>().Property(u => u.DisplayName).HasColumnName("display_name");
-            builder.Entity<DeactivatedUser>().Property(u => u.CreationDate).HasColumnName("creation_date");
-            builder.Entity<DeactivatedUser>().Property(u => u.Email).HasColumnName("email");
-            builder.Entity<DeactivatedUser>().Property(u => u.Password).HasColumnName("password");
-            builder.Entity<DeactivatedUser>().Property(u => u.DeactivationDate).HasColumnName("deactivation_date");
-        }
-
+        
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
@@ -227,6 +232,7 @@ namespace Rawdata.Data
                 .WithMany(s => s.Searches)
                 .HasForeignKey(s => s.UserId);
         }
+<<<<<<< HEAD
 
         private void BuildDeactivatedSearchConfig(ModelBuilder builder)
         {
@@ -258,5 +264,8 @@ namespace Rawdata.Data
         }
 
 
+=======
+        
+>>>>>>> a0ab269601d6658c990ad4ecb7cb189dfcc452bc
     }
 }

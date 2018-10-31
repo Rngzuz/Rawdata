@@ -11,7 +11,5 @@ namespace Rawdata.Data.Repositories.Interfaces
         void UnfavoriteComment(int userId, int commentId);
 
         IEnumerable<FavoriteComment> GetFavoriteCommentsByUserId(int userId);
-
-        IEnumerable<DeactivatedFavoriteComment> GetFavoriteDeactivatedCommentsByUserId(int userId);
     }
 }
