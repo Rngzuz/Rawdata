@@ -19,20 +19,20 @@ namespace Rawdata.Data.Repositories
         {
             return Context.Users.SingleOrDefaultAsync(a => a.Id == id);
         }
-
-        public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int userId)
+        
+        public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
         {
-            return await Context.FavoriteComments.Where(com => com.UserId == userId).ToListAsync();
+            return await Context.FavoriteComments.Where(a => a.UserId == id).ToListAsync();
         }
 
-        public virtual async Task<ICollection<FavoritePost>> GetFavoritePosts(int userId)
+        public virtual async Task<IEnumerable<FavoritePost>> GetFavoritePosts(int id)
         {
-            return await Context.FavoritePosts.Where(post => post.UserId == userId).ToListAsync();
+            return await Context.FavoritePosts.Where(a => a.UserId == id).ToListAsync();
         }
 
         public virtual void Add(User user)
         {
-            Context.Set<User>().Add(user);
+            Context.Users.Add(user);
         }
 
         public virtual async Task<IEnumerable<User>> GetAllAsync()
@@ -42,46 +42,40 @@ namespace Rawdata.Data.Repositories
 
         public virtual void Update(User user)
         {
-            Context.Set<User>().Update(user);
+            Context.Users.Update(user);
         }
 
         public virtual void Remove(User user)
         {
-            Context.Set<User>().Remove(user);
-            }
-
-        public User RegisterUser(string name, string email, string password)
-        {
-            throw new System.NotImplementedException();
+            Context.Users.Remove(user);
         }
 
-        public void Remove(int userId)
+        public async Task<User> RegisterUser(string name, string email, string password)
         {
-            throw new System.NotImplementedException();
+            var newUser = new User { DisplayName = name, Email = email, Password = password };
+
+            Context.Users.Add(newUser);
+
+            await Context.SaveChangesAsync();
+
+            return newUser;
         }
 
-
-        public User GetUserByEmail(string email)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        /*  public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
             var db = Context.Database.GetDbConnection();
 
-            using (var cmd  = db.CreateCommand())
+            using (var cmd = db.CreateCommand())
             {
                 cmd.CommandText = "select * from get_user_by_email(@email)";
                 cmd.Parameters.Add(new NpgsqlParameter("email", email));
-                
+
                 await cmd.ExecuteNonQueryAsync();
             }
 
             throw new System.NotImplementedException();
         }
-        */
-        
+
         public virtual async Task<IEnumerable<Search>> GetSearches(User user)
         {
             var db = Context.Database.GetDbConnection();
@@ -97,6 +91,5 @@ namespace Rawdata.Data.Repositories
 
             throw new System.NotImplementedException();
         }
-
     }
 }

@@ -13,10 +13,10 @@
     <ProjectReference Include="..\Rawdata.Data\Rawdata.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <Reference Include="xunit.core">
       <HintPath>..\..\..\..\..\..\Users\Tomas\.nuget\packages\xunit.extensibility.core\2.4.0\lib\netstandard2.0\xunit.core.dll</HintPath>
     </Reference>
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>

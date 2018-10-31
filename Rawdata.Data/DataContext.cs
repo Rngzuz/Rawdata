@@ -14,9 +14,9 @@ namespace Rawdata.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Search> Searches { get; set; }
         public DbSet<FavoriteComment> FavoriteComments { get; set; }
         public DbSet<FavoritePost> FavoritePosts { get; set; }
+        public DbSet<Search> Searches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -26,7 +26,7 @@ namespace Rawdata.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+
             base.OnModelCreating(modelBuilder);
 
             //Stackover flow DB
@@ -88,7 +88,7 @@ namespace Rawdata.Data
                 .ToTable("posts")
                 .HasDiscriminator<int>("type_id")
                 .HasValue<Question>(1)
-                .HasValue<Answer>(2); 
+                .HasValue<Answer>(2);
 
             builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
@@ -109,7 +109,7 @@ namespace Rawdata.Data
             builder.Entity<Question>().Property(q => q.Title).HasColumnName("title");
             builder.Entity<Question>().Property(q => q.ClosedDate).HasColumnName("closed_date");
             builder.Entity<Question>().Property(q => q.AcceptedAnswerId).HasColumnName("accepted_answer_id");
-            
+
             //Answer post config
             builder.Entity<Answer>().Property(a => a.ParentId).HasColumnName("parent_id");
 
@@ -118,7 +118,7 @@ namespace Rawdata.Data
                 .WithMany(p => p.Answers)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-            
+
         }
 
         private void BuildTagConfig(ModelBuilder builder)
@@ -192,18 +192,17 @@ namespace Rawdata.Data
 
         private void BuildFavoritePostConfig(ModelBuilder builder)
         {
-            builder.Entity<FavoritePost>().ToTable("favorite_posts");
-            builder.Entity<FavoritePost>().HasKey(p => new { p.UserId, p.PostId });
+            builder.Entity<FavoritePost>().HasKey(c => new { c.UserId, c.PostId });
 
-            builder.Entity<FavoritePost>().Property(p => p.UserId).HasColumnName("user_id");
-            builder.Entity<FavoritePost>().Property(p => p.PostId).HasColumnName("post_id");
+            builder.Entity<FavoritePost>().Property(c => c.UserId).HasColumnName("user_id");
+            builder.Entity<FavoritePost>().Property(c => c.PostId).HasColumnName("post_id");
 
             builder.Entity<FavoritePost>()
-                .HasOne(p => p.User)
-                .WithMany(p => p.FavoritePosts)
+                .HasOne(c => c.User)
+                .WithMany(u => u.FavoritePosts)
                 .HasForeignKey(c => c.PostId);
         }
-        
+
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
@@ -218,6 +217,5 @@ namespace Rawdata.Data
                 .WithMany(s => s.Searches)
                 .HasForeignKey(s => s.UserId);
         }
-        
     }
 }

@@ -10,9 +10,24 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 {
     public class UserRepositoryTests
     {
-        
         [Fact]
-        public void User_Add_And_Remove()
+        public void User_GetAll_ReturnsNonZero_And_CorrectFirstValues()
+        {
+            DataContext db = new DataContext();
+            UserRepository repo = new UserRepository(db);
+
+            IEnumerable<User> users = repo.GetAllAsync().Result;
+
+            Assert.True(users.Count() != 0);
+
+            User user = repo.GetById(1).Result;
+
+            Assert.Equal("Begoña", user.DisplayName);
+            Assert.Equal("begona@test.local", user.Email);
+        }
+
+        [Fact]
+        public void add_new_userAsync_and_remove()
         {
             DataContext db = new DataContext();
             UserRepository repo = new UserRepository(db);
@@ -75,7 +90,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
             UserRepository repo = new UserRepository(db);
 
             SearchRepository repo2 = new SearchRepository(db);
-            
+
             Search search = new Search()
             {
                 Id=10,
@@ -84,7 +99,7 @@ namespace Rawdata.Tests.RepositoryTestsFolder
             };
             repo2.Add(search);
             repo2.SaveChangesAsync().Wait();
-            
+
 
             User user = new User()
             {
@@ -97,12 +112,12 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 
            repo.Add(user);
            repo.SaveChangesAsync().Wait();
-            
+
            user = repo.GetById(999789999).Result;
            search = user.Searches.First();
            Assert.Equal(10, search.Id);
            Assert.Equal("Null pointer", search.SearchText);
-            
+
            repo.Remove(user);
            repo.SaveChangesAsync().Wait();
 
