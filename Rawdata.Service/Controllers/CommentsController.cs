@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,7 @@ using Rawdata.Service.Models;
 namespace Rawdata.Service.Controllers
 {
     [ApiController]
-    [Route("api/comments")]
+    [Route("api/comments")] // localhost:80/api/comments
     [Produces("application/json")]
     public class CommentsController : ControllerBase
     {
@@ -24,6 +23,7 @@ namespace Rawdata.Service.Controllers
         {
             var result = await Service
                 .QueryComments(userId, query.Search, query.Page, query.Size)
+                .Include(c => c.Author)
                 .ToListAsync();
 
             // TODO: Failure logic and use DTOs
@@ -37,6 +37,7 @@ namespace Rawdata.Service.Controllers
         {
             var result = await Service
                 .QueryMarkedComments(userId, query.Search, query.Page, query.Size)
+                .Include(c => c.Author)
                 .ToListAsync();
 
             // TODO: Failure logic and use DTOs
