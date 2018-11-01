@@ -1,17 +1,17 @@
 
 DROP FUNCTION IF EXISTS
-    get_posts_by_tags,
-    get_all_posts,
-    get_all_marked_posts,
-    get_all_comments,
-    get_all_marked_comments,
+    query_posts_by_tags,
+    query_posts,
+    query_marked_posts,
+    query_comments,
+    query_marked_comments,
     add_user,
     toggle_marked_post,
     toggle_marked_comment,
     strip_tags
     CASCADE;
 
-CREATE FUNCTION get_posts_by_tags(_tags TEXT[])
+CREATE FUNCTION query_posts_by_tags(_tags TEXT[])
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         RETURN QUERY
@@ -24,7 +24,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION get_all_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE FUNCTION query_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     DECLARE
         _query TSQUERY;
@@ -45,7 +45,7 @@ RETURNS SETOF posts_with_tags AS $$
         -- else only search for the _search string in the title column
         IF _tags IS NOT NULL THEN
             RETURN QUERY
-                SELECT * FROM get_posts_by_tags(_tags)
+                SELECT * FROM query_posts_by_tags(_tags)
                 WHERE ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query)) -- if _flag is true then do not search in either the title or body
                 AND (NOT _anwered_only OR accepted_answer_id IS NOT NULL); -- if _anwered_only is false then do not filter by accepted_answer_id else if true then only fetch answered posts
         ELSE
@@ -57,13 +57,13 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION get_all_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE FUNCTION query_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
             IF _user_id IN (SELECT "id" FROM users) THEN
                 RETURN QUERY
-                    SELECT * FROM get_all_posts(_search, _tags, _anwered_only, _user_id) p
+                    SELECT * FROM query_posts(_search, _tags, _anwered_only, _user_id) p
                     WHERE p."id" IN (SELECT post_id FROM marked_posts WHERE "user_id" = _user_id);
             ELSE
                 RAISE EXCEPTION 'search_marked_posts: User does not exist.';
@@ -74,7 +74,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION get_all_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE FUNCTION query_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     DECLARE
         _query TSQUERY;
@@ -97,13 +97,13 @@ RETURNS SETOF comments AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION get_all_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE FUNCTION query_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
             IF _user_id IN (SELECT "id" FROM users) THEN
                 RETURN QUERY
-                    SELECT * FROM get_all_comments(_search, _user_id) c
+                    SELECT * FROM query_comments(_search, _user_id) c
                     WHERE c."id" IN (SELECT comment_id FROM marked_comments WHERE "user_id" = _user_id);
             ELSE
                 RAISE EXCEPTION 'search_marked_comments: User does not exist.';
