@@ -166,7 +166,7 @@ CREATE TABLE marked_comments (
     comment_id INTEGER REFERENCES comments ("id"),
     note TEXT,
 
-    UNIQUE ("user_id", comment_id)
+    PRIMARY KEY ("user_id", comment_id)
 );
 
 --
@@ -177,7 +177,7 @@ CREATE TABLE searches (
     "user_id" INTEGER REFERENCES users (id),
     search_text TEXT,
 
-    UNIQUE ("user_id", search_text)
+    PRIMARY KEY ("user_id", comment_id)
 );
 
 --
