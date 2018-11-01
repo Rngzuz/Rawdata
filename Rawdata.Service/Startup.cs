@@ -39,7 +39,7 @@ namespace Rawdata.Service
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(
-                options => options.SwaggerDoc("v1", new Info { Title = "Stackoverflow API", Version = "v1" })
+                options => options.SwaggerDoc("api", new Info { Title = "Stackoverflow API" })
             );
         }
 
@@ -58,7 +58,7 @@ namespace Rawdata.Service
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Stackoverflow API");
+                options.SwaggerEndpoint("/swagger/api/swagger.json", "Stackoverflow API");
                 options.RoutePrefix = "api";
             });
 
