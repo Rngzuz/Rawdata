@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 
-namespace Rawdata.Data.Repositories
+namespace Rawdata.Data.Services
 {
-    public class RepositoryBase
+    public class ServiceBase
     {
         protected readonly DataContext Context;
 
-        public RepositoryBase(DataContext context)
+        public ServiceBase(DataContext context)
         {
             Context = context;
         }

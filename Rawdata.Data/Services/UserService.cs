@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories.Interfaces;
+using Rawdata.Data.Services.Interfaces;
 
-namespace Rawdata.Data.Repositories
+namespace Rawdata.Data.Services
 {
-    public class UserRepository : RepositoryBase, IUserRepository
+    public class UserService : ServiceBase, IUserService
     {
-        public UserRepository(DataContext context) : base(context)
+        public UserService(DataContext context) : base(context)
         {
         }
 

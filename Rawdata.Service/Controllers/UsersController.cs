@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Rawdata.Data.Repositories.Interfaces;
+using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Produces("applicaiton/json")]
+    [Produces("application/json")]
     public class UsersController : ControllerBase
     {
         protected readonly IMapper DtoMapper;
-        protected readonly IUserRepository Service;
+        protected readonly IUserService Service;
 
-        public UsersController(IMapper mapper, IUserRepository service)
+        public UsersController(IMapper mapper, IUserService service)
         {
             DtoMapper = mapper;
             Service = service;
@@ -32,9 +32,15 @@ namespace Rawdata.Service.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] string email)
+        public IActionResult Register([FromBody] RegisterDto registerDto)
         {
-            var user = Service.RegisterUser("test", email, "1234").Result;
+            if (!ModelState.IsValid) {
+                return BadRequest();
+            }
+
+            // Url.Action(nameof(this.GetById), new { id = 1 });
+
+            var user = Service.RegisterUser("test", registerDto.Email, "1234").Result;
             if (user == null)
             {
                 return NotFound(user);

@@ -2,17 +2,13 @@
 using System.Threading.Tasks;
 using Rawdata.Data.Models;
 
-namespace Rawdata.Data.Repositories.Interfaces
+namespace Rawdata.Data.Services.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         Task<User> RegisterUser(string name, string email, string password);
 
         Task<User> GetUserByEmail(string email);
-
-        Task<IEnumerable<MarkedComment>> GetMarkedComments(int userId);
-
-        Task<IEnumerable<MarkedPost>> GetMarkedPosts(int userId);
 
         Task<IEnumerable<Search>> GetSearches(int userId);
 

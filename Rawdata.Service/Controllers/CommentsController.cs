@@ -1,27 +1,30 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Rawdata.Data.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
     [ApiController]
     [Route("api/comments")]
-    [Produces("applicaiton/json")]
+    [Produces("application/json")]
     public class CommentsController : ControllerBase
     {
-        protected readonly ICommentRepository Repository;
+        protected readonly ICommentService Service;
 
-        public CommentsController(ICommentRepository repository)
+        public CommentsController(ICommentService service)
         {
-            Repository = repository;
+            Service = service;
         }
 
         [HttpGet("{userId:int?}")]
         public async Task<IActionResult> GetAll([FromQuery] PageQuery query, int? userId)
         {
-            var result = await Repository
-                .GetAll(userId, query.Search, query.Page, query.Size);
+            var result = await Service
+                .QueryComments(userId, query.Search, query.Page, query.Size)
+                .ToListAsync();
 
             // TODO: Failure logic and use DTOs
 
@@ -32,8 +35,9 @@ namespace Rawdata.Service.Controllers
         [HttpGet("marked/{userId:int}")]
         public async Task<IActionResult> GetAllMarked([FromQuery] PageQuery query, int userId)
         {
-            var result = await Repository
-                .GetAllMarked(userId, query.Search, query.Page, query.Size);
+            var result = await Service
+                .QueryMarkedComments(userId, query.Search, query.Page, query.Size)
+                .ToListAsync();
 
             // TODO: Failure logic and use DTOs
 

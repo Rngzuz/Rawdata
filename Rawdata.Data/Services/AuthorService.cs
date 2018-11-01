@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories.Interfaces;
+using Rawdata.Data.Services.Interfaces;
 
-namespace Rawdata.Data.Repositories
+namespace Rawdata.Data.Services
 {
-    public class AuthorRepository : RepositoryBase, IAuthorRepository
+    public class AuthorService : ServiceBase, IAuthorService
     {
-        public AuthorRepository(DataContext context) : base(context)
+        public AuthorService(DataContext context) : base(context)
         {
 
         }

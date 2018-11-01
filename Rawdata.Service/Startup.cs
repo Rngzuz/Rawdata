@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Rawdata.Data;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories;
-using Rawdata.Data.Repositories.Interfaces;
+using Rawdata.Data.Services;
+using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -26,16 +26,18 @@ namespace Rawdata.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddScoped<DataContext>();
-
             services.AddDbContext<DataContext>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMapper>(_ => CreateMapper());
 
             services
                 .AddMvc()
-                .AddJsonOptions(_ => CreateSerializerSettings())
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(
@@ -56,6 +58,7 @@ namespace Rawdata.Service
             }
 
             app.UseSwagger();
+
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/api/swagger.json", "Stackoverflow API");
@@ -65,12 +68,6 @@ namespace Rawdata.Service
             // app.UseHttpsRedirection();
             app.UseMvc();
         }
-
-        private JsonSerializerSettings CreateSerializerSettings() => new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Formatting = Formatting.Indented
-        };
 
         private IMapper CreateMapper() =>
             new MapperConfiguration(cfg => { cfg.CreateMap<User, UserDto>(); }).CreateMapper();
