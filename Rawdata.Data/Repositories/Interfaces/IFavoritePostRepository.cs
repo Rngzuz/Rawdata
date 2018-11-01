@@ -9,6 +9,6 @@ namespace Rawdata.Data.Repositories.Interfaces
 
         void UnfavoritePost(int userId, int postId);
 
-        IEnumerable<FavoritePost> GetFavoritePosts(int userId);
+        IEnumerable<MarkedPost> GetFavoritePosts(int userId);
     }
 }

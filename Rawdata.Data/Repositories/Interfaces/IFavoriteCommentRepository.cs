@@ -4,12 +4,12 @@ using Rawdata.Data.Repositories.Generic;
 
 namespace Rawdata.Data.Repositories.Interfaces
 {
-    public interface IFavoriteCommentRepository : IRepository<FavoriteComment>
+    public interface IFavoriteCommentRepository : IRepository<MarkedComment>
     {
         void FavoriteComment(int userId, int commentId, string note);
 
         void UnfavoriteComment(int userId, int commentId);
 
-        IEnumerable<FavoriteComment> GetFavoriteCommentsByUserId(int userId);
+        IEnumerable<MarkedComment> GetFavoriteCommentsByUserId(int userId);
     }
 }

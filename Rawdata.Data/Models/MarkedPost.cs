@@ -1,6 +1,6 @@
 ﻿namespace Rawdata.Data.Models
 {
-    public class FavoritePost
+    public class MarkedPost
     {
         public int UserId { get; set; }
         public User User { get; set; }

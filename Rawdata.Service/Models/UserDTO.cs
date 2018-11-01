@@ -3,22 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Rawdata.Data.Models;
 
 namespace Rawdata.Service.Models
 {
-    public class UserDTO
+    public class UserDto
     {
         [JsonProperty(PropertyName = "displayName")]
-        public int DisplayName { get; set; }
+        public string DisplayName { get; set; }
 
         [JsonProperty(PropertyName = "creationDate")]
-        public int CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
 
         [JsonProperty(PropertyName = "email")]
-        public int Email { get; set; }
+        public string Email { get; set; }
 
         [JsonProperty(PropertyName = "password")]
-        public int Password { get; set; }
+        public string Password { get; set; }
 
+
+        public UserDto()
+        {
         }
+
+        public UserDto(User user)
+        {
+            DisplayName = user.DisplayName;
+            CreationDate = user.CreationDate;
+            Email = user.Email;
+            Password = user.Password;
+        }
+    }
 }

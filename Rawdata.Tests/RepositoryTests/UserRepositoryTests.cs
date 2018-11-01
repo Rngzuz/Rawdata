@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Rawdata.Data;
@@ -34,10 +35,10 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 
             User user = new User()
             {
-                Id=99999999,
-                DisplayName="bego",
-                Email="begosut@gmail.com",
-                Password="1234"
+                Id = 99999999,
+                DisplayName = "bego",
+                Email = "begosut@gmail.com",
+                Password = "1234"
             };
             repo.Add(user);
             repo.SaveChangesAsync().Wait();
@@ -93,8 +94,8 @@ namespace Rawdata.Tests.RepositoryTestsFolder
 
             Search search = new Search()
             {
-                Id=10,
-                UserId= null,
+                Id = 10,
+                UserId = null,
                 SearchText = "Null pointer"
             };
             repo2.Add(search);
@@ -110,20 +111,31 @@ namespace Rawdata.Tests.RepositoryTestsFolder
                 Searches = new[] {search}
             };
 
-           repo.Add(user);
-           repo.SaveChangesAsync().Wait();
+            repo.Add(user);
+            repo.SaveChangesAsync().Wait();
 
-           user = repo.GetById(999789999).Result;
-           search = user.Searches.First();
-           Assert.Equal(10, search.Id);
-           Assert.Equal("Null pointer", search.SearchText);
+            user = repo.GetById(999789999).Result;
+            search = user.Searches.First();
+            Assert.Equal(10, search.Id);
+            Assert.Equal("Null pointer", search.SearchText);
 
-           repo.Remove(user);
-           repo.SaveChangesAsync().Wait();
+            repo.Remove(user);
+            repo.SaveChangesAsync().Wait();
 
-           repo2.Remove(search);
-           repo2.SaveChangesAsync().Wait();
+            repo2.Remove(search);
+            repo2.SaveChangesAsync().Wait();
 
+        }
+
+        [Fact]
+        public void User_Correct_MarkedCommentMapping()
+        {
+            DataContext db = new DataContext();
+            UserRepository repo = new UserRepository(db);
+
+            var marked = repo.GetMarkedCommentsByCommentId(18728068);
+
+            Assert.Equal(18728068, marked.First().CommentId);
         }
     }
 }

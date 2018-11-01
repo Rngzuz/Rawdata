@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -19,15 +20,25 @@ namespace Rawdata.Data.Repositories
         {
             return Context.Users.SingleOrDefaultAsync(a => a.Id == id);
         }
-        
-        public virtual async Task<IEnumerable<FavoriteComment>> GetFavoriteComments(int id)
+
+        public virtual async Task<IEnumerable<MarkedComment>> GetMarkedComments(int id)
         {
-            return await Context.FavoriteComments.Where(a => a.UserId == id).ToListAsync();
+            return await Context.MarkedComments
+                .Where(mark => mark.UserId == id)
+                .ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<FavoritePost>> GetFavoritePosts(int id)
+
+        public virtual IEnumerable<MarkedComment> GetMarkedCommentsByCommentId(int commentid)
         {
-            return await Context.FavoritePosts.Where(a => a.UserId == id).ToListAsync();
+            return Context.MarkedComments.Where(mark => (mark.CommentId == commentid && mark.UserId == 1)).ToList();
+        }
+
+        public virtual async Task<IEnumerable<MarkedPost>> GetMarkedPosts(int id)
+        {
+            return await Context.MarkedPosts
+                    .Where(a => a.UserId == id)
+                    .ToListAsync();
         }
 
         public virtual void Add(User user)
@@ -52,35 +63,21 @@ namespace Rawdata.Data.Repositories
 
         public async Task<User> RegisterUser(string name, string email, string password)
         {
-            var newUser = new User { DisplayName = name, Email = email, Password = password };
+            Context.Database.ExecuteSqlCommand("select * register_user @p0, @p1, @p2",
+                parameters: new object[] {name, email, password});
 
-            Context.Users.Add(newUser);
-
-            await Context.SaveChangesAsync();
-
-            return newUser;
+            return await GetUserByEmail(email);
         }
 
         public async Task<User> GetUserByEmail(string email)
         {
-            var db = Context.Database.GetDbConnection();
-
-            using (var cmd = db.CreateCommand())
-            {
-                cmd.CommandText = "select * from get_user_by_email(@email)";
-                cmd.Parameters.Add(new NpgsqlParameter("email", email));
-
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-            throw new System.NotImplementedException();
+            return await Context.Users.SingleOrDefaultAsync(u => u.Email.ToLower().Equals(email.ToLower()));
         }
 
-        public virtual async Task<IEnumerable<Search>> GetSearches(User user)
+        public virtual async Task<IEnumerable<Search>> GetSearches(int userId)
         {
             var db = Context.Database.GetDbConnection();
-
-            int userId = user.Id;
+            
             using (var cmd = db.CreateCommand())
             {
                 cmd.CommandText = "select * from get_users_search_history(@userId)";

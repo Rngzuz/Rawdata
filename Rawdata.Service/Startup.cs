@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rawdata.Data;
+using Rawdata.Data.Models;
+using Rawdata.Data.Repositories;
+using Rawdata.Data.Repositories.Interfaces;
+using Rawdata.Service.Models;
 
 namespace Rawdata.Service
 {
@@ -26,6 +32,8 @@ namespace Rawdata.Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSingleton<IUserRepository>(new UserRepository(new DataContext()));
+            services.AddSingleton<IMapper>(serviceProvider => CreateMapperInstance());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +50,16 @@ namespace Rawdata.Service
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private IMapper CreateMapperInstance()
+        {
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<User, UserDto>();
+            });
+
+            return mapperConfiguration.CreateMapper();
         }
     }
 }

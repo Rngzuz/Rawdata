@@ -11,8 +11,8 @@ namespace Rawdata.Data.Models
         public string Email { get; set; }
         public string Password { get; set; }
 
-        public ICollection<FavoriteComment> FavoriteComments { get; set; }
-        public ICollection<FavoritePost> FavoritePosts { get; set; }
+        public ICollection<MarkedComment> MarkedComments { get; set; }
+        public ICollection<MarkedPost> MarkedPosts { get; set; }
         public ICollection<Search> Searches { get; set; }
     }
 }

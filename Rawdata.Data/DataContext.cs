@@ -14,8 +14,8 @@ namespace Rawdata.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<FavoriteComment> FavoriteComments { get; set; }
-        public DbSet<FavoritePost> FavoritePosts { get; set; }
+        public DbSet<MarkedComment> MarkedComments { get; set; }
+        public DbSet<MarkedPost> MarkedPosts { get; set; }
         public DbSet<Search> Searches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,8 +39,8 @@ namespace Rawdata.Data
 
             //Application DB
             BuildUserConfig(modelBuilder);
-            BuildFavoriteCommentConfig(modelBuilder);
-            BuildFavoritePostConfig(modelBuilder);
+            BuildMarkedCommentConfig(modelBuilder);
+            BuildMarkedPostConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
         }
 
@@ -176,30 +176,32 @@ namespace Rawdata.Data
             builder.Entity<User>().Property(u => u.Password).HasColumnName("password");
         }
 
-        private void BuildFavoriteCommentConfig(ModelBuilder builder)
+        private void BuildMarkedCommentConfig(ModelBuilder builder)
         {
-            builder.Entity<FavoriteComment>().ToTable("favorite_comments");
-            builder.Entity<FavoriteComment>().HasKey(c => new {c.UserId, c.CommentId});
+            builder.Entity<MarkedComment>().ToTable("marked_comments");
+            builder.Entity<MarkedComment>().Property(c => c.UserId).HasColumnName("user_id");
+            builder.Entity<MarkedComment>().Property(c => c.CommentId).HasColumnName("comment_id");
+            builder.Entity<MarkedComment>().Property(c => c.Note).HasColumnName("note");
 
-            builder.Entity<FavoriteComment>().Property(c => c.UserId).HasColumnName("user_id");
-            builder.Entity<FavoriteComment>().Property(c => c.CommentId).HasColumnName("comment_id");
-
-            builder.Entity<FavoriteComment>()
+            builder.Entity<MarkedComment>().HasKey(c => new {c.UserId, c.CommentId});
+           
+            builder.Entity<MarkedComment>()
                 .HasOne(c => c.User)
-                .WithMany(u => u.FavoriteComments)
+                .WithMany(u => u.MarkedComments)
                 .HasForeignKey(c => c.CommentId);
         }
 
-        private void BuildFavoritePostConfig(ModelBuilder builder)
+        private void BuildMarkedPostConfig(ModelBuilder builder)
         {
-            builder.Entity<FavoritePost>().HasKey(c => new { c.UserId, c.PostId });
+            builder.Entity<MarkedComment>().ToTable("marked_posts");
+            builder.Entity<MarkedPost>().Property(c => c.UserId).HasColumnName("user_id");
+            builder.Entity<MarkedPost>().Property(c => c.PostId).HasColumnName("post_id");
+            
+            builder.Entity<MarkedPost>().HasKey(c => new { c.UserId, c.PostId });
 
-            builder.Entity<FavoritePost>().Property(c => c.UserId).HasColumnName("user_id");
-            builder.Entity<FavoritePost>().Property(c => c.PostId).HasColumnName("post_id");
-
-            builder.Entity<FavoritePost>()
+            builder.Entity<MarkedPost>()
                 .HasOne(c => c.User)
-                .WithMany(u => u.FavoritePosts)
+                .WithMany(u => u.MarkedPosts)
                 .HasForeignKey(c => c.PostId);
         }
 
