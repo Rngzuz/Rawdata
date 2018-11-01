@@ -183,20 +183,25 @@ namespace Rawdata.Data
             builder.Entity<MarkedComment>().Property(c => c.CommentId).HasColumnName("comment_id");
             builder.Entity<MarkedComment>().Property(c => c.Note).HasColumnName("note");
 
-            builder.Entity<MarkedComment>().HasKey(c => new {c.UserId, c.CommentId});
-           
+            builder.Entity<MarkedComment>().HasKey(c => new { c.UserId, c.CommentId });
+
             builder.Entity<MarkedComment>()
                 .HasOne(c => c.User)
+                .WithMany(u => u.MarkedComments)
+                .HasForeignKey(c => c.UserId);
+
+            builder.Entity<MarkedComment>()
+                .HasOne(c => c.Comment)
                 .WithMany(u => u.MarkedComments)
                 .HasForeignKey(c => c.CommentId);
         }
 
         private void BuildMarkedPostConfig(ModelBuilder builder)
         {
-            builder.Entity<MarkedComment>().ToTable("marked_posts");
+            builder.Entity<MarkedPost>().ToTable("marked_posts");
             builder.Entity<MarkedPost>().Property(c => c.UserId).HasColumnName("user_id");
             builder.Entity<MarkedPost>().Property(c => c.PostId).HasColumnName("post_id");
-            
+
             builder.Entity<MarkedPost>().HasKey(c => new { c.UserId, c.PostId });
 
             builder.Entity<MarkedPost>()

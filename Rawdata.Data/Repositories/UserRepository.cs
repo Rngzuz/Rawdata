@@ -24,6 +24,8 @@ namespace Rawdata.Data.Repositories
         public virtual async Task<IEnumerable<MarkedComment>> GetMarkedComments(int id)
         {
             return await Context.MarkedComments
+                .Include(mark => mark.User)
+                .Include(mark => mark.Comment)
                 .Where(mark => mark.UserId == id)
                 .ToListAsync();
         }
@@ -77,7 +79,7 @@ namespace Rawdata.Data.Repositories
         public virtual async Task<IEnumerable<Search>> GetSearches(int userId)
         {
             var db = Context.Database.GetDbConnection();
-            
+
             using (var cmd = db.CreateCommand())
             {
                 cmd.CommandText = "select * from get_users_search_history(@userId)";

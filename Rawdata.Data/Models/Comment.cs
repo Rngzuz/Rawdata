@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Rawdata.Data.Models
 {
@@ -14,5 +15,7 @@ namespace Rawdata.Data.Models
 
         public int PostId { get; set; }
         public Post Post { get; set; }
+
+        public ICollection<MarkedComment> MarkedComments { get; set; }
     }
 }

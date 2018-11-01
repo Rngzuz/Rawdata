@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
@@ -7,36 +8,30 @@ using Rawdata.Data.Repositories.Interfaces;
 
 namespace Rawdata.Data.Repositories
 {
-    public class CommentRepository : Repository<Comment>, ICommentRepository
+    public class CommentRepository : RepositoryBase, ICommentRepository
     {
         public CommentRepository(DataContext context) : base(context)
         {
-
         }
 
-        public virtual Task<Comment> GetById(int id)
+        public async Task<IEnumerable<Comment>> GetAll(int? userId, string search, int page, int size)
         {
-            return Context.Comments.SingleOrDefaultAsync(a => a.Id == id);
+            var query = Context.Comments
+                .FromSql($"select * from get_all_comments({search}, {userId})")
+                .Skip(size * (page - 1)) // Skip records based on page number
+                .Take(size); // Limit the result set to the size
+
+            return await query.ToListAsync();
         }
 
-        public virtual void Add(Comment comment)
+        public async Task<IEnumerable<Comment>> GetAllMarked(int userId, string search, int page, int size)
         {
-            Context.Set<Comment>().Add(comment);
-        }
+            var query = Context.Comments
+                .FromSql($"select * from get_all_marked_comments({search}, {userId})")
+                .Skip(size * (page - 1))
+                .Take(size);
 
-        public virtual async Task<IEnumerable<Comment>> GetAllAsync()
-        {
-            return await Context.Comments.ToListAsync();
-        }
-
-        public virtual void Update(Comment comment)
-        {
-            Context.Set<Comment>().Update(comment);
-        }
-
-        public virtual void Remove(Comment comment)
-        {
-            Context.Set<Comment>().Remove(comment);
+            return await query.ToListAsync();
         }
     }
 }
