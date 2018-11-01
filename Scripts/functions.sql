@@ -11,7 +11,7 @@ DROP FUNCTION IF EXISTS
     strip_tags
     CASCADE;
 
-CREATE OR REPLACE FUNCTION get_posts_by_tags(_tags TEXT[])
+CREATE FUNCTION get_posts_by_tags(_tags TEXT[])
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         RETURN QUERY
@@ -24,7 +24,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_all_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE FUNCTION get_all_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     DECLARE
         _query TSQUERY;
@@ -57,7 +57,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_all_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE FUNCTION get_all_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
@@ -74,7 +74,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_all_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE FUNCTION get_all_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     DECLARE
         _query TSQUERY;
@@ -97,7 +97,7 @@ RETURNS SETOF comments AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_all_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE FUNCTION get_all_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
@@ -114,7 +114,7 @@ RETURNS SETOF comments AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION add_user(_display_name TEXT, _email TEXT, _password TEXT)
+CREATE FUNCTION add_user(_display_name TEXT, _email TEXT, _password TEXT)
 RETURNS VOID AS $$
 BEGIN
 	INSERT INTO users (display_name, creation_date, email, "password")
@@ -123,7 +123,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION toggle_marked_post(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
+CREATE FUNCTION toggle_marked_post(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
 RETURNS VOID AS $$
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
@@ -134,7 +134,7 @@ RETURNS VOID AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION toggle_marked_comment(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
+CREATE FUNCTION toggle_marked_comment(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
 RETURNS VOID AS $$
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id) THEN
@@ -147,6 +147,6 @@ $$ LANGUAGE plpgsql;
 
 
 -- ADD THIS BEFORE SCHEMA AND FUNCTIONS
-CREATE OR REPLACE FUNCTION strip_tags(TEXT) RETURNS TEXT AS $$
+CREATE FUNCTION strip_tags(TEXT) RETURNS TEXT AS $$
     SELECT regexp_replace(regexp_replace($1, E'(?x)<[^>]*?(\s alt \s* = \s* ([\'"]) ([^>]*?) \2) [^>]*? >', E'\3'), E'(?x)(< [^>]*? >)', '', 'g')
 $$ LANGUAGE SQL;
