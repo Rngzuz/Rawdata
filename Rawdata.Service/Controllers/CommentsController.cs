@@ -5,8 +5,9 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/comments")]
+    [Produces("applicaiton/json")]
     public class CommentsController : ControllerBase
     {
         protected readonly ICommentRepository Repository;
