@@ -7,16 +7,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Rawdata.Data\Rawdata.Data.csproj" />
   </ItemGroup>
-
-  <!-- <ItemGroup>
-    <Reference Include="xunit.core">
-      <HintPath>..\..\..\..\..\..\Users\Tomas\.nuget\packages\xunit.extensibility.core\2.4.0\lib\netstandard2.0\xunit.core.dll</HintPath>
-    </Reference>
-  </ItemGroup> -->
 
 </Project>

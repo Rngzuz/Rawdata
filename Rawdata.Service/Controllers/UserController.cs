@@ -49,26 +49,26 @@ namespace Rawdata.Service.Controllers
         public async Task<IActionResult> GetFavoriteComments(int id)
         {
             var fComments = await Service.GetMarkedComments(id);
-        
+
             if (!fComments.Any())
             {
                 return NotFound(fComments);
             }
-        
-            return Ok(fComments.First());
+
+            return Ok(fComments);
         }
         //
 //        [HttpGet("{id}/favorite_posts")]
 //        public async Task<IActionResult> GetMarkedPosts(int id)
 //        {
 //            var fPosts = await Service.GetMarkedPosts(id);
-//        
+//
 //            if (!fPosts.Any())
 //            {
 //                return NotFound(fPosts);
 //            }
 //            var fPostDto = DtoMapper.Map<ICollection<FavoritePostDto>>(fPosts);
-//        
+//
 //            return Ok(fPostDto);
 //        }
         //
