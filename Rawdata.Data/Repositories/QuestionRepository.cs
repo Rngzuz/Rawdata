@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories.Generic;
 using Rawdata.Data.Repositories.Interfaces;
 
 namespace Rawdata.Data.Repositories
 {
-    public class QuestionRepository : Repository<Question>, IQuestionRepository
+    public class QuestionRepository : RepositoryBase, IQuestionRepository
     {
         public QuestionRepository(DataContext context) : base(context)
         {
@@ -40,7 +39,7 @@ namespace Rawdata.Data.Repositories
         {
             Context.Questions.Add(question);
         }
-        
+
         public void Update(Question question)
         {
             Context.Questions.Update(question);

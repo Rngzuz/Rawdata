@@ -1,4 +1,6 @@
-namespace Rawdata.Data.Repositories.Generic
+using System.Threading.Tasks;
+
+namespace Rawdata.Data.Repositories
 {
     public class RepositoryBase
     {
@@ -7,6 +9,11 @@ namespace Rawdata.Data.Repositories.Generic
         public RepositoryBase(DataContext context)
         {
             Context = context;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await Context.SaveChangesAsync();
         }
     }
 }

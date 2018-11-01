@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories.Generic;
 using Rawdata.Data.Repositories.Interfaces;
 
 namespace Rawdata.Data.Repositories
 {
-    public class AuthorRepository : Repository<Author>, IAuthorRepository
+    public class AuthorRepository : RepositoryBase, IAuthorRepository
     {
         public AuthorRepository(DataContext context) : base(context)
         {

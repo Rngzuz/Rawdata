@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Rawdata.Data.Models;
-using Rawdata.Data.Repositories.Generic;
 
 namespace Rawdata.Data.Repositories.Interfaces
 {
-    public interface IQuestionRepository : IRepository<Question>
+    public interface IQuestionRepository
     {
         IEnumerable<Question> FilterByTags(IList<string> tags);
 
