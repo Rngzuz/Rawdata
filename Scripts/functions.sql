@@ -1,16 +1,17 @@
--- ARRAY_AGG(posts_tags.name) tags
 
 DROP FUNCTION IF EXISTS
-    search_posts_tags,
-    search_posts,
-    search_marked_posts,
-    search_comments,
-    search_marked_comments,
-    register_user,
+    get_posts_by_tags,
+    get_all_posts,
+    get_all_marked_posts,
+    get_all_comments,
+    get_all_marked_comments,
+    add_user,
+    toggle_marked_post,
+    toggle_marked_comment,
     strip_tags
     CASCADE;
 
-CREATE OR REPLACE FUNCTION search_posts_tags(_tags TEXT[])
+CREATE OR REPLACE FUNCTION get_posts_by_tags(_tags TEXT[])
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         RETURN QUERY
@@ -23,7 +24,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION search_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE OR REPLACE FUNCTION get_all_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     DECLARE
         _query TSQUERY;
@@ -44,7 +45,7 @@ RETURNS SETOF posts_with_tags AS $$
         -- else only search for the _search string in the title column
         IF _tags IS NOT NULL THEN
             RETURN QUERY
-                SELECT * FROM search_posts_tags(_tags)
+                SELECT * FROM get_posts_by_tags(_tags)
                 WHERE ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query)) -- if _flag is true then do not search in either the title or body
                 AND (NOT _anwered_only OR accepted_answer_id IS NOT NULL); -- if _anwered_only is false then do not filter by accepted_answer_id else if true then only fetch answered posts
         ELSE
@@ -56,13 +57,13 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION search_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+CREATE OR REPLACE FUNCTION get_all_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
             IF _user_id IN (SELECT "id" FROM users) THEN
                 RETURN QUERY
-                    SELECT * FROM search_posts(_search, _tags, _anwered_only, _user_id) p
+                    SELECT * FROM get_all_posts(_search, _tags, _anwered_only, _user_id) p
                     WHERE p."id" IN (SELECT post_id FROM marked_posts WHERE "user_id" = _user_id);
             ELSE
                 RAISE EXCEPTION 'search_marked_posts: User does not exist.';
@@ -73,7 +74,7 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION search_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE OR REPLACE FUNCTION get_all_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     DECLARE
         _query TSQUERY;
@@ -96,13 +97,13 @@ RETURNS SETOF comments AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION search_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
+CREATE OR REPLACE FUNCTION get_all_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     BEGIN
         IF _user_id IS NOT NULL THEN
             IF _user_id IN (SELECT "id" FROM users) THEN
                 RETURN QUERY
-                    SELECT * FROM search_comments(_search, _user_id) c
+                    SELECT * FROM get_all_comments(_search, _user_id) c
                     WHERE c."id" IN (SELECT comment_id FROM marked_comments WHERE "user_id" = _user_id);
             ELSE
                 RAISE EXCEPTION 'search_marked_comments: User does not exist.';
@@ -113,7 +114,7 @@ RETURNS SETOF comments AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION register_user(_display_name TEXT, _email TEXT, _password TEXT)
+CREATE OR REPLACE FUNCTION add_user(_display_name TEXT, _email TEXT, _password TEXT)
 RETURNS VOID AS $$
 BEGIN
 	INSERT INTO users (display_name, creation_date, email, "password")
@@ -122,7 +123,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION toggle_mark_post(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
+CREATE OR REPLACE FUNCTION toggle_marked_post(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
 RETURNS VOID AS $$
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
@@ -133,7 +134,7 @@ RETURNS VOID AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION toggle_mark_comment(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
+CREATE OR REPLACE FUNCTION toggle_marked_comment(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
 RETURNS VOID AS $$
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id) THEN
