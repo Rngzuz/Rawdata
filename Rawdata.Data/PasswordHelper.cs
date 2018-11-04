@@ -7,22 +7,22 @@ namespace Rawdata.Data
 {
     public class PasswordHelper
     {
-        public static string CreateHash(string value, string salt)
+        public static string CreateHash(string value, string salt, int iterations = 10000, int size = 32)
         {
             var bytes = KeyDerivation.Pbkdf2(
                 password: value,
                 salt: Encoding.UTF8.GetBytes(salt),
                 prf: KeyDerivationPrf.HMACSHA512,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8 // 32 bytes
+                iterationCount: iterations,
+                numBytesRequested: size
             );
 
             return Convert.ToBase64String(bytes);
         }
 
-        public static string CreateSalt()
+        public static string CreateSalt(int size = 16)
         {
-            byte[] bytes = new byte[128 / 8]; // 16 bytes
+            byte[] bytes = new byte[size];
 
             using (var generator = RandomNumberGenerator.Create()) {
                 generator.GetBytes(bytes);
@@ -39,9 +39,9 @@ namespace Rawdata.Data
 
         public static bool Validate(string value, string hash)
         {
-            var salt = hash.Split(':')[1];
+            var password = hash.Split(':');
 
-            return CreateHash(value, salt) == hash;
+            return CreateHash(value, password[1]) == password[0];
         }
     }
 }

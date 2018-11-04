@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
@@ -65,6 +66,7 @@ namespace Rawdata.Service.Controllers
         }
 
         // Add authorize attribute and move to UsersController
+        [Authorize]
         [HttpGet("marked/{userId:int}", Name = "QueryMarkedComments")]
         public async Task<IActionResult> QueryMarkedComments([FromQuery] PageQuery query, int userId)
         {
