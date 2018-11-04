@@ -1,14 +1,22 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
 
 namespace Rawdata.Data.Services
 {
-    public class CommentService : ServiceBase, ICommentService
+    public class CommentService : BaseService, ICommentService
     {
         public CommentService(DataContext context) : base(context)
         {
+        }
+
+        public async Task<Comment> GetCommentById(int id)
+        {
+            return await Context.Comments
+                .Include(c => c.Author)
+                .SingleOrDefaultAsync(c => c.Id == id);
         }
 
         public IQueryable<Comment> QueryComments(int? userId, string search, int page, int size)

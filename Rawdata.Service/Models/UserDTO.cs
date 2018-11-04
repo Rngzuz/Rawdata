@@ -1,37 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Rawdata.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Rawdata.Service.Models
 {
     public class UserDto
     {
-        [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
-        [JsonProperty(PropertyName = "creationDate")]
         public DateTime CreationDate { get; set; }
+        public string Email { get; set; }
+        public UserDtoLinks Links { get; set; }
 
-        [JsonProperty(PropertyName = "email")]
+        public class UserDtoLinks
+        {
+            public string Self { get; set; }
+        }
+    }
+
+    public class UserSignInDto
+    {
+        [DataType(DataType.EmailAddress, ErrorMessage = "Invalid e-mail address.")]
         public string Email { get; set; }
 
-        [JsonProperty(PropertyName = "password")]
+        [MinLength(8, ErrorMessage = "Must be atleast 8 characters.")]
         public string Password { get; set; }
+    }
 
-
-        public UserDto()
-        {
-        }
-
-        public UserDto(User user)
-        {
-            DisplayName = user.DisplayName;
-            CreationDate = user.CreationDate;
-            Email = user.Email;
-            Password = user.Password;
-        }
+    public class UserRegisterDto : UserSignInDto
+    {
+        [MinLength(1, ErrorMessage = "Must be atleast 8 characters.")]
+        public string DisplayName { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Rawdata.Data.Services.Interfaces;
 
 namespace Rawdata.Data.Services
 {
-    public class AnswerService : ServiceBase, IAnswerService
+    public class AnswerService : BaseService, IAnswerService
     {
         public AnswerService(DataContext context) : base(context)
         {

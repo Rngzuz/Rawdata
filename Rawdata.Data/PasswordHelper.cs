@@ -3,9 +3,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Rawdata.Data.Repositories
+namespace Rawdata.Data
 {
-    public class Authentication
+    public class PasswordHelper
     {
         public static string CreateHash(string value, string salt)
         {
@@ -22,17 +22,25 @@ namespace Rawdata.Data.Repositories
 
         public static string CreateSalt()
         {
-            byte[] bytes = new byte[128 / 8]; // 16 bytes 
+            byte[] bytes = new byte[128 / 8]; // 16 bytes
 
-            using (var generator = RandomNumberGenerator.Create())
-            {
+            using (var generator = RandomNumberGenerator.Create()) {
                 generator.GetBytes(bytes);
                 return Convert.ToBase64String(bytes);
             }
         }
 
-        public static bool Validate(string value, string salt, string hash)
+        public static string CreatePassword(string value)
         {
+            var salt = CreateSalt();
+
+            return $"{CreateHash(value, salt)}:{salt}";
+        }
+
+        public static bool Validate(string value, string hash)
+        {
+            var salt = hash.Split(':')[1];
+
             return CreateHash(value, salt) == hash;
         }
     }

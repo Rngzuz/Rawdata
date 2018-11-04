@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 
 namespace Rawdata.Data.Services
 {
-    public class ServiceBase
+    public class BaseService
     {
         protected readonly DataContext Context;
 
-        public ServiceBase(DataContext context)
+        public BaseService(DataContext context)
         {
             Context = context;
         }

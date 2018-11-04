@@ -1,5 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
 
@@ -19,33 +23,56 @@ namespace Rawdata.Service.Controllers
             Service = service;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("{id:int}", Name = "GetUserById")]
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = Service.GetById(id).Result;
+            UserDto user;
 
-            if (user == null)
-            {
-                return NotFound(null);
+            try {
+                var result = await Service.GetUserById(id);
+                user = DtoMapper.Map<UserDto>(result);
             }
-            return Ok(new UserDto(user));
+            catch {
+                return StatusCode(500);
+            }
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
-        [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterDto registerDto)
+        [HttpPost(Name = "RegisterUser")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserRegisterDto userRegisterDto)
         {
             if (!ModelState.IsValid) {
                 return BadRequest();
             }
 
-            // Url.Action(nameof(this.GetById), new { id = 1 });
+            UserDto user;
 
-            var user = Service.RegisterUser("test", registerDto.Email, "1234").Result;
-            if (user == null)
-            {
-                return NotFound(user);
+            try {
+                var newUser = DtoMapper.Map<User>(userRegisterDto);
+                var result = await Service.RegisterUser(newUser);
+                user = DtoMapper.Map<UserDto>(result);
             }
-            return Ok(new UserDto(user));
+            catch (PostgresException exception) {
+                if (exception.SqlState == "23505") {
+                    return BadRequest();
+                }
+
+                return StatusCode(500);
+            }
+            catch {
+                return StatusCode(500);
+            }
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
     }
 }
