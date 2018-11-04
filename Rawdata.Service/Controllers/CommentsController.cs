@@ -27,65 +27,28 @@ namespace Rawdata.Service.Controllers
         [HttpGet("{id:int}", Name = "GetCommentById")]
         public async Task<IActionResult> GetCommentById(int id)
         {
-            CommentDto comment;
+            var result = await Service.GetCommentById(id);
 
-            try {
-                var result = await Service.GetCommentById(id);
-                comment = DtoMapper.Map<CommentDto>(result);
-            }
-            catch {
-                return StatusCode(500);
-            }
-
-            if (comment == null) {
+            if (result == null) {
                 return NotFound();
             }
 
-            return Ok(comment);
+            return Ok(
+                DtoMapper.Map<CommentDto>(result)
+            );
         }
 
         [HttpGet(Name = "QueryComments")]
-        public async Task<IActionResult> QueryComments([FromQuery] PageQuery query)
+        public async Task<IActionResult> QueryComments([FromQuery] PagingDto paging)
         {
-            IList<CommentDto> comments;
+            var result = await Service
+                .QueryComments(null, paging.Search, paging.Page, paging.Size)
+                .Include(c => c.Author)
+                .ToListAsync();
 
-            try {
-                var result = await Service
-                    .QueryComments(null, query.Search, query.Page, query.Size)
-                    .Include(c => c.Author)
-                    .ToListAsync();
-
-                comments = DtoMapper
-                    .Map<IList<Comment>, IList<CommentDto>>(result);
-            }
-            catch {
-                return StatusCode(500);
-            }
-
-            return Ok(comments);
-        }
-
-        // Add authorize attribute and move to UsersController
-        [Authorize]
-        [HttpGet("marked/{userId:int}", Name = "QueryMarkedComments")]
-        public async Task<IActionResult> QueryMarkedComments([FromQuery] PageQuery query, int userId)
-        {
-            IList<CommentDto> comments;
-
-            try {
-                var result = await Service
-                    .QueryMarkedComments(userId, query.Search, query.Page, query.Size)
-                    .Include(c => c.Author)
-                    .ToListAsync();
-
-                comments = DtoMapper
-                    .Map<IList<Comment>, IList<CommentDto>>(result);
-            }
-            catch {
-                return StatusCode(500);
-            }
-
-            return Ok(comments);
+            return Ok(
+                DtoMapper.Map<IList<Comment>, IList<CommentDto>>(result)
+            );
         }
     }
 }

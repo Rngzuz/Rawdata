@@ -1,6 +1,6 @@
 namespace Rawdata.Service.Models
 {
-    public class PageQuery
+    public class PagingDto
     {
         // Search query that defaults to null
         public string Search { get; set; }
