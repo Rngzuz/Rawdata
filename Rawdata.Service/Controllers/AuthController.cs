@@ -43,6 +43,7 @@ namespace Rawdata.Service.Controllers
                 user = DtoMapper.Map<UserDto>(result);
             }
             catch (PostgresException exception) {
+                // Duplicate key exception
                 if (exception.SqlState == "23505") {
                     return BadRequest();
                 }

@@ -12,15 +12,15 @@ namespace Rawdata.Service.Profiles
             CreateMap<Author, AuthorDto>()
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => "Self author URL")
+                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.Questions,
-                    opt => opt.MapFrom(src => "Questions URL")
+                    opt => opt.MapFrom(src => url.Link("QueryQuestions", new { }))
                 )
                 .ForPath(
                     dest => dest.Links.Comments,
-                    opt => opt.MapFrom(src => "Comments URL")
+                    opt => opt.MapFrom(src => url.Link("QueryComments", new { }))
                 );
         }
     }

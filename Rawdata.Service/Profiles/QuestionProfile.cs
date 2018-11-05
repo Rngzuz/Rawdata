@@ -21,15 +21,15 @@ namespace Rawdata.Service.Profiles
                 )
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => "Self author URL")
+                    opt => opt.MapFrom(src => url.Link("GetQuestionById", new { src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.AcceptedAnswer,
-                    opt => opt.MapFrom(src => "Accepted answer URL")
+                    opt => opt.MapFrom(src => "" /* Still wondering about this one */)
                 )
                 .ForPath(
                     dest => dest.Links.Author,
-                    opt => opt.MapFrom(src => "Author URL")
+                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { src.Id }))
                 );
         }
     }

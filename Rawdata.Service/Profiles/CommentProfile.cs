@@ -24,7 +24,7 @@ namespace Rawdata.Service.Profiles
                 .ForPath(
                     dest => dest.Links.Author,
                     // Generate absolute URL
-                    opt => opt.MapFrom(src => "Author URL" /* MISSING Author URL */)
+                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { src.Id }))
                 );
 
             // Allow mapping to an empty collection

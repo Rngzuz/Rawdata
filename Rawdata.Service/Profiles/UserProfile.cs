@@ -20,9 +20,6 @@ namespace Rawdata.Service.Profiles
 
             // Add map from UserRegisterDto to User (services should only use entity classes from the business layer)
             CreateMap<UserRegisterDto, User>();
-
-            // Allow mapping to an empty collection
-            AllowNullCollections = true;
         }
     }
 }
