@@ -6,21 +6,17 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
-    [ApiController]
-    [Route("api/authors")]
-    [Produces("application/json")]
-    public class AuthorsController : ControllerBase
+    [ApiController, Route("api/authors"), Produces("application/json")]
+    public class AuthorsController : BaseController
     {
-        protected readonly IMapper DtoMapper;
         protected readonly IAuthorService AuthorService;
 
-        public AuthorsController(IMapper dtoMapper, IAuthorService authorService)
+        public AuthorsController(IMapper dtoMapper, IAuthorService authorService) : base(dtoMapper)
         {
-            DtoMapper = dtoMapper;
             AuthorService = authorService;
         }
 
-        [HttpGet("{id:int}", Name = "GetAuthorById")]
+        [HttpGet("{id:int}", Name = GET_AUTHOR_BY_ID)]
         public async Task<IActionResult> GetAuthorById(int id)
         {
             var result = await AuthorService.GetAuthorById(id);

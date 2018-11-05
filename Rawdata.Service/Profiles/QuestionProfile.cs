@@ -2,6 +2,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
+using Rawdata.Service.Controllers;
 using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Profiles
@@ -21,15 +22,11 @@ namespace Rawdata.Service.Profiles
                 )
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => url.Link("GetQuestionById", new { src.Id }))
-                )
-                .ForPath(
-                    dest => dest.Links.AcceptedAnswer,
-                    opt => opt.MapFrom(src => "" /* Still wondering about this one */)
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.Author,
-                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.AuthorId }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
                 );
         }
     }

@@ -11,20 +11,18 @@ using Rawdata.Service.Models;
 namespace Rawdata.Service.Controllers
 {
     [ApiController, Route("api/users"), Produces("application/json")]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseController
     {
-        protected readonly IMapper DtoMapper;
         protected readonly IUserService UserService;
         protected readonly ICommentService CommentService;
 
-        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService)
+        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService) : base(dtoMapper)
         {
-            DtoMapper = dtoMapper;
             UserService = userService;
             CommentService = commentService;
         }
 
-        [Authorize, HttpGet("{id:int}", Name = "GetUserById")]
+        [Authorize, HttpGet("{id:int}", Name = GET_USER_BY_ID)]
         public async Task<IActionResult> GetUserById(int id)
         {
             UserDto user;
@@ -44,7 +42,7 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
-        [Authorize, HttpGet("{id:int}/comments", Name = "QueryMarkedComments")]
+        [Authorize, HttpGet("{id:int}/comments", Name = QUERY_MARKED_COMMENTS)]
         public async Task<IActionResult> QueryMarkedComments([FromQuery] PagingDto paging, int id)
         {
             var result = await CommentService

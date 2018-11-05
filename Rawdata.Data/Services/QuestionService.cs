@@ -14,7 +14,11 @@ namespace Rawdata.Data.Services
 
         public async Task<Question> GetQuestionById(int id)
         {
-            return await Context.Questions.SingleOrDefaultAsync(q => q.Id == id);
+            return await Context.Questions
+                .FromSql($"select * from posts_with_tags where id = {id}")
+                .Include(q => q.Answers)
+                .Include(q => q.Comments)
+                .FirstAsync();
         }
 
         public IQueryable<Question> QueryQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size)

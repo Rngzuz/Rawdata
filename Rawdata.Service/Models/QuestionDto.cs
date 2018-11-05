@@ -17,7 +17,6 @@ namespace Rawdata.Service.Models
         public class QuestionDtoLink
         {
             public string Self { get; set; }
-            public string AcceptedAnswer { get; set; }
             public string Author { get; set; }
         }
     }

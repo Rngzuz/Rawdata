@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
 using Rawdata.Service.Models;
+using Rawdata.Service.Controllers;
 
 namespace Rawdata.Service.Profiles
 {
@@ -19,12 +20,12 @@ namespace Rawdata.Service.Profiles
                 .ForPath(
                     dest => dest.Links.Self,
                     // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link("GetCommentById", new { src.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_COMMENT_BY_ID, new { src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.Author,
                     // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.AuthorId }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
                 );
 
             // Allow mapping to an empty collection

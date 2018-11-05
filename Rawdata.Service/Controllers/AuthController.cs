@@ -14,21 +14,17 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
-    [ApiController]
-    [Route("api")]
-    public class AuthController : ControllerBase
+    [ApiController, Route("api")]
+    public class AuthController : BaseController
     {
-        protected readonly IMapper DtoMapper;
         protected readonly IUserService Service;
 
-        public AuthController(IMapper dtoMapper, IUserService service)
+        public AuthController(IMapper dtoMapper, IUserService service) : base(dtoMapper)
         {
-            DtoMapper = dtoMapper;
             Service = service;
         }
 
-        [HttpPost("register", Name = "RegisterUser")]
-        [Produces("application/json")]
+        [HttpPost("register", Name = REGISTER_USER), Produces("application/json")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegisterDto userRegisterDto)
         {
             if (!ModelState.IsValid) {
@@ -61,8 +57,7 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
-        [HttpPost("oauth", Name = "SignIn")]
-        [Produces("text/plain")]
+        [HttpPost("oauth", Name = SIGN_IN), Produces("text/plain")]
         public async Task<IActionResult> SignIn(UserSignInDto userSignInDto)
         {
             if (!ModelState.IsValid) {

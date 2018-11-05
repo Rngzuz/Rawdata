@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
 using Rawdata.Service.Models;
+using Rawdata.Service.Controllers;
 
 namespace Rawdata.Service.Profiles
 {
@@ -17,15 +18,15 @@ namespace Rawdata.Service.Profiles
                 )
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => url.Link("GetQuestionById", new { src.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { Id = src.ParentId }))
                 )
                 .ForPath(
                     dest => dest.Links.Parent,
-                    opt => opt.MapFrom(src => url.Link("GetQuestionById", new { Id = src.ParentId }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { Id = src.ParentId }))
                 )
                 .ForPath(
                     dest => dest.Links.Author,
-                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.AuthorId }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
                 );
         }
     }

@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
 using Rawdata.Service.Models;
+using Rawdata.Service.Controllers;
 
 namespace Rawdata.Service.Profiles
 {
@@ -15,7 +16,7 @@ namespace Rawdata.Service.Profiles
                 .ForPath(
                     dest => dest.Links.Self,
                     // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link("GetUserById", new { Id = src.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_USER_BY_ID, new { Id = src.Id }))
                 );
 
             // Add map from UserRegisterDto to User (services should only use entity classes from the business layer)
