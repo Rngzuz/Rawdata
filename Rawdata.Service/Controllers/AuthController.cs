@@ -27,7 +27,7 @@ namespace Rawdata.Service.Controllers
             Service = service;
         }
 
-        [HttpPost("signin", Name = "RegisterUser")]
+        [HttpPost("register", Name = "RegisterUser")]
         [Produces("application/json")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegisterDto userRegisterDto)
         {
@@ -93,11 +93,12 @@ namespace Rawdata.Service.Controllers
                         new Claim(ClaimTypes.Name, user.DisplayName),
                         new Claim(ClaimTypes.Email, user.Email)
                     }),
-                    Expires = DateTime.Now.AddMinutes(10),
+                    Expires = DateTime.UtcNow.AddMinutes(10),
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes("L0onhppuCM1lMTwiEYe8667BZ-Bd8C22ETjdsdRm5NU")),
                         SecurityAlgorithms.HmacSha384Signature
-                    )
+                    ),
+                    NotBefore = DateTime.UtcNow
                 };
 
                 var handler = new JwtSecurityTokenHandler();

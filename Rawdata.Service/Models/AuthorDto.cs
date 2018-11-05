@@ -13,8 +13,8 @@ namespace Rawdata.Service.Models
         public class AuthorDtoLink
         {
             public string Self { get; set; }
-            public string Questions { get; set; }
-            public string Comments { get; set; }
+            // public string Questions { get; set; }
+            // public string Comments { get; set; }
         }
     }
 }

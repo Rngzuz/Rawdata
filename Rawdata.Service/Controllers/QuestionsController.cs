@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
 
@@ -24,13 +27,42 @@ namespace Rawdata.Service.Controllers
         [HttpGet("{id:int}", Name = "GetQuestionById")]
         public async Task<IActionResult> GetQuestionById(int id)
         {
-            throw new NotImplementedException();
+            var result = await QuestionService.GetQuestionById(id);
+
+            if (result == null) {
+                return NotFound();
+            }
+
+            return Ok(
+                DtoMapper.Map<QuestionDto>(result)
+            );
         }
 
         [HttpGet(Name = "QueryQuestions")]
-        public async Task<IActionResult> QueryQuestions([FromBody] PagingDto paging)
+        public async Task<IActionResult> QueryQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
         {
-            throw new NotImplementedException();
+            var result = await QuestionService
+                .QueryQuestions(GetAuthorizedUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
+                .Include(q => q.Author)
+                .Include(q => q.Comments)
+                .Include(q => q.Answers)
+                    .ThenInclude(a => a.Comments)
+                .ToListAsync();
+
+            return Ok(
+                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
+            );
+        }
+
+        public int? GetAuthorizedUserId()
+        {
+            var claim = User.FindFirst("id")?.Value;
+
+            if (int.TryParse(claim, out int userId)) {
+                return userId;
+            }
+
+            return null;
         }
     }
 }

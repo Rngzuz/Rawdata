@@ -1,13 +1,13 @@
-using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Services.Interfaces;
+using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
     [ApiController]
-    [Route("api/questions")]
+    [Route("api/authors")]
     [Produces("application/json")]
     public class AuthorsController : ControllerBase
     {
@@ -23,7 +23,15 @@ namespace Rawdata.Service.Controllers
         [HttpGet("{id:int}", Name = "GetAuthorById")]
         public async Task<IActionResult> GetAuthorById(int id)
         {
-            throw new NotImplementedException();
+            var result = await AuthorService.GetAuthorById(id);
+
+            if (result == null) {
+                return NotFound();
+            }
+
+            return Ok(
+                DtoMapper.Map<AuthorDto>(result)
+            );
         }
     }
 }

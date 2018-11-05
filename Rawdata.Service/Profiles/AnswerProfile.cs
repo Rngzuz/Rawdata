@@ -6,15 +6,11 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Profiles
 {
-    public class QuestionProfile : Profile
+    public class AnswerProfile : Profile
     {
-        public QuestionProfile(IUrlHelper url)
+        public AnswerProfile(IUrlHelper url)
         {
-            CreateMap<Question, QuestionDto>()
-                .ForMember(
-                    dest => dest.Answers,
-                    opt => opt.MapFrom(src => src.Answers.ToList())
-                )
+            CreateMap<Answer, AnswerDto>()
                 .ForMember(
                     dest => dest.Comments,
                     opt => opt.MapFrom(src => src.Comments.ToList())
@@ -24,8 +20,8 @@ namespace Rawdata.Service.Profiles
                     opt => opt.MapFrom(src => url.Link("GetQuestionById", new { src.Id }))
                 )
                 .ForPath(
-                    dest => dest.Links.AcceptedAnswer,
-                    opt => opt.MapFrom(src => "" /* Still wondering about this one */)
+                    dest => dest.Links.Parent,
+                    opt => opt.MapFrom(src => url.Link("GetQuestionById", new { Id = src.ParentId }))
                 )
                 .ForPath(
                     dest => dest.Links.Author,

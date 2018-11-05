@@ -13,15 +13,15 @@ namespace Rawdata.Service.Profiles
                 .ForPath(
                     dest => dest.Links.Self,
                     opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.Id }))
-                )
-                .ForPath(
-                    dest => dest.Links.Questions,
-                    opt => opt.MapFrom(src => url.Link("QueryQuestions", new { }))
-                )
-                .ForPath(
-                    dest => dest.Links.Comments,
-                    opt => opt.MapFrom(src => url.Link("QueryComments", new { }))
                 );
+                // .ForPath(
+                //     dest => dest.Links.Questions,
+                //     opt => opt.MapFrom(src => url.Link("QueryQuestions", new { }))
+                // )
+                // .ForPath(
+                //     dest => dest.Links.Comments,
+                //     opt => opt.MapFrom(src => url.Link("QueryComments", new { }))
+                // );
         }
     }
 }

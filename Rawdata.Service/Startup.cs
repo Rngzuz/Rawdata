@@ -46,8 +46,6 @@ namespace Rawdata.Service
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
-                    options.Audience = "Stackoverflow API";
-
                     options.TokenValidationParameters = new TokenValidationParameters {
                         ValidateAudience = false,
                         ValidateIssuer = false,
@@ -97,13 +95,11 @@ namespace Rawdata.Service
                 var url = provider.GetService<IUrlHelper>();
 
                 // Add profiles and supply it to the profile contructors
-                cfg.AddProfile(
-                    new CommentProfile(url)
-                );
-
-                cfg.AddProfile(
-                    new UserProfile(url)
-                );
+                cfg.AddProfile(new AnswerProfile(url));
+                cfg.AddProfile(new AuthorProfile(url));
+                cfg.AddProfile(new CommentProfile(url));
+                cfg.AddProfile(new QuestionProfile(url));
+                cfg.AddProfile(new UserProfile(url));
             });
 
             return mapperCfg.CreateMapper();
