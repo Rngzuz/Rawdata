@@ -27,7 +27,7 @@ namespace Rawdata.Data.Services
                 .Take(size); // Limit the result set to the size
         }
 
-        public IQueryable<Comment> QueryMarkedComments(int userId, string search, int page, int size)
+        public IQueryable<Comment> QueryMarkedComments(int? userId, string search, int page, int size)
         {
             return Context.Comments
                 .FromSql($"select * from query_marked_comments({search}, {userId})")

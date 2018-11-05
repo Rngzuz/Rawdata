@@ -15,11 +15,13 @@ namespace Rawdata.Service.Controllers
     {
         protected readonly IUserService UserService;
         protected readonly ICommentService CommentService;
+        protected readonly IQuestionService QuestionService;
 
-        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService) : base(dtoMapper)
+        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService, IQuestionService questionService) : base(dtoMapper)
         {
             UserService = userService;
             CommentService = commentService;
+            QuestionService = questionService;
         }
 
         [Authorize, HttpGet("{id:int}", Name = GET_USER_BY_ID)]
@@ -42,16 +44,29 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
-        [Authorize, HttpGet("{id:int}/comments", Name = QUERY_MARKED_COMMENTS)]
-        public async Task<IActionResult> QueryMarkedComments([FromQuery] PagingDto paging, int id)
+        [Authorize, HttpGet("comments", Name = QUERY_MARKED_COMMENTS)]
+        public async Task<IActionResult> QueryMarkedComments([FromQuery] PagingDto paging)
         {
             var result = await CommentService
-                .QueryMarkedComments(id, paging.Search, paging.Page, paging.Size)
+                .QueryMarkedComments(GetUserId(), paging.Search, paging.Page, paging.Size)
                 .Include(c => c.Author)
                 .ToListAsync();
 
             return Ok(
                 DtoMapper.Map<IList<Comment>, IList<CommentDto>>(result)
+            );
+        }
+
+        [Authorize, HttpGet("questions", Name = QUERY_MARKED_QUESTIONS)]
+        public async Task<IActionResult> QueryMarkedQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
+        {
+            var result = await QuestionService
+                .QueryMarkedQuestions(GetUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
+                .Include(c => c.Author)
+                .ToListAsync();
+
+            return Ok(
+                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
             );
         }
     }

@@ -29,7 +29,7 @@ namespace Rawdata.Data.Services
                 .Take(size); // Limit the result set to the size
         }
 
-        public IQueryable<Question> QueryMarkedQuestions(int userId, string search, string[] tags, bool answeredOnly, int page, int size)
+        public IQueryable<Question> QueryMarkedQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size)
         {
             return Context.Questions
                 .FromSql($"select * from query_marked_posts({search}, {(tags.Length > 0 ? tags : null)}, {answeredOnly}, {userId})")

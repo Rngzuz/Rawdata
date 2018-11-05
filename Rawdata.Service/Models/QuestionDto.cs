@@ -10,6 +10,7 @@ namespace Rawdata.Service.Models
         public DateTime CreationDate { get; set; }
         public string Title { get; set; }
         public DateTime? ClosedDate { get; set; }
+        public string AuthorDisplayName { get; set; }
         public IList<AnswerDto> Answers { get; set; }
         public IList<CommentDto> Comments { get; set; }
         public QuestionDtoLink Links { get; set; }

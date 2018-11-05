@@ -38,10 +38,7 @@ namespace Rawdata.Service.Controllers
         {
             var result = await QuestionService
                 .QueryQuestions(GetUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
-                // .Include(q => q.Author)
-                // .Include(q => q.Comments)
-                // .Include(q => q.Answers)
-                //     .ThenInclude(a => a.Comments)
+                .Include(q => q.Author)
                 .ToListAsync();
 
             return Ok(

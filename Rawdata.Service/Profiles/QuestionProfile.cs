@@ -13,6 +13,10 @@ namespace Rawdata.Service.Profiles
         {
             CreateMap<Question, QuestionDto>()
                 .ForMember(
+                    dest => dest.AuthorDisplayName,
+                    opt => opt.MapFrom(src => src.Author.DisplayName)
+                )
+                .ForMember(
                     dest => dest.Answers,
                     opt => opt.MapFrom(src => src.Answers.ToList())
                 )

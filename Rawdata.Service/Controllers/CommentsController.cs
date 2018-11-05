@@ -37,7 +37,7 @@ namespace Rawdata.Service.Controllers
         public async Task<IActionResult> QueryComments([FromQuery] PagingDto paging)
         {
             var result = await Service
-                .QueryComments(null, paging.Search, paging.Page, paging.Size)
+                .QueryComments(GetUserId(), paging.Search, paging.Page, paging.Size)
                 .Include(c => c.Author)
                 .ToListAsync();
 
