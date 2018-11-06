@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Rawdata.Data.Models;
 
 namespace Rawdata.Service.Models
 {
@@ -10,7 +11,7 @@ namespace Rawdata.Service.Models
         public DateTime CreationDate { get; set; }
         public string Title { get; set; }
         public DateTime? ClosedDate { get; set; }
-        public string[] Tags { get; set; }
+        public IList<string> Tags { get; set; }
         public string AuthorDisplayName { get; set; }
         public IList<AnswerDto> Answers { get; set; }
         public IList<CommentDto> Comments { get; set; }

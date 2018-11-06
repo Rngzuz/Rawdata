@@ -129,7 +129,7 @@ namespace Rawdata.Data
 
         private void BuildPostTagConfig(ModelBuilder builder)
         {
-            builder.Entity<PostTag>().ToTable("post_tags");
+            builder.Entity<PostTag>().ToTable("posts_tags");
             builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId});
 
             builder.Entity<PostTag>().Property(pt => pt.QuestionId).HasColumnName("post_id");

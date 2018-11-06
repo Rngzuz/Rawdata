@@ -2,6 +2,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
+using Rawdata.Data.Models.Relationships;
 using Rawdata.Service.Controllers;
 using Rawdata.Service.Models;
 
@@ -11,6 +12,9 @@ namespace Rawdata.Service.Profiles
     {
         public QuestionProfile(IUrlHelper url)
         {
+            CreateMap<PostTag, string>()
+                .ConvertUsing(source => source.TagName);
+
             CreateMap<Question, QuestionDto>()
                 .ForMember(
                     dest => dest.AuthorDisplayName,
@@ -19,6 +23,10 @@ namespace Rawdata.Service.Profiles
                 .ForMember(
                     dest => dest.Answers,
                     opt => opt.MapFrom(src => src.Answers.ToList())
+                )
+                .ForMember(
+                    dest => dest.Tags,
+                    opt => opt.MapFrom(src => src.PostTags.ToList())
                 )
                 .ForMember(
                     dest => dest.Comments,

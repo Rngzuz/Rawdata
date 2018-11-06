@@ -17,7 +17,11 @@ namespace Rawdata.Data.Services
             return await Context.Questions
                 .FromSql($"select * from posts_with_tags where id = {id}")
                 .Include(q => q.Answers)
+                    .ThenInclude(a => a.Author)
                 .Include(q => q.Comments)
+                    .ThenInclude(c => c.Author)
+                .Include(q => q.Author)
+                .Include(q => q.PostTags)
                 .FirstAsync();
         }
 
