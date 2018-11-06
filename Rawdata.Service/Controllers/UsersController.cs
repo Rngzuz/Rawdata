@@ -46,11 +46,13 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
+
+        [Consumes("application/json")]
         [Authorize, HttpPost("comments", Name = TOGGLE_MARKED_COMMENT)]
-        public async Task<IActionResult> ToggleMarkedComment([FromBody] (int commentId, string note) body)
+        public async Task<IActionResult> ToggleMarkedComment([FromBody] ToggleCommentDto commentDto)
         {
             var result = await CommentService
-                .ToggleMarkedComment(GetUserId(), body.commentId, body.note)
+                .ToggleMarkedComment(GetUserId(), commentDto.CommentId, commentDto.Note)
                 .Include(c => c.Comment)
                     .ThenInclude(c => c.Author)
                 .SingleOrDefaultAsync();
