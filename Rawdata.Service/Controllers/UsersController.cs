@@ -16,12 +16,14 @@ namespace Rawdata.Service.Controllers
         protected readonly IUserService UserService;
         protected readonly ICommentService CommentService;
         protected readonly IQuestionService QuestionService;
+        protected readonly IAnswerService AnswerService;
 
-        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService, IQuestionService questionService) : base(dtoMapper)
+        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService, IQuestionService questionService, IAnswerService answerService) : base(dtoMapper)
         {
             UserService = userService;
             CommentService = commentService;
             QuestionService = questionService;
+            AnswerService = answerService;
         }
 
         [Authorize, HttpGet("{id:int}", Name = GET_USER_BY_ID)]
@@ -67,6 +69,20 @@ namespace Rawdata.Service.Controllers
 
             return Ok(
                 DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
+            );
+        }
+
+        [Authorize, HttpGet("answers", Name = QUERY_MARKED_ANSWERS)]
+        public async Task<IActionResult> QueryMarkedAnswers([FromQuery] PagingDto paging)
+        {
+            var result = await AnswerService
+                .QueryMarkedAnswers(GetUserId(), paging.Search, paging.Page, paging.Size)
+                .Include(c => c.Author)
+                .Include(c => c.Parent)
+                .ToListAsync();
+
+            return Ok(
+                DtoMapper.Map<IList<Answer>, IList<AnswerDto>>(result)
             );
         }
     }

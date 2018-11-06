@@ -10,9 +10,9 @@ namespace Rawdata.Data.Services.Interfaces
 
         Task<Answer> GetById(int id);
 
-        IQueryable<Answer> QueryAnswers(int? userId, string search, IList<string> tags, bool answeredOnly, int page, int size);
+        IQueryable<Answer> QueryAnswers(int? userId, string search, int page, int size);
 
-        IQueryable<Answer> QueryMarkedAnswers(int userId, string search, IList<string> tags, bool answeredOnly, int page, int size);
+        IQueryable<Answer> QueryMarkedAnswers(int? userId, string search, int page, int size);
 
     }
 }

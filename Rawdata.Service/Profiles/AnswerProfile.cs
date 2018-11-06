@@ -13,12 +13,16 @@ namespace Rawdata.Service.Profiles
         {
             CreateMap<Answer, AnswerDto>()
                 .ForMember(
+                    dest => dest.AuthorDisplayName,
+                    opt => opt.MapFrom(src => src.Author.DisplayName)
+                )
+                .ForMember(
                     dest => dest.Comments,
                     opt => opt.MapFrom(src => src.Comments.ToList())
                 )
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { Id = src.ParentId }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_ANSWER_BY_ID, new {src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.Parent,

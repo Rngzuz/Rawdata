@@ -74,6 +74,49 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
+
+CREATE FUNCTION query_answers(_search TEXT = NULL, _user_id INTEGER = NULL)
+RETURNS SETOF posts AS $$
+	DECLARE
+        _query TSQUERY;
+        _flag BOOLEAN;
+	BEGIN
+		-- convert _search to ts query (will compare each word by AND)
+        _query := PLAINTO_TSQUERY('english', _search);
+
+        -- check if _search is empty or null
+        _flag := (_search = '') IS NOT FALSE;
+
+		 -- save to search history if _user_id is supplied
+        IF NOT _flag AND _user_id IS NOT NULL THEN
+	        INSERT INTO searches ("user_id", search_text) VALUES (_user_id, _search) ON CONFLICT DO NOTHING;
+        END IF;
+
+		RETURN QUERY
+			SELECT * FROM posts
+			WHERE type_id = 2 AND (_flag OR body iLIKE Concat('%',_search,'%'));
+	END
+$$ LANGUAGE plpgsql;
+
+
+CREATE FUNCTION query_marked_answers(_search TEXT = NULL, _user_id INTEGER = NULL)
+RETURNS SETOF posts AS $$
+	BEGIN
+		-- convert _search to ts query (will compare each word by AND)
+        IF _user_id IS NOT NULL THEN
+            IF _user_id IN (SELECT "id" FROM users) THEN
+                RETURN QUERY
+                    SELECT * FROM query_answers(_search, _user_id) a
+                    WHERE a."id" IN (SELECT post_id FROM marked_posts WHERE "user_id" = _user_id);
+            ELSE
+                RAISE EXCEPTION 'search_marked_posts: User does not exist.';
+            END IF;
+        ELSE
+            RAISE EXCEPTION 'search_marked_posts: User ID required.';
+        END IF;
+	END
+$$ LANGUAGE plpgsql;
+
 CREATE FUNCTION query_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
 RETURNS SETOF comments AS $$
     DECLARE
@@ -125,25 +168,37 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE FUNCTION toggle_marked_post(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
-RETURNS VOID AS $$
+CREATE FUNCTION toggle_marked_post(_user_id INTEGER, _post_id INTEGER, _note TEXT = NULL)
+RETURNS BOOLEAN AS $$
+	DECLARE
+		_marked BOOLEAN;
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
             INSERT INTO marked_posts VALUES(_user_id, _post_id, _note);
+			_marked := true;
         ELSE
             DELETE FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id;
+			_marked := false;
         END IF;
+
+		RETURN _marked;
     END
 $$ LANGUAGE plpgsql;
 
 CREATE FUNCTION toggle_marked_comment(_user_id INTEGER, _comment_id INTEGER, _note TEXT = NULL)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
+	DECLARE
+		_marked BOOLEAN;
     BEGIN
         IF NOT EXISTS (SELECT * FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id) THEN
             INSERT INTO marked_comments VALUES(_user_id, _comment_id, _note);
+			_marked := true;
         ELSE
             DELETE FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id;
+			_marked := false;
         END IF;
+
+		RETURN _marked;
     END
 $$ LANGUAGE plpgsql;
 

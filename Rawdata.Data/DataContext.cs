@@ -109,7 +109,6 @@ namespace Rawdata.Data
             builder.Entity<Question>().Property(q => q.Title).HasColumnName("title");
             builder.Entity<Question>().Property(q => q.ClosedDate).HasColumnName("closed_date");
             builder.Entity<Question>().Property(q => q.AcceptedAnswerId).HasColumnName("accepted_answer_id");
-            builder.Entity<Question>().Property(q => q.Tags).HasColumnName("tags");
 
             //Answer post config
             builder.Entity<Answer>().Property(a => a.ParentId).HasColumnName("parent_id");

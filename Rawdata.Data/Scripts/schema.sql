@@ -173,12 +173,14 @@ CREATE TABLE marked_comments (
 -- searches
 --
 CREATE TABLE searches (
-    "id" SERIAL PRIMARY KEY,
     "user_id" INTEGER REFERENCES users (id),
     search_text TEXT,
 
-    PRIMARY KEY ("user_id", comment_id)
+    PRIMARY KEY ("user_id", search_text)
 );
+
+ALTER TABLE searches
+    ADD FOREIGN KEY ("user_id") REFERENCES users (id);
 
 --
 -- posts_with_tags
