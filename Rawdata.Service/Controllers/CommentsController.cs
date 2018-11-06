@@ -32,18 +32,5 @@ namespace Rawdata.Service.Controllers
                 DtoMapper.Map<CommentDto>(result)
             );
         }
-
-        [HttpGet(Name = QUERY_COMMENTS)]
-        public async Task<IActionResult> QueryComments([FromQuery] PagingDto paging)
-        {
-            var result = await Service
-                .QueryComments(GetUserId(), paging.Search, paging.Page, paging.Size)
-                .Include(c => c.Author)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Comment>, IList<CommentDto>>(result)
-            );
-        }
     }
 }

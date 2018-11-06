@@ -22,7 +22,7 @@ namespace Rawdata.Service.Controllers
         [HttpGet("{id:int}", Name = GET_ANSWER_BY_ID)]
         public async Task<IActionResult> GetAnswerById(int id)
         {
-            var result = await AnswerService.GetById(id);
+            var result = await AnswerService.GetAnswerById(id);
 
             if (result == null)
             {
@@ -31,20 +31,6 @@ namespace Rawdata.Service.Controllers
 
             return Ok(
                 DtoMapper.Map<AnswerDto>(result)
-            );
-        }
-
-        [HttpGet(Name = QUERY_ANSWERS)]
-        public async Task<IActionResult> QueryAnswers([FromQuery] PagingDto paging)
-        {
-            var result = await AnswerService
-                .QueryAnswers(GetUserId(), paging.Search, paging.Page, paging.Size)
-                .Include(a => a.Author)
-                .Include(a => a.Parent)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Answer>, IList<AnswerDto>>(result)
             );
         }
     }

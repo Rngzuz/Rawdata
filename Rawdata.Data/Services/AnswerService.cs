@@ -13,7 +13,7 @@ namespace Rawdata.Data.Services
         {
         }
 
-        public async Task<Answer> GetById(int id)
+        public async Task<Answer> GetAnswerById(int id)
         {
             return await Context.Answers
                 .FromSql($"select * from posts where id = {id}")
@@ -22,22 +22,6 @@ namespace Rawdata.Data.Services
                 .Include(a => a.Comments)
                 .ThenInclude(c => c.Author)
                 .SingleOrDefaultAsync();
-        }
-
-        public IQueryable<Answer> QueryAnswers(int? userId, string search, int page, int size)
-        {
-            return Context.Answers
-                .FromSql($"select * from query_answers({search}, {userId})")
-                .Skip(size * (page - 1)) // Skip records based on page number
-                .Take(size); // Limit the result set to the size
-        }
-
-        public IQueryable<Answer> QueryMarkedAnswers(int? userId, string search, int page, int size)
-        {
-            return Context.Answers
-                .FromSql($"select * from query_marked_answers({search}, {userId})")
-                .Skip(size * (page - 1)) // Skip records based on page number
-                .Take(size); // Limit the result set to the size
         }
     }
 }

@@ -18,6 +18,8 @@ namespace Rawdata.Data.Services
                 .FromSql($"select * from posts_with_tags where id = {id}")
                 .Include(q => q.Answers)
                     .ThenInclude(a => a.Author)
+                .Include(q => q.Answers)
+                    .ThenInclude(a => a.Comments)
                 .Include(q => q.Comments)
                     .ThenInclude(c => c.Author)
                 .Include(q => q.Author)
@@ -28,15 +30,7 @@ namespace Rawdata.Data.Services
         public IQueryable<Question> QueryQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size)
         {
             return Context.Questions
-                .FromSql($"select * from query_posts({search}, {(tags.Length > 0 ? tags : null)}, {answeredOnly}, {userId})")
-                .Skip(size * (page - 1)) // Skip records based on page number
-                .Take(size); // Limit the result set to the size
-        }
-
-        public IQueryable<Question> QueryMarkedQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size)
-        {
-            return Context.Questions
-                .FromSql($"select * from query_marked_posts({search}, {(tags.Length > 0 ? tags : null)}, {answeredOnly}, {userId})")
+                .FromSql($"select * from query_questions({search}, {(tags.Length > 0 ? tags : null)}, {answeredOnly}, {userId})")
                 .Skip(size * (page - 1)) // Skip records based on page number
                 .Take(size); // Limit the result set to the size
         }
