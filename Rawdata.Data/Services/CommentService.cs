@@ -34,5 +34,11 @@ namespace Rawdata.Data.Services
                 .Skip(size * (page - 1))
                 .Take(size);
         }
+
+        public IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note)
+        {
+            return Context.MarkedComments
+                .FromSql($"select * from toggle_marked_comment({userId}, {commentId}, {note})");
+        }
     }
 }

@@ -59,6 +59,20 @@ namespace Rawdata.Service.Controllers
             );
         }
 
+        [Authorize, HttpPost("comments", Name = TOGGLE_MARKED_COMMENT)]
+        public async Task<IActionResult> ToggleMarkedComment([FromBody] (int commentId, string note) body)
+        {
+            var result = await CommentService
+                .ToggleMarkedComment(GetUserId(), body.commentId, body.note)
+                .Include(c => c.Comment)
+                    .ThenInclude(c => c.Author)
+                .SingleOrDefaultAsync();
+
+            return Ok(
+                DtoMapper.Map<MarkedComment, MarkedCommentDto>(result)
+            );
+        }
+
         [Authorize, HttpGet("questions", Name = QUERY_MARKED_QUESTIONS)]
         public async Task<IActionResult> QueryMarkedQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
         {

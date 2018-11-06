@@ -179,9 +179,6 @@ CREATE TABLE searches (
     PRIMARY KEY ("user_id", search_text)
 );
 
-ALTER TABLE searches
-    ADD FOREIGN KEY ("user_id") REFERENCES users (id);
-
 --
 -- posts_with_tags
 --

@@ -11,5 +11,7 @@ namespace Rawdata.Data.Services.Interfaces
         IQueryable<Comment> QueryComments(int? userId, string search, int page, int size);
 
         IQueryable<Comment> QueryMarkedComments(int? userId, string search, int page, int size);
+
+        IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note);
     }
 }
