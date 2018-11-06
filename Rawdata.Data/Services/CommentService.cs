@@ -19,22 +19,6 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync(c => c.Id == id);
         }
 
-        public IQueryable<Comment> QueryComments(int? userId, string search, int page, int size)
-        {
-            return Context.Comments
-                .FromSql($"select * from query_comments({search}, {userId})")
-                .Skip(size * (page - 1)) // Skip records based on page number
-                .Take(size); // Limit the result set to the size
-        }
-
-        public IQueryable<Comment> QueryMarkedComments(int? userId, string search, int page, int size)
-        {
-            return Context.Comments
-                .FromSql($"select * from query_marked_comments({search}, {userId})")
-                .Skip(size * (page - 1))
-                .Take(size);
-        }
-
         public IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note)
         {
             return Context.MarkedComments

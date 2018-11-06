@@ -15,6 +15,24 @@ namespace Rawdata.Service.Profiles
             CreateMap<PostTag, string>()
                 .ConvertUsing(source => source.TagName);
 
+            CreateMap<Question, QuestionListDto>()
+                .ForMember(
+                    dest => dest.AuthorDisplayName,
+                    opt => opt.MapFrom(src => src.Author.DisplayName)
+                )
+                .ForMember(
+                    dest => dest.Tags,
+                    opt => opt.MapFrom(src => src.PostTags.ToList())
+                )
+                .ForPath(
+                    dest => dest.Links.Self,
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { src.Id }))
+                )
+                .ForPath(
+                    dest => dest.Links.Author,
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
+                );
+
             CreateMap<Question, QuestionDto>()
                 .ForMember(
                     dest => dest.AuthorDisplayName,

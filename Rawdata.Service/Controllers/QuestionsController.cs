@@ -43,7 +43,7 @@ namespace Rawdata.Service.Controllers
                 .ToListAsync();
 
             return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
+                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
             );
         }
     }

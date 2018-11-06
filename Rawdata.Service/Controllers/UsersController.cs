@@ -46,18 +46,6 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
-        [Authorize, HttpGet("comments", Name = QUERY_MARKED_COMMENTS)]
-        public async Task<IActionResult> QueryMarkedComments([FromQuery] PagingDto paging)
-        {
-            var result = await CommentService
-                .QueryMarkedComments(GetUserId(), paging.Search, paging.Page, paging.Size)
-                .Include(c => c.Author)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Comment>, IList<CommentDto>>(result)
-            );
-        }
 
         [Consumes("application/json")]
         [Authorize, HttpPost("comments", Name = TOGGLE_MARKED_COMMENT)]
@@ -71,33 +59,6 @@ namespace Rawdata.Service.Controllers
 
             return Ok(
                 DtoMapper.Map<MarkedComment, MarkedCommentDto>(result)
-            );
-        }
-
-        [Authorize, HttpGet("questions", Name = QUERY_MARKED_QUESTIONS)]
-        public async Task<IActionResult> QueryMarkedQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
-        {
-            var result = await QuestionService
-                .QueryMarkedQuestions(GetUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
-                .Include(c => c.Author)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
-            );
-        }
-
-        [Authorize, HttpGet("answers", Name = QUERY_MARKED_ANSWERS)]
-        public async Task<IActionResult> QueryMarkedAnswers([FromQuery] PagingDto paging)
-        {
-            var result = await AnswerService
-                .QueryMarkedAnswers(GetUserId(), paging.Search, paging.Page, paging.Size)
-                .Include(c => c.Author)
-                .Include(c => c.Parent)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Answer>, IList<AnswerDto>>(result)
             );
         }
     }

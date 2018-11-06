@@ -11,17 +11,12 @@ namespace Rawdata.Service.Controllers
         public const string GET_AUTHOR_BY_ID = "GetAuthorById";
 
         public const string GET_COMMENT_BY_ID = "GetCommentById";
-        public const string QUERY_COMMENTS = "QueryComments";
-        public const string QUERY_MARKED_COMMENTS = "QueryMarkedComments";
         public const string TOGGLE_MARKED_COMMENT = "ToggleMarkedComment";
 
         public const string GET_QUESTION_BY_ID = "GetQuestionById";
         public const string QUERY_QUESTIONS = "QueryQuestions";
-        public const string QUERY_MARKED_QUESTIONS = "QueryMarkedQuestions";
 
         public const string GET_ANSWER_BY_ID = "GetAnswerById";
-        public const string QUERY_ANSWERS = "QueryAnswers";
-        public const string QUERY_MARKED_ANSWERS = "QueryMarkedAnswers";
 
         public const string GET_USER_BY_ID = "GetUserById";
 

@@ -1,17 +1,14 @@
-
 DROP FUNCTION IF EXISTS
-    query_posts_by_tags,
-    query_posts,
-    query_marked_posts,
-    query_comments,
-    query_marked_comments,
+    query_questions_by_tags,
+    query_questions_by_text,
+    query_questions,
     add_user,
     toggle_marked_post,
     toggle_marked_comment,
     strip_tags
     CASCADE;
 
-CREATE FUNCTION query_posts_by_tags(_tags TEXT[])
+CREATE FUNCTION query_questions_by_tags(_tags TEXT[])
 RETURNS SETOF posts_with_tags AS $$
     BEGIN
         RETURN QUERY
@@ -24,7 +21,27 @@ RETURNS SETOF posts_with_tags AS $$
     END
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION query_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
+
+CREATE FUNCTION query_questions_by_text(_search TEXT = NULL)
+RETURNS SETOF posts_with_tags AS $$
+    DECLARE
+        _query TSQUERY;
+        _flag BOOLEAN;
+    BEGIN
+        _query := PLAINTO_TSQUERY('english', _search);
+        _flag := (_search = '') IS NOT FALSE;
+
+        RETURN QUERY
+            SELECT * FROM posts_with_tags
+            WHERE (
+                ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query))
+                OR "id" IN (SELECT "id" FROM posts WHERE type_id = 2  AND (_flag OR body_tokens @@ _query))
+                OR "id" IN (SELECT "post_id" FROM comments WHERE (_flag OR text_tokens @@ _query))
+            );
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION query_questions(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
 RETURNS SETOF posts_with_tags AS $$
     DECLARE
         _query TSQUERY;
@@ -45,114 +62,14 @@ RETURNS SETOF posts_with_tags AS $$
         -- else only search for the _search string in the title column
         IF _tags IS NOT NULL THEN
             RETURN QUERY
-                SELECT * FROM query_posts_by_tags(_tags)
-                WHERE ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query)) -- if _flag is true then do not search in either the title or body
-                AND (NOT _anwered_only OR accepted_answer_id IS NOT NULL); -- if _anwered_only is false then do not filter by accepted_answer_id else if true then only fetch answered posts
+                SELECT * FROM query_questions_by_tags(_tags) t1
+                JOIN query_questions_by_text(_search) t2
+                ON t1."id" = t2."id"
+                WHERE (NOT _anwered_only OR accepted_answer_id IS NOT NULL);
         ELSE
             RETURN QUERY
-                SELECT * FROM posts_with_tags
-                WHERE ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query))
-                AND (NOT _anwered_only OR accepted_answer_id IS NOT NULL);
-        END IF;
-    END
-$$ LANGUAGE plpgsql;
-
-CREATE FUNCTION query_marked_posts(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
-RETURNS SETOF posts_with_tags AS $$
-    BEGIN
-        IF _user_id IS NOT NULL THEN
-            IF _user_id IN (SELECT "id" FROM users) THEN
-                RETURN QUERY
-                    SELECT * FROM query_posts(_search, _tags, _anwered_only, _user_id) p
-                    WHERE p."id" IN (SELECT post_id FROM marked_posts WHERE "user_id" = _user_id);
-            ELSE
-                RAISE EXCEPTION 'search_marked_posts: User does not exist.';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'search_marked_posts: User ID required.';
-        END IF;
-    END
-$$ LANGUAGE plpgsql;
-
-
-CREATE FUNCTION query_answers(_search TEXT = NULL, _user_id INTEGER = NULL)
-RETURNS SETOF posts AS $$
-	DECLARE
-        _query TSQUERY;
-        _flag BOOLEAN;
-	BEGIN
-		-- convert _search to ts query (will compare each word by AND)
-        _query := PLAINTO_TSQUERY('english', _search);
-
-        -- check if _search is empty or null
-        _flag := (_search = '') IS NOT FALSE;
-
-		 -- save to search history if _user_id is supplied
-        IF NOT _flag AND _user_id IS NOT NULL THEN
-	        INSERT INTO searches ("user_id", search_text) VALUES (_user_id, _search) ON CONFLICT DO NOTHING;
-        END IF;
-
-		RETURN QUERY
-			SELECT * FROM posts
-			WHERE type_id = 2 AND (_flag OR body iLIKE Concat('%',_search,'%'));
-	END
-$$ LANGUAGE plpgsql;
-
-
-CREATE FUNCTION query_marked_answers(_search TEXT = NULL, _user_id INTEGER = NULL)
-RETURNS SETOF posts AS $$
-	BEGIN
-		-- convert _search to ts query (will compare each word by AND)
-        IF _user_id IS NOT NULL THEN
-            IF _user_id IN (SELECT "id" FROM users) THEN
-                RETURN QUERY
-                    SELECT * FROM query_answers(_search, _user_id) a
-                    WHERE a."id" IN (SELECT post_id FROM marked_posts WHERE "user_id" = _user_id);
-            ELSE
-                RAISE EXCEPTION 'search_marked_posts: User does not exist.';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'search_marked_posts: User ID required.';
-        END IF;
-	END
-$$ LANGUAGE plpgsql;
-
-CREATE FUNCTION query_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
-RETURNS SETOF comments AS $$
-    DECLARE
-        _query TSQUERY;
-        _flag BOOLEAN;
-    BEGIN
-        -- convert _search to ts query (will compare each word by AND)
-        _query := PLAINTO_TSQUERY('english', _search);
-
-        -- check if _search is empty or null
-        _flag := (_search = '') IS NOT FALSE;
-
-        -- save to search history if _user_id is supplied
-        IF NOT _flag AND _user_id IS NOT NULL THEN
-	        INSERT INTO searches ("user_id", search_text) VALUES (_user_id, _search) ON CONFLICT DO NOTHING;
-        END IF;
-
-        RETURN QUERY
-            SELECT * FROM comments
-            WHERE (_flag OR text_tokens @@ _query);
-    END
-$$ LANGUAGE plpgsql;
-
-CREATE FUNCTION query_marked_comments(_search TEXT = NULL, _user_id INTEGER = NULL)
-RETURNS SETOF comments AS $$
-    BEGIN
-        IF _user_id IS NOT NULL THEN
-            IF _user_id IN (SELECT "id" FROM users) THEN
-                RETURN QUERY
-                    SELECT * FROM query_comments(_search, _user_id) c
-                    WHERE c."id" IN (SELECT comment_id FROM marked_comments WHERE "user_id" = _user_id);
-            ELSE
-                RAISE EXCEPTION 'search_marked_comments: User does not exist.';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'search_marked_comments: User ID required.';
+                SELECT * FROM query_questions_by_text(_search)
+                WHERE (NOT _anwered_only OR accepted_answer_id IS NOT NULL);
         END IF;
     END
 $$ LANGUAGE plpgsql;
@@ -200,9 +117,9 @@ RETURNS SETOF marked_comments AS $$
 			ELSIF _user_id NOT IN (SELECT "id" FROM users) THEN RAISE EXCEPTION 'toggle_marked_comment: User does not exist.';
 			ELSIF _comment_id IS NULL THEN RAISE EXCEPTION 'toggle_marked_comment: Comment ID required.';
 			ELSIF _comment_id NOT IN (SELECT "id" FROM comments) THEN RAISE EXCEPTION 'toggle_marked_comment: Comment does not exist.';
-			ELSIF NOT EXISTS (SELECT * FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id) THEN 
+			ELSIF NOT EXISTS (SELECT * FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id) THEN
 				INSERT INTO marked_comments VALUES(_user_id, _comment_id, _note);
-			ELSE 
+			ELSE
 				DELETE FROM marked_comments WHERE "user_id" = _user_id AND comment_id = _comment_id;
 			END IF;
 
