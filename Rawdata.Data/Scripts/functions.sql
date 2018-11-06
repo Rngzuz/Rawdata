@@ -23,7 +23,7 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE FUNCTION query_questions_by_text(_search TEXT = NULL)
-RETURNS SETOF posts_with_tags AS $$
+RETURNS SETOF posts_with_tags_and_marked AS $$
     DECLARE
         _query TSQUERY;
         _flag BOOLEAN;
@@ -32,7 +32,7 @@ RETURNS SETOF posts_with_tags AS $$
         _flag := (_search = '') IS NOT FALSE;
 
         RETURN QUERY
-            SELECT * FROM posts_with_tags
+            SELECT * FROM posts_with_tags_and_marked
             WHERE (
                 ((_flag OR title_tokens @@ _query) OR (_flag OR body_tokens @@ _query))
                 OR "id" IN (SELECT "id" FROM posts WHERE type_id = 2  AND (_flag OR body_tokens @@ _query))
@@ -42,7 +42,7 @@ RETURNS SETOF posts_with_tags AS $$
 $$ LANGUAGE plpgsql;
 
 CREATE FUNCTION query_questions(_search TEXT = NULL, _tags TEXT[] = NULL, _anwered_only BOOLEAN = FALSE, _user_id INTEGER = NULL)
-RETURNS SETOF posts_with_tags AS $$
+RETURNS SETOF posts_with_tags_and_marked AS $$
     DECLARE
         _query TSQUERY;
         _flag BOOLEAN;

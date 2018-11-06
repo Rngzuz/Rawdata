@@ -188,3 +188,17 @@ FROM posts
 JOIN posts_tags
 ON posts.id = posts_tags.post_id
 GROUP BY posts.id;
+
+--
+-- posts_with_tags_and_marked
+--
+CREATE VIEW posts_with_tags_and_marked AS
+SELECT
+    posts.*,
+    ARRAY_AGG(posts_tags.name) tags,
+    (posts."id" in (SELECT post_id FROM marked_posts)) as marked,
+    (select note from marked_posts where post_id = posts."id") note
+FROM posts
+JOIN posts_tags
+ON posts.id = posts_tags.post_id
+GROUP BY posts.id;
