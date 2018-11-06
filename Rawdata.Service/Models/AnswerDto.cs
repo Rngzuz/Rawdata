@@ -19,4 +19,9 @@ namespace Rawdata.Service.Models
             public string Author { get; set; }
         }
     }
+
+    public class MarkedAnswerDto : AnswerDto
+    {
+        public string Note { get; set; }
+    }
 }

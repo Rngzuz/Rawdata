@@ -86,27 +86,19 @@ $$
 LANGUAGE plpgsql;
 
 CREATE FUNCTION toggle_marked_post(_user_id INTEGER, _post_id INTEGER, _note TEXT = NULL)
-RETURNS BOOLEAN AS $$
-	DECLARE
-		_marked BOOLEAN;
+RETURNS SETOF marked_posts AS $$
     BEGIN
-		 IF _user_id IS NOT NULL THEN
-            IF _user_id IN (SELECT "id" FROM users) THEN
-				IF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
-					INSERT INTO marked_posts VALUES(_user_id, _post_id, _note);
-					_marked := true;
-				ELSE
-					DELETE FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id;
-					_marked := false;
-				END IF;
-			 ELSE
-                RAISE EXCEPTION 'search_marked_comments: User does not exist.';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'search_marked_comments: User ID required.';
-        END IF;
+		IF _user_id IS NULL THEN RAISE EXCEPTION 'toggle_marked_post: User ID required.';
+		ELSIF _user_id NOT IN (SELECT "id" FROM users) THEN RAISE EXCEPTION 'toggle_marked_post: User does not exist.';
+		ELSIF _post_id IS NULL THEN RAISE EXCEPTION 'toggle_marked_post: Post ID required.';
+		ELSIF _post_id NOT IN (SELECT "id" FROM posts) THEN RAISE EXCEPTION 'toggle_marked_post: Post does not exist.';
+		ELSIF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
+			INSERT INTO marked_posts VALUES(_user_id, _post_id, _note);
+		ELSE 
+			DELETE FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id;
+		END IF;
 
-		RETURN _marked;
+		RETURN QUERY SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id;
     END
 $$ LANGUAGE plpgsql;
 

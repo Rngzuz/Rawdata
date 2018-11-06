@@ -21,10 +21,15 @@ namespace Rawdata.Service.Models
             public string Author { get; set; }
         }
     }
-
+    
     public class QuestionDto : QuestionListDto
     {
         public IList<AnswerDto> Answers { get; set; }
         public IList<CommentDto> Comments { get; set; }
+    }
+
+    public class MarkedQuestionDto : QuestionListDto
+    {
+        public string Note { get; set; }
     }
 }

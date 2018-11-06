@@ -24,7 +24,7 @@ namespace Rawdata.Data.Services
                     .ThenInclude(c => c.Author)
                 .Include(q => q.Author)
                 .Include(q => q.PostTags)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
         public IQueryable<Question> QueryQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size)

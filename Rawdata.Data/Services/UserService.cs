@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
@@ -32,6 +33,12 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync();
 
             return newUser;
+        }
+
+        public IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note)
+        {
+            return Context.MarkedPosts
+                .FromSql($"select * from toggle_marked_post({userId}, {postId}, {note})");
         }
     }
 }

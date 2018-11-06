@@ -201,6 +201,7 @@ namespace Rawdata.Data
             builder.Entity<MarkedPost>().ToTable("marked_posts");
             builder.Entity<MarkedPost>().Property(c => c.UserId).HasColumnName("user_id");
             builder.Entity<MarkedPost>().Property(c => c.PostId).HasColumnName("post_id");
+            builder.Entity<MarkedPost>().Property(c => c.Note).HasColumnName("note");
 
             builder.Entity<MarkedPost>().HasKey(c => new { c.UserId, c.PostId });
 
@@ -208,6 +209,11 @@ namespace Rawdata.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.MarkedPosts)
                 .HasForeignKey(c => c.PostId);
+
+            builder.Entity<MarkedPost>()
+                .HasOne(mp => mp.Post)
+                .WithMany(p => p.MarkedPosts)
+                .HasForeignKey(mp => mp.PostId);
         }
 
         private void BuildSearchConfig(ModelBuilder builder)
