@@ -33,5 +33,14 @@ namespace Rawdata.Data.Services
 
             return newUser;
         }
+
+        public void DeleteUser(User user)
+        {
+            Context.Users
+                .FromSql($"delete from users where id={user.Id}")
+                .SingleOrDefaultAsync();
+
+
+        }
     }
 }
