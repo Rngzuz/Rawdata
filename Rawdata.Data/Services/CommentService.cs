@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
@@ -30,14 +31,13 @@ namespace Rawdata.Data.Services
             var markedComment =
                await Context.MarkedComments.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.CommentId == commentId);
 
-            if (markedComment == null)
-            {
+            if (markedComment == null) {
                 return false;
             }
 
             markedComment.Note = note;
             await Context.SaveChangesAsync();
-        
+
             return true;
         }
     }

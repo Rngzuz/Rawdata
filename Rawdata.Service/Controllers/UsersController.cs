@@ -49,6 +49,28 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
+        [Authorize, HttpGet("questions", Name = "GetQuestionsWithMarkedPosts")]
+        public async Task<IActionResult> GetQuestionsWithMarkedPosts([FromQuery] PagingDto paging)
+        {
+            var result = await QuestionService
+                .GetQuestionsWithMarkedPosts(GetUserId(), paging.Page, paging.Size);
+
+            return Ok(
+                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
+            );
+        }
+
+        [Authorize, HttpGet("comments", Name = "GetQuestionsWithMarkedComments")]
+        public async Task<IActionResult> GetQuestionsWithMarkedComments([FromQuery] PagingDto paging)
+        {
+            var result = await QuestionService
+                .GetQuestionsWithMarkedComments(GetUserId(), paging.Page, paging.Size);
+
+            return Ok(
+                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
+            );
+        }
+
         [Authorize, HttpGet("{userId:int}/history", Name = GET_USER_HISTORY)]
         public async Task<IActionResult> GetUserHistory(int userId)
         {
@@ -103,7 +125,7 @@ namespace Rawdata.Service.Controllers
                 .Include(p => p.Post)
                     .ThenInclude(p => p.Author)
                 .SingleOrDefaultAsync();
-            
+
             //If nothing is returned - post is unmarked -> return empty
             if (result == null)
             {
@@ -124,7 +146,7 @@ namespace Rawdata.Service.Controllers
                     DtoMapper.Map<MarkedPost, MarkedAnswerDto>(result)
                 );
             }
-            
+
         }
     }
 }

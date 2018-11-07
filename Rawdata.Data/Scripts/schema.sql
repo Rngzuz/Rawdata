@@ -104,7 +104,7 @@ SELECT
 INTO "comments"
 FROM comments_universal c;
 
-ALTER TABLE "comments"
+ALTER TABLE comments
     ADD PRIMARY KEY ("id"),
     ADD FOREIGN KEY (post_id) REFERENCES posts ("id"),
     ADD FOREIGN KEY (author_id) REFERENCES authors ("id");
@@ -166,7 +166,7 @@ CREATE TABLE marked_comments (
     comment_id INTEGER REFERENCES comments ("id"),
     note TEXT,
 
-    PRIMARY KEY ("user_id", comment_id)
+    UNIQUE ("user_id", comment_id)
 );
 
 --
@@ -176,7 +176,7 @@ CREATE TABLE searches (
     "user_id" INTEGER REFERENCES users (id),
     search_text TEXT,
 
-    PRIMARY KEY ("user_id", search_text)
+    UNIQUE ("user_id", search_text)
 );
 
 --
