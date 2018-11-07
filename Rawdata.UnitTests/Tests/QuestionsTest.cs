@@ -29,15 +29,15 @@ namespace Rawdata.UnitTests.Tests
             DataContext db = new DataContext();
             QuestionService repo = new QuestionService(db);
 
-            String[] tags = new string[0];
+            var tags = new string[] { "mysql","sql" };
 
-            IQueryable<Question> question = repo.QueryQuestions(null, "null", tags, true, 2, 2);
+            IQueryable<Question> question = repo.QueryQuestions(null, "null", tags, false, 1, 10);
 
-            Question q = question.First();
+            Question q = question.FirstOrDefault();
             Assert.NotNull(q);
-            Assert.Equal(335, q.Score);
-            Assert.Equal(145154, q.Id);
-            Assert.Equal("What should my Objective-C singleton look like?",q.Title);
+            Assert.Equal(1848, q.Score);
+            Assert.Equal(38549, q.Id);
+            Assert.Equal("Difference between INNER and OUTER joins", q.Title);
         }
 
         [Fact]
@@ -46,11 +46,11 @@ namespace Rawdata.UnitTests.Tests
             DataContext db = new DataContext();
             QuestionService repo = new QuestionService(db);
 
-            String[] tags = new string[0];
+            
+            var tags = new string[ ]{ "arrays" };
+            IQueryable<Question> question = repo.QueryQuestions(1, "ALTER", tags, false, 1, 1);
 
-            IQueryable<Question> question = repo.QueryQuestions(1, "ALTER", tags, false, 2, 2);
-
-            Question q = question.First();
+            Question q = question.FirstOrDefault();
             Assert.NotNull(q);
             Assert.Equal(34, q.Score);
             Assert.Equal(5752906, q.Id);
