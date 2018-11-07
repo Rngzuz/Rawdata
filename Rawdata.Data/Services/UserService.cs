@@ -35,7 +35,7 @@ namespace Rawdata.Data.Services
 
             return newUser;
         }
-
+        
         public IQueryable<MarkedPost> GetMarkedPosts(int userId)
         {
             return Context.MarkedPosts.Where(mp => mp.UserId == userId);
@@ -45,6 +45,15 @@ namespace Rawdata.Data.Services
         {
             return Context.MarkedComments.Where(mc => mc.UserId == userId);
         }
+        
+
+        public void DeleteUser(User user)
+        {
+            Context.Users
+                .FromSql($"delete from users where id={user.Id}")
+                .SingleOrDefaultAsync();
+        }
+
 
         public IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note)
         {
