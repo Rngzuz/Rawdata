@@ -71,10 +71,10 @@ SELECT DISTINCT ON ("id")
     p.creationdate creation_date,
     p.score,
     p.body,
-    to_tsvector(strip_tags(p.body)) body_tokens,
+    to_tsvector('english', strip_tags(p.body)) body_tokens,
     p.closeddate closed_date,
     p.title,
-    to_tsvector(p.title) title_tokens,
+    to_tsvector('english', p.title) title_tokens,
     p.ownerid author_id,
     p.linkpostid link_id
 INTO posts
@@ -98,7 +98,7 @@ SELECT
     c.commentscore score,
     c.postid post_id,
     c.commenttext "text",
-    to_tsvector(c.commenttext) text_tokens,
+    to_tsvector('english', c.commenttext) text_tokens,
     c.commentcreatedate creation_date,
     c.authorid author_id
 INTO "comments"

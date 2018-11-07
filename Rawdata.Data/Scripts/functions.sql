@@ -94,7 +94,7 @@ RETURNS SETOF marked_posts AS $$
 		ELSIF _post_id NOT IN (SELECT "id" FROM posts) THEN RAISE EXCEPTION 'toggle_marked_post: Post does not exist.';
 		ELSIF NOT EXISTS (SELECT * FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id) THEN
 			INSERT INTO marked_posts VALUES(_user_id, _post_id, _note);
-		ELSE 
+		ELSE
 			DELETE FROM marked_posts WHERE "user_id" = _user_id AND post_id = _post_id;
 		END IF;
 
