@@ -173,11 +173,10 @@ CREATE TABLE marked_comments (
 -- searches
 --
 CREATE TABLE searches (
-    "id" SERIAL PRIMARY KEY,
     "user_id" INTEGER REFERENCES users (id),
     search_text TEXT,
 
-    PRIMARY KEY ("user_id", comment_id)
+    PRIMARY KEY ("user_id", search_text)
 );
 
 --
@@ -185,6 +184,20 @@ CREATE TABLE searches (
 --
 CREATE VIEW posts_with_tags AS
 SELECT posts.*, array_agg(posts_tags.name) tags
+FROM posts
+JOIN posts_tags
+ON posts.id = posts_tags.post_id
+GROUP BY posts.id;
+
+--
+-- posts_with_tags_and_marked
+--
+CREATE VIEW posts_with_tags_and_marked AS
+SELECT
+    posts.*,
+    ARRAY_AGG(posts_tags.name) tags,
+    (posts."id" in (SELECT post_id FROM marked_posts)) as marked,
+    (select note from marked_posts where post_id = posts."id") note
 FROM posts
 JOIN posts_tags
 ON posts.id = posts_tags.post_id

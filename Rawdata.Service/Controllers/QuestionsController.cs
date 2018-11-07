@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,21 +9,17 @@ using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Controllers
 {
-    [ApiController]
-    [Route("api/questions")]
-    [Produces("application/json")]
-    public class QuestionsController : ControllerBase
+    [ApiController, Route("api/questions"), Produces("application/json")]
+    public class QuestionsController : BaseController
     {
-        protected readonly IMapper DtoMapper;
         protected readonly IQuestionService QuestionService;
 
-        public QuestionsController(IMapper dtoMapper, IQuestionService questionService)
+        public QuestionsController(IMapper dtoMapper, IQuestionService questionService) : base(dtoMapper)
         {
-            DtoMapper = dtoMapper;
             QuestionService = questionService;
         }
 
-        [HttpGet("{id:int}", Name = "GetQuestionById")]
+        [HttpGet("{id:int}", Name = GET_QUESTION_BY_ID)]
         public async Task<IActionResult> GetQuestionById(int id)
         {
             var result = await QuestionService.GetQuestionById(id);
@@ -38,31 +33,18 @@ namespace Rawdata.Service.Controllers
             );
         }
 
-        [HttpGet(Name = "QueryQuestions")]
+        [HttpGet(Name = QUERY_QUESTIONS)]
         public async Task<IActionResult> QueryQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
         {
             var result = await QuestionService
-                .QueryQuestions(GetAuthorizedUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
+                .QueryQuestions(GetUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
                 .Include(q => q.Author)
-                .Include(q => q.Comments)
-                .Include(q => q.Answers)
-                    .ThenInclude(a => a.Comments)
+                .Include(q => q.PostTags)
                 .ToListAsync();
 
             return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
+                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
             );
-        }
-
-        public int? GetAuthorizedUserId()
-        {
-            var claim = User.FindFirst("id")?.Value;
-
-            if (int.TryParse(claim, out int userId)) {
-                return userId;
-            }
-
-            return null;
         }
     }
 }

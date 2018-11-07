@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
+using Rawdata.Service.Controllers;
 using Rawdata.Service.Models;
 
 namespace Rawdata.Service.Profiles
@@ -12,7 +13,7 @@ namespace Rawdata.Service.Profiles
             CreateMap<Author, AuthorDto>()
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => url.Link("GetAuthorById", new { Id = src.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.Id }))
                 );
                 // .ForPath(
                 //     dest => dest.Links.Questions,

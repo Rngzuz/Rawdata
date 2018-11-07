@@ -19,20 +19,26 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync(c => c.Id == id);
         }
 
-        public IQueryable<Comment> QueryComments(int? userId, string search, int page, int size)
+        public IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note)
         {
-            return Context.Comments
-                .FromSql($"select * from query_comments({search}, {userId})")
-                .Skip(size * (page - 1)) // Skip records based on page number
-                .Take(size); // Limit the result set to the size
+            return Context.MarkedComments
+                .FromSql($"select * from toggle_marked_comment({userId}, {commentId}, {note})");
         }
 
-        public IQueryable<Comment> QueryMarkedComments(int userId, string search, int page, int size)
+        public async Task<bool> UpdateMarkedCommentNote(int? userId, int commentId, string note)
         {
-            return Context.Comments
-                .FromSql($"select * from query_marked_comments({search}, {userId})")
-                .Skip(size * (page - 1))
-                .Take(size);
+            var markedComment =
+               await Context.MarkedComments.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.CommentId == commentId);
+
+            if (markedComment == null)
+            {
+                return false;
+            }
+
+            markedComment.Note = note;
+            await Context.SaveChangesAsync();
+        
+            return true;
         }
     }
 }

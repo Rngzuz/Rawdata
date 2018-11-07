@@ -68,6 +68,7 @@ namespace Rawdata.Service
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IAuthorService, AuthorService>();
 
             // Create and inject DtoMapper
             services.AddScoped<IMapper>(p => CreateMapper(p));
@@ -100,6 +101,9 @@ namespace Rawdata.Service
                 cfg.AddProfile(new CommentProfile(url));
                 cfg.AddProfile(new QuestionProfile(url));
                 cfg.AddProfile(new UserProfile(url));
+                cfg.AddProfile(new MarkedCommentProfile(url));
+                cfg.AddProfile(new MarkedQuestionProfile(url));
+                cfg.AddProfile(new MarkedAnswerProfile(url));
             });
 
             return mapperCfg.CreateMapper();

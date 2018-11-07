@@ -15,7 +15,7 @@ namespace Rawdata.Service.Models
         }
 
         // Default page size (is 0 if not specified)
-        private int _Size = 5;
+        private int _Size = 50;
 
         public int Size
         {

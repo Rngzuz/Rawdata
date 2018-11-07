@@ -13,6 +13,7 @@ namespace Rawdata.Data.Services
         {
         }
 
+<<<<<<< HEAD
         public async Task<Answer> GetById(int id)
         {
             return await Context.Answers.SingleOrDefaultAsync(q => q.Id == id);
@@ -26,6 +27,17 @@ namespace Rawdata.Data.Services
         public IQueryable<Answer> QueryMarkedAnswers(int userId, string search, IList<string> tags, bool answeredOnly, int page, int size)
         {
             throw new System.NotImplementedException();
+=======
+        public async Task<Answer> GetAnswerById(int id)
+        {
+            return await Context.Answers
+                .FromSql($"select * from posts where id = {id}")
+                .Include(a => a.Parent)
+                .Include(a => a.Author)
+                .Include(a => a.Comments)
+                .ThenInclude(c => c.Author)
+                .SingleOrDefaultAsync();
+>>>>>>> b509b5a123814a220766fcf4cdac4adca0731f4d
         }
     }
 }

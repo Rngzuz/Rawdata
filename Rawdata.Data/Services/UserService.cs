@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
@@ -34,6 +35,7 @@ namespace Rawdata.Data.Services
             return newUser;
         }
 
+<<<<<<< HEAD
         public void DeleteUser(User user)
         {
             Context.Users
@@ -41,6 +43,28 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync();
 
 
+=======
+        public IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note)
+        {
+            return Context.MarkedPosts
+                .FromSql($"select * from toggle_marked_post({userId}, {postId}, {note})");
+        }
+
+        public async Task<bool> UpdateMarkedPostNote(int? userId, int postId, string note)
+        {
+            var markedPost =
+                await Context.MarkedPosts.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.PostId == postId);
+
+            if (markedPost == null)
+            {
+                return false;
+            }
+
+            markedPost.Note = note;
+            await Context.SaveChangesAsync();
+
+            return true;
+>>>>>>> b509b5a123814a220766fcf4cdac4adca0731f4d
         }
     }
 }

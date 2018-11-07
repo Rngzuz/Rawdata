@@ -4,7 +4,7 @@ namespace Rawdata.Data.Services
 {
     public class BaseService
     {
-        protected readonly DataContext Context;
+        public readonly DataContext Context;
 
         public BaseService(DataContext context)
         {

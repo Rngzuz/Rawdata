@@ -18,6 +18,7 @@ namespace Rawdata.Data.Models
 
         public ICollection<PostLink> LinkedToPosts { get; set; }
         public ICollection<PostLink> LinkedByPosts { get; set; }
-       
+
+        public ICollection<MarkedPost> MarkedPosts { get; set; }
     }
 }

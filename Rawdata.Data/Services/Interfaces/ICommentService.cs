@@ -8,8 +8,8 @@ namespace Rawdata.Data.Services.Interfaces
     {
         Task<Comment> GetCommentById(int id);
 
-        IQueryable<Comment> QueryComments(int? userId, string search, int page, int size);
+        IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note);
 
-        IQueryable<Comment> QueryMarkedComments(int userId, string search, int page, int size);
+        Task<bool> UpdateMarkedCommentNote(int? userId, int commentId, string note);
     }
 }
