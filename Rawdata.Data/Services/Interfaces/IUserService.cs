@@ -10,5 +10,6 @@ namespace Rawdata.Data.Services.Interfaces
         Task<User> GetUserByEmail(string email);
         Task<User> RegisterUser(User user);
         IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note);
+        Task<bool> UpdateMarkedPostNote(int? userId, int postId, string note);
     }
 }

@@ -75,6 +75,16 @@ namespace Rawdata.Service.Controllers
         }
 
         [Consumes("application/json")]
+        [Authorize, HttpPost("posts/{postId:int}", Name = UPDATE_MARKED_POST)]
+        public async Task<IActionResult> UpdateMarkedPost([FromRoute] int postId, [FromBody] TogglePostDto postDto)
+        {
+            var result = await UserService
+                .UpdateMarkedPostNote(GetUserId(), postId, postDto.Note);
+
+            return result ? StatusCode(204) : NotFound();
+        }
+
+        [Consumes("application/json")]
         [Authorize, HttpPost("posts", Name = TOGGLE_MARKED_POST)]
         public async Task<IActionResult> ToggleMarkedPost([FromBody] TogglePostDto postDto)
         {

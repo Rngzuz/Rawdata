@@ -40,5 +40,21 @@ namespace Rawdata.Data.Services
             return Context.MarkedPosts
                 .FromSql($"select * from toggle_marked_post({userId}, {postId}, {note})");
         }
+
+        public async Task<bool> UpdateMarkedPostNote(int? userId, int postId, string note)
+        {
+            var markedPost =
+                await Context.MarkedPosts.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.PostId == postId);
+
+            if (markedPost == null)
+            {
+                return false;
+            }
+
+            markedPost.Note = note;
+            await Context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Rawdata.Service.Controllers
         public const string UPDATE_MARKED_COMMENT = "UpdateMarkedComment";
         
         public const string TOGGLE_MARKED_POST = "ToggleMarkedPost";
+        public const string UPDATE_MARKED_POST = "UpdateMarkedPost";
 
         public const string GET_QUESTION_BY_ID = "GetQuestionById";
         public const string QUERY_QUESTIONS = "QueryQuestions";
