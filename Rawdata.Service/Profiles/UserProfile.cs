@@ -17,13 +17,9 @@ namespace Rawdata.Service.Profiles
                     dest => dest.SearchText,
                     opt => opt.MapFrom(src => src.SearchText)
                 );
-
+            
             // Add map from User to UserDto
             CreateMap<User, UserDto>()
-                .ForMember(
-                    dest => dest.Searches,
-                    opt => opt.MapFrom(src => src.Searches.ToList())
-                )
                 .ForPath(
                     dest => dest.Links.Self,
                     // Generate absolute URL

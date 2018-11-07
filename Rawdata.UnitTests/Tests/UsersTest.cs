@@ -33,10 +33,10 @@ namespace Rawdata.UnitTests.Tests
             DataContext db = new DataContext();
             UserService repo = new UserService(db);
 
-            Task<User> user = repo.GetUserByEmail("begona@test.local");
+            Task<User> user = repo.GetUserByEmail("test@test.com");
 
-            Assert.Equal("Begoña", user.Result.DisplayName);
-            Assert.Equal(1, user.Result.Id);
+            Assert.Equal("TestUser", user.Result.DisplayName);
+            Assert.Equal(3, user.Result.Id);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
@@ -15,7 +16,6 @@ namespace Rawdata.Data.Services
         public virtual Task<User> GetUserById(int id)
         {
             return Context.Users
-                .Include(u => u.Searches)
                 .SingleOrDefaultAsync(u => u.Id == id);
         }
 
@@ -34,6 +34,11 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync();
 
             return newUser;
+        }
+
+        public async Task<IList<Search>> GetUserHistory(int userId)
+        {
+            return await Context.Searches.Where(search => search.UserId == userId).ToListAsync();
         }
         
         public IQueryable<MarkedPost> GetMarkedPosts(int userId)
