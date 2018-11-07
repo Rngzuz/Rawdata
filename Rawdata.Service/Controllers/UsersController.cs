@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -48,6 +49,15 @@ namespace Rawdata.Service.Controllers
             return Ok(user);
         }
 
+        [Authorize, HttpGet("{userId:int}/history", Name = GET_USER_HISTORY)]
+        public async Task<IActionResult> GetUserHistory(int userId)
+        {
+            IList<Search> searches = await UserService.GetUserHistory(userId);
+
+            return Ok(
+                    DtoMapper.Map<IList<Search>, IList<SearchDto>>(searches)
+           );
+        }
 
         [Consumes("application/json")]
         [Authorize, HttpPost("comments", Name = TOGGLE_MARKED_COMMENT)]

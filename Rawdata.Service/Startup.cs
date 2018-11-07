@@ -16,6 +16,7 @@ using Rawdata.Data;
 using Rawdata.Data.Services;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Profiles;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Rawdata.Service
 {
@@ -72,6 +73,11 @@ namespace Rawdata.Service
 
             // Create and inject DtoMapper
             services.AddScoped<IMapper>(p => CreateMapper(p));
+
+
+            services.AddSwaggerGen(
+                options => options.SwaggerDoc("api", new Info { Title = "Stackoverflow API" })
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,6 +89,12 @@ namespace Rawdata.Service
             else {
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => {
+                options.SwaggerEndpoint("/swagger/api/swagger.json", "Stackoverflow API");
+                options.RoutePrefix = "api";
+            });
 
             app.UseAuthentication();
             app.UseMvc();

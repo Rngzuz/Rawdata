@@ -63,6 +63,7 @@ namespace Rawdata.UnitTests.Tests
             
             repo.DeleteUser(u.Result);
             await repo.SaveChangesAsync();
+            
         }
 
 

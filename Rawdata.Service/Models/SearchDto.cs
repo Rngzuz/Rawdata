@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Rawdata.Service.Models
 {
-    public class SearchDto
+   public class SearchDto
     {
-        public string SearchText { get; set;}
+        public string SearchText { get; set; }
     }
 }

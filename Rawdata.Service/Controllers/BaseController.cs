@@ -23,6 +23,7 @@ namespace Rawdata.Service.Controllers
         public const string GET_ANSWER_BY_ID = "GetAnswerById";
 
         public const string GET_USER_BY_ID = "GetUserById";
+        public const string GET_USER_HISTORY = "GetUserHistory";
 
         protected readonly IMapper DtoMapper;
 
