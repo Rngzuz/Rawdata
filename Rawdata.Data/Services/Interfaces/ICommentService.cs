@@ -9,5 +9,7 @@ namespace Rawdata.Data.Services.Interfaces
         Task<Comment> GetCommentById(int id);
 
         IQueryable<MarkedComment> ToggleMarkedComment(int? userId, int commentId, string note);
+
+        Task<bool> UpdateMarkedCommentNote(int? userId, int commentId, string note);
     }
 }

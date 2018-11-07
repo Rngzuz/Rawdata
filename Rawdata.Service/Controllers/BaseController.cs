@@ -12,6 +12,7 @@ namespace Rawdata.Service.Controllers
 
         public const string GET_COMMENT_BY_ID = "GetCommentById";
         public const string TOGGLE_MARKED_COMMENT = "ToggleMarkedComment";
+        public const string UPDATE_MARKED_COMMENT = "UpdateMarkedComment";
         
         public const string TOGGLE_MARKED_POST = "ToggleMarkedPost";
 

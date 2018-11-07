@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
@@ -61,6 +62,16 @@ namespace Rawdata.Service.Controllers
             return Ok(
                 DtoMapper.Map<MarkedComment, MarkedCommentDto>(result)
             );
+        }
+
+        [Consumes("application/json")]
+        [Authorize, HttpPost("comments/{commentId:int}", Name = UPDATE_MARKED_COMMENT)]
+        public async Task<IActionResult> UpdateMarkedComment([FromRoute] int commentId, [FromBody] ToggleCommentDto commentDto)
+        {
+            var result = await CommentService
+                .UpdateMarkedCommentNote(GetUserId(), commentId, commentDto.Note);
+
+            return result ? StatusCode(204) : NotFound();
         }
 
         [Consumes("application/json")]

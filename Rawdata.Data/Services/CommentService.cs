@@ -24,5 +24,21 @@ namespace Rawdata.Data.Services
             return Context.MarkedComments
                 .FromSql($"select * from toggle_marked_comment({userId}, {commentId}, {note})");
         }
+
+        public async Task<bool> UpdateMarkedCommentNote(int? userId, int commentId, string note)
+        {
+            var markedComment =
+               await Context.MarkedComments.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.CommentId == commentId);
+
+            if (markedComment == null)
+            {
+                return false;
+            }
+
+            markedComment.Note = note;
+            await Context.SaveChangesAsync();
+        
+            return true;
+        }
     }
 }
