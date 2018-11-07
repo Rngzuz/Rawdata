@@ -62,10 +62,10 @@ RETURNS SETOF posts_with_tags_and_marked AS $$
         -- else only search for the _search string in the title column
         IF _tags IS NOT NULL THEN
             RETURN QUERY
-                SELECT * FROM query_questions_by_tags(_tags) t1
+                SELECT t2.* FROM query_questions_by_tags(_tags) t1
                 JOIN query_questions_by_text(_search) t2
                 ON t1."id" = t2."id"
-                WHERE (NOT _anwered_only OR accepted_answer_id IS NOT NULL);
+                WHERE (NOT _anwered_only OR t1.accepted_answer_id IS NOT NULL);
         ELSE
             RETURN QUERY
                 SELECT * FROM query_questions_by_text(_search)
