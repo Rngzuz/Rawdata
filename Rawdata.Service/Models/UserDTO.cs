@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Rawdata.Service.Models
@@ -9,6 +10,7 @@ namespace Rawdata.Service.Models
         public DateTime CreationDate { get; set; }
         public string Email { get; set; }
         public UserDtoLinks Links { get; set; }
+        public IList<SearchDto> Searches { get; set; }
 
         public class UserDtoLinks
         {

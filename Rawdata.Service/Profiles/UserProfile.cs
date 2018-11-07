@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
@@ -11,8 +12,18 @@ namespace Rawdata.Service.Profiles
         // UrlHelper is injected when the UserProfile is instantiated
         public UserProfile(IUrlHelper url)
         {
+            CreateMap<Search, SearchDto>()
+                .ForMember(
+                    dest => dest.SearchText,
+                    opt => opt.MapFrom(src => src.SearchText)
+                );
+
             // Add map from User to UserDto
             CreateMap<User, UserDto>()
+                .ForMember(
+                    dest => dest.Searches,
+                    opt => opt.MapFrom(src => src.Searches.ToList())
+                )
                 .ForPath(
                     dest => dest.Links.Self,
                     // Generate absolute URL

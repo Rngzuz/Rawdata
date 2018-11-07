@@ -219,11 +219,10 @@ namespace Rawdata.Data
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
-            builder.Entity<Search>().HasKey(s => s.Id);
-
-            builder.Entity<Search>().Property(u => u.Id).HasColumnName("id");
+            
             builder.Entity<Search>().Property(u => u.UserId).HasColumnName("user_id");
             builder.Entity<Search>().Property(u => u.SearchText).HasColumnName("search_text");
+            builder.Entity<Search>().HasKey(c => new { c.UserId, c.SearchText });
 
             builder.Entity<Search>()
                 .HasOne(s => s.User)

@@ -15,6 +15,7 @@ namespace Rawdata.Data.Services
         public virtual Task<User> GetUserById(int id)
         {
             return Context.Users
+                .Include(u => u.Searches)
                 .SingleOrDefaultAsync(u => u.Id == id);
         }
 
@@ -33,6 +34,16 @@ namespace Rawdata.Data.Services
                 .SingleOrDefaultAsync();
 
             return newUser;
+        }
+
+        public IQueryable<MarkedPost> GetMarkedPosts(int userId)
+        {
+            return Context.MarkedPosts.Where(mp => mp.UserId == userId);
+        }
+
+        public IQueryable<MarkedComment> GetMarkedComments(int userId)
+        {
+            return Context.MarkedComments.Where(mc => mc.UserId == userId);
         }
 
         public IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note)

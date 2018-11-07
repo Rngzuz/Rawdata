@@ -10,7 +10,7 @@ namespace Rawdata.Data.Models
 
         public int? AcceptedAnswerId { get; set; }
         
-        public Post AcceptedAnswer { get; set; }
+        public Answer AcceptedAnswer { get; set; }
 
         public DateTime? ClosedDate { get; set; }
 
