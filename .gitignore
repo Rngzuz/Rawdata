@@ -13,6 +13,7 @@ nupkg/
 *.user
 *.userosscache
 *.sln.docstates
+*.code-workspace
 
 # Build results
 [Dd]ebug/
