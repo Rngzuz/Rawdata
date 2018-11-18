@@ -202,3 +202,19 @@ FROM posts
 JOIN posts_tags
 ON posts.id = posts_tags.post_id
 GROUP BY posts.id;
+
+--
+-- mwib
+--
+select id, sen, idx, word into mwib from words where what = 'body' and
+tablename='posts' and word ~* '^[a-zA-Z]+$';
+create index mwib_index_id on mwib (id);
+create index mwib_index_word on mwib (word);
+
+--
+-- mwi
+--
+select id, idx, word into mwi from words where what = 'title' and word ~*
+'^[a-zA-Z]+$';
+create index mwi_index_id on mwi (id);
+create index mwi_index_word on mwi (word);
