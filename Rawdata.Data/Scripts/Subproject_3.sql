@@ -11,6 +11,7 @@ where tablename = 'posts'
 
 alter table post_words_cleaned add foreign key (id) references posts (id);
 create index post_words_cleaned_word_index on post_words_cleaned (word);
+create index post_words_cleaned_post_id_index on post_words_cleaned (id);
 
 --
 -- comment_words_cleaned
@@ -25,6 +26,7 @@ where tablename = 'comments'
 
 alter table comment_words_cleaned add foreign key (id) references comments (id);
 create index comment_words_cleaned_word_index on comment_words_cleaned (word);
+create index comment_words_cleaned_comment_id_index on comment_words_cleaned (id);
 
 --
 -- Post frequency
