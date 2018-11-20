@@ -5,7 +5,7 @@ declare
     _title_frequency int := 0;
     _total_frequency int;
     
-    _body_count int := 0;d
+    _body_count int := 0;
     _title_count int := 0;
     _total_count int;
 begin
