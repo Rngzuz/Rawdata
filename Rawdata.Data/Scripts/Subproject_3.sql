@@ -29,23 +29,22 @@ create index comment_words_cleaned_word_index on comment_words_cleaned (word);
 create index comment_words_cleaned_comment_id_index on comment_words_cleaned (id);
 
 --
--- Post frequency
+-- post_frequency
 --
+select
+    word,
+    count(word) frequency
+into post_frequency
+from post_words_cleaned
+group by word
+order by frequency desc;
 
-create table post_frequency(
-    word text primary key ,
-    frequency bigint
-);
-
-insert into post_frequency
-    select word, count(*) 
-    from post_words_cleaned
-    group by word
-    order by count desc;
+alter table post_frequency
+    add primary key (word);
 
 --
 -- B3
--- 
+--
 create or replace function calculate_post_tf(query varchar, postId int)
 returns float as $$
 declare
@@ -54,18 +53,18 @@ declare
     _total_count int;
 begin
     -- get body and title frequenies and set to 0 if they are null
-    select into _post_frequency count(*) from post_words_cleaned where word = query and id = postId group by id;
+    select into _post_frequency count(id) from post_words_cleaned where word = query and id = postId group by id;
     if _post_frequency IS NULL then
         _post_frequency := 0;
     end if;
 
     -- get body and title counts and set to 0 if they are null
-    select into _post_count count(*) from post_words_cleaned where id = postId group by id;
-  
+    select into _post_count count(id) from post_words_cleaned where id = postId group by id;
+
     if _post_count IS NULL then
         _post_count := 0;
     end if;
-    
+
     -- tf(d, t) = log(1 + (n(d, t)/n(d)))
     return LOG(1 + (cast(_post_frequency as float) / _post_count));
 end
@@ -77,34 +76,30 @@ returns float as $$
 declare
     _post_count int;
 begin
-    select into _post_count frequency from post_frequency where word = query ;
+    select into _post_count frequency from post_frequency where word = query;
     return 1 / (cast(_post_count as float));
 end
 $$ language 'plpgsql';
 
+--
+-- post_word_index
+--
+select
+    id post_id,
+    what context,
+    word,
+    sen sentence,
+    idx "index",
+    (calculate_post_tf(word, id) * calculate_post_idf(word)) tf_idf
+into post_word_index
+from post_words_cleaned;
 
-create table post_word_index(
-    post_id int,
-    context text,
-    word text,
-    sentence int,
-    index int,
-    tf_idf float
-);
-
-ALTER TABLE post_word_index ADD FOREIGN KEY (word) REFERENCES post_frequency ("word");
-create index pwi_post_id_index on post_word_index (post_id); 
-create index pwi_word_index on post_word_index (word); 
-
-insert into post_word_index 
-    select id, what, word, sen, idx, 
-    (calculate_post_tf(word, id) * calculate_post_idf(word)) as tf_idf
- from post_words_cleaned
- ON CONFLICT DO NOTHING;
-
+alter table post_word_index add foreign key (word) references post_frequency ("word");
+create index pwi_post_id_index on post_word_index (post_id);
+create index pwi_word_index on post_word_index (word);
 
 --
--- B4 
+-- B4
 --
 
 
@@ -116,11 +111,10 @@ insert into post_word_index
 --
 --B7
 --
-select w1.word, w2.word, count(*) as grade 
+select w1.word, w2.word, count(*) as grade
 from post_word_index w1, post_word_index w2
-left join post_frequency pf 
+left join post_frequency pf
     using (word)
 where w1.id = w2.id and w1.word < w2.word
 and w1.tfidf > 0.0002 and w2.tfidf > 0.0002 and pf.frequency > 20
 group by w1.word,w2.word order by grade desc;
-
