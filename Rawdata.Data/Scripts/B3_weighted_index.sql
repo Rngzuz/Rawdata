@@ -64,7 +64,7 @@ create table tf_idf (
     tfidf float,
     PRIMARY KEY (id, word),
     CONSTRAINT post_id_fkey FOREIGN KEY (id) REFERENCES posts (id)
-)
+);
 
 insert into tf_idf select distinct id, word, (calculate_tf(word, id) * calculate_idf(word)) as tfidf from mwi where word ~*'^[a-zA-Z]+$' and lower(word) not in (select * from stopwords);
 insert into tf_idf select distinct id, word, (calculate_tf(word, id) * calculate_idf(word)) as tfidf from mwib where word ~*'^[a-zA-Z]+$' and lower(word) not in (select * from stopwords) ON CONFLICT DO NOTHING;
