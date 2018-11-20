@@ -29,13 +29,14 @@ create index comment_words_cleaned_word_index on comment_words_cleaned (word);
 create index comment_words_cleaned_comment_id_index on comment_words_cleaned (id);
 
 --
--- post_frequency
+-- post_word_count
 --
 create table post_word_count as
 select
 	word,
 	count(word) count
 from (select lower(word) word from post_words_cleaned) words
+where word not null
 group by word
 order by count desc;
 
@@ -51,9 +52,11 @@ declare
     _post_frequency int := 0;
     _post_count int := 0;
     _total_count int;
+
+    _collection post_words_cleaned;
 begin
     -- get body and title frequenies and set to 0 if they are null
-    select into _post_frequency count(id) from post_words_cleaned where lower(word) = lower(query) and id = postId group by id;
+    select into _post_frequency count(id) from post_words_cleaned where id = postId and lower(word) = lower(query) group by id;
 
     if _post_frequency IS NULL then
         _post_frequency := 0;
@@ -77,7 +80,7 @@ returns float as $$
 declare
     _post_count int;
 begin
-    select into _post_count count from post_word_count where word = query;
+    select into _post_count count from post_word_count where lower(word) = lower(query);
     return 1 / (cast(_post_count as float));
 end
 $$ language 'plpgsql';
@@ -85,20 +88,20 @@ $$ language 'plpgsql';
 --
 -- post_word_index
 --
+create table post_word_index as
 select
     id post_id,
     what context,
-    word,
+    lower(word) word,
     sen sentence,
     idx "index",
     (calculate_post_tf(word, id) * calculate_post_idf(word)) tf_idf
-into post_word_index
 from post_words_cleaned;
 
 create index pwi_post_id_index on post_word_index (post_id);
 create index pwi_word_index on post_word_index (word);
 
-alter table post_word_index add foreign key (word) references post_word_count ("word");
+alter table post_word_index add foreign key (word) references post_word_count (word);
 
 --
 -- B4
@@ -113,7 +116,7 @@ alter table post_word_index add foreign key (word) references post_word_count ("
 --
 --B7
 --
-create table post_word_cooccurence as
+create table post_word_association as
     select w1.word word1, w2.word word2, count(*) as grade
     from post_word_index w1, post_word_index w2
     left join post_word_count pf
@@ -122,13 +125,16 @@ create table post_word_cooccurence as
     and w1.tf_idf > 0.0002 and w2.tf_idf > 0.0002 and pf.count > 20
     group by w1.word, w2.word order by grade desc;
 
+create index pwa_word1_index on post_word_association (word1);
+create index pwa_word2_index on post_word_association (word2);
 
-
-
-select
-    word1,
-    word2,
-    grade
-from post_word_cooccurence
-where (word1 = 'address' or word2 = 'address')
-order by grade desc;
+create or replace function get_word_association(_word text)
+returns setof post_word_association as $$
+begin
+    return query
+        select * from post_word_association where word1 = lower(_word)
+        union
+        select * from post_word_association where word2 = lower(_word)
+        order by grade desc;
+end
+$$ language 'plpgsql';
