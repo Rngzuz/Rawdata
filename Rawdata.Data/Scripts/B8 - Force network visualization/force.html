@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+</style>
+<svg width="960" height="600"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var graph = 
+{"nodes":[
+  {"id":"restrict"},
+  {"id":"syntax"},
+  {"id":"unexpected"},
+  {"id":"xcode"},
+  {"id":"text"},
+  {"id":"windows"},
+  {"id":"std"},
+  {"id":"test"},
+  {"id":"objective-c"},
+  {"id":"pass"},
+  {"id":"unit"},
+  {"id":"testing"},
+  {"id":"seq"},
+  {"id":"parts"},
+  {"id":"unicode"},
+  {"id":"macro"},
+  {"id":"separator"},
+  {"id":"struct"},
+  {"id":"mac"},
+],
+
+"links":[
+{"source":"macro", "target":"xcode", "value":3},
+{"source":"mac", "target":"testing", "value":6},
+{"source":"restrict", "target":"struct", "value":40},
+{"source":"parts", "target":"unexpected", "value":1},
+{"source":"text", "target":"windows", "value":3},
+{"source":"test", "target":"text", "value":0},
+{"source":"test", "target":"xcode", "value":22},
+{"source":"objective-c", "target":"xcode", "value":12},
+{"source":"parts", "target":"unicode", "value":1},
+{"source":"seq", "target":"std", "value":72},
+{"source":"pass", "target":"syntax", "value":4},
+{"source":"mac", "target":"text", "value":9},
+{"source":"syntax", "target":"windows", "value":0},
+{"source":"parts", "target":"unit", "value":8},
+{"source":"pass", "target":"std", "value":4},
+{"source":"objective-c", "target":"pass", "value":1},
+{"source":"pass", "target":"windows", "value":2},
+{"source":"mac", "target":"unicode", "value":4},
+{"source":"mac", "target":"unit", "value":7},
+{"source":"separator", "target":"unicode", "value":48},
+{"source":"parts", "target":"separator", "value":0},
+{"source":"test", "target":"testing", "value":39},
+{"source":"mac", "target":"parts", "value":4},
+{"source":"pass", "target":"test", "value":112},
+{"source":"std", "target":"struct", "value":222},
+{"source":"restrict", "target":"syntax", "value":160},
+{"source":"macro", "target":"test", "value":13},
+{"source":"mac", "target":"test", "value":8},
+{"source":"syntax", "target":"text", "value":2},
+{"source":"mac", "target":"std", "value":8},
+{"source":"objective-c", "target":"syntax", "value":1},
+{"source":"mac", "target":"xcode", "value":10},
+{"source":"restrict", "target":"unexpected", "value":160},
+{"source":"parts", "target":"testing", "value":0},
+{"source":"parts", "target":"xcode", "value":3},
+{"source":"macro", "target":"testing", "value":3},
+{"source":"pass", "target":"unit", "value":0},
+{"source":"objective-c", "target":"testing", "value":20},
+{"source":"mac", "target":"restrict", "value":20},
+{"source":"test", "target":"unit", "value":59},
+{"source":"unit", "target":"windows", "value":0},
+{"source":"testing", "target":"unit", "value":183},
+{"source":"restrict", "target":"unicode", "value":3},
+{"source":"struct", "target":"unexpected", "value":32},
+{"source":"text", "target":"unicode", "value":1},
+{"source":"separator", "target":"unexpected", "value":1},
+{"source":"std", "target":"syntax", "value":3},
+{"source":"syntax", "target":"unexpected", "value":132},
+{"source":"struct", "target":"unit", "value":1},
+{"source":"macro", "target":"struct", "value":44},
+{"source":"macro", "target":"pass", "value":1},
+{"source":"pass", "target":"unexpected", "value":1},
+{"source":"mac", "target":"seq", "value":4},
+{"source":"mac", "target":"pass", "value":7},
+{"source":"pass", "target":"restrict", "value":0},
+{"source":"mac", "target":"syntax", "value":16},
+{"source":"mac", "target":"unexpected", "value":16},
+{"source":"syntax", "target":"unit", "value":5},
+{"source":"testing", "target":"xcode", "value":44},
+{"source":"objective-c", "target":"unit", "value":13},
+{"source":"mac", "target":"macro", "value":4},
+{"source":"mac", "target":"windows", "value":8},
+{"source":"syntax", "target":"unicode", "value":5},
+{"source":"unicode", "target":"windows", "value":1},
+{"source":"mac", "target":"objective-c", "value":7},
+{"source":"macro", "target":"parts", "value":0},
+{"source":"parts", "target":"windows", "value":0},
+{"source":"macro", "target":"windows", "value":1},
+{"source":"restrict", "target":"separator", "value":1},
+{"source":"std", "target":"windows", "value":1},
+{"source":"macro", "target":"std", "value":3},
+{"source":"macro", "target":"objective-c", "value":1},
+{"source":"pass", "target":"testing", "value":1},
+{"source":"struct", "target":"test", "value":1},
+{"source":"windows", "target":"xcode", "value":1},
+{"source":"macro", "target":"unicode", "value":2},
+{"source":"syntax", "target":"testing", "value":2},
+{"source":"pass", "target":"struct", "value":0},
+{"source":"macro", "target":"unit", "value":7},
+{"source":"struct", "target":"syntax", "value":32},
+{"source":"objective-c", "target":"parts", "value":6},
+{"source":"struct", "target":"testing", "value":2},
+{"source":"unit", "target":"xcode", "value":42},
+{"source":"mac", "target":"separator", "value":4},
+{"source":"mac", "target":"struct", "value":4},
+]}
+
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(0.001))
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+//d3.json("miserables.json", function(error, graph) {
+(function () {
+//  if (error) throw error;
+
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter().append("line")
+      .attr("stroke-width", function(d) { return Math.sqrt(d.value)*1.0; });
+
+  var node = svg.append("g")
+      .attr("class", "nodes")
+    .selectAll("g")
+    .data(graph.nodes)
+    .enter().append("g")
+    
+  var circles = node.append("circle")
+      .attr("r", 8)
+      .attr("fill", function(d) { return color(d.group); })
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+  var lables = node.append("text")
+      .text(function(d) {
+        return d.id;
+      })
+      .style("font-size", "14px")
+      .attr('x', 8)
+      .attr('y', 3);
+
+  node.append("title")
+      .text(function(d) { return d.id*2; });
+      
+
+
+  simulation
+      .nodes(graph.nodes)
+      .on("tick", ticked);
+
+  simulation.force("link")
+      .links(graph.links);
+      
+      
+
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        })
+  }
+})();
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+</script>
