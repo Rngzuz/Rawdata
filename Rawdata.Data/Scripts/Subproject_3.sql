@@ -42,6 +42,7 @@ order by count desc;
 alter table post_word_count
     add primary key (word);
 
+
 --
 -- B3
 --
@@ -102,9 +103,88 @@ create index pwi_word_index on post_word_index (word);
 
 alter table post_word_index add foreign key (word) references post_word_count (word);
 
+
+--
+-- B1
+--
+create or replace function exact_match(variadic _words text[])
+returns table (id int, title text, body text, score int) as $$
+declare
+   _word text;
+   _sub_queries text[];
+   _query text := 'select posts.id, title, body, score from posts, ';
+   _count int := 0;
+begin
+   foreach _word in array _words loop
+       _sub_queries := array_append(
+           _sub_queries,
+           '(select post_id from post_word_index where word = ''' || _word || ''') t' || _count
+       );
+
+       _count := _count + 1;
+   end loop;
+
+   _query := _query
+       || ' (' || array_to_string(_sub_queries, ' join ') || ' using (post_id))'
+       || ' t_all where t_all.post_id = posts.id group by posts.id order by score desc';
+
+   raise notice '%', _query;
+   return query execute _query;
+end
+$$ language 'plpgsql';
+
+--
+-- B2
+-- 
+
+create or replace function best_match(variadic _words text[])
+returns table (id int, rank bigint, title text, body text, score int) as $$
+declare
+   _word text;
+   _sub_queries text[];
+   _query text := 'select posts.id, sum(t_all.score) rank, title, body, posts.score from posts, ';
+begin
+   foreach _word in array _words loop
+       _sub_queries := array_append(
+           _sub_queries,
+           '(select distinct post_id, 1 score from post_word_index where word = ''' || _word || ''')'
+       );
+   end loop;
+
+   _query := _query
+       || ' (' || array_to_string(_sub_queries, ' union all ') || ')'
+       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, score desc';
+
+   raise notice '%', _query;
+   return query execute _query;
+end
+$$ language 'plpgsql';
+
 --
 -- B4
 --
+create or replace function ranked_weighted_match(variadic _words text[])
+returns table (id int, rank float, title text, body text, score int) as $$
+declare
+   _word text;
+   _sub_queries text[];
+   _query text := 'select posts.id, sum(t_all.tf_idf) rank, title, body, posts.score from posts, ';
+begin
+   foreach _word in array _words loop
+       _sub_queries := array_append(
+           _sub_queries,
+           '(select distinct post_id, tf_idf from post_word_index where word = ''' || _word || ''')'
+       );
+   end loop;
+
+   _query := _query
+       || ' (' || array_to_string(_sub_queries, ' union all ') || ')'
+       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, score desc';
+
+   raise notice '%', _query;
+   return query execute _query;
+end
+$$ language 'plpgsql';
 
 
 --
