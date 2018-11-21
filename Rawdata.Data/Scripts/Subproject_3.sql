@@ -190,7 +190,21 @@ $$ language 'plpgsql';
 --
 -- B5
 --
-
+create or replace function word_to_word(_word text)
+returns table(word text, freq bigint) as $$
+BEGIN
+    RETURN query
+      SELECT
+        t1.word,
+        COUNT(*) AS freq
+      FROM
+        post_word_index t1
+      LEFT JOIN post_word_index t2 ON t1.post_id = t2.post_id
+      WHERE  t2.word = lower(_word) AND t1.word != lower(_word) -- check so that we do not return the query as 
+      GROUP BY t1.word 
+      ORDER BY freq DESC;
+END
+$$ language 'plpgsql';
 
 --
 --B7
