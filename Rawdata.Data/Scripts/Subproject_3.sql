@@ -215,7 +215,7 @@ create table post_word_association as
     left join post_word_count pf
         using (word)
     where w1.post_id = w2.post_id and w1.word < w2.word
-    and w1.tf_idf > 0.0002 and w2.tf_idf > 0.0002 and pf.count > 20
+    and w1.tf_idf > 0.00002 and w2.tf_idf > 0.00002 and pf.count > 20
     group by w1.word, w2.word order by grade desc;
 
 create index pwa_word1_index on post_word_association (word1);
