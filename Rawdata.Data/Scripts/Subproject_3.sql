@@ -36,7 +36,6 @@ select
 	word,
 	count(word) count
 from (select lower(word) word from post_words_cleaned) words
-where word not null
 group by word
 order by count desc;
 
