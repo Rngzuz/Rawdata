@@ -11,5 +11,6 @@ namespace Rawdata.Data.Services.Interfaces
         IQueryable<Question> QueryQuestions(int? userId, string search, string[] tags, bool answeredOnly, int page, int size);
         Task<IList<Question>> GetQuestionsWithMarkedPosts(int? userId, int page, int size);
         Task<IList<Question>> GetQuestionsWithMarkedComments(int? userId, int page, int size);
+        Task<IList<MatchResult>> GetExactMatch(params string[] words);
     }
 }

@@ -27,9 +27,9 @@ namespace Rawdata.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
-
+            
+            BuildMatchResult(modelBuilder);
             //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
             BuildCommentConfig(modelBuilder);
@@ -43,6 +43,18 @@ namespace Rawdata.Data
             BuildMarkedCommentConfig(modelBuilder);
             BuildMarkedPostConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
+        }
+
+        private void BuildMatchResult(ModelBuilder builder)
+        {
+            builder.Query<MatchResult>();
+
+            builder.Entity<MatchResult>()
+                .Property(m => m.PostId)
+                .HasColumnName("post_id");
+
+            builder.Entity<MatchResult>()
+                .HasOne(m => m.Post);
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -220,7 +232,7 @@ namespace Rawdata.Data
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
-            
+
             builder.Entity<Search>().Property(u => u.UserId).HasColumnName("user_id");
             builder.Entity<Search>().Property(u => u.SearchText).HasColumnName("search_text");
             builder.Entity<Search>().HasKey(c => new { c.UserId, c.SearchText });

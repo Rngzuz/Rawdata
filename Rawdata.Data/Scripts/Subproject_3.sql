@@ -108,11 +108,11 @@ alter table post_word_index add foreign key (word) references post_word_count (w
 -- B1
 --
 create or replace function exact_match(variadic _words text[])
-returns setof posts as $$
+returns table (post_id int) as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.* from posts, ';
+   _query text := 'select posts.id from posts, ';
    _count int := 0;
 begin
    foreach _word in array _words loop
@@ -137,11 +137,11 @@ $$ language 'plpgsql';
 -- B2
 --
 create or replace function best_match(variadic _words text[])
-returns setof posts_ranked as $$
+returns table (post_id int, "rank" float) as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.*, cast(sum(t_all.score) as float) rank from posts, ';
+   _query text := 'select posts.id, cast(sum(t_all.score) as float) rank from posts, ';
 begin
    foreach _word in array _words loop
        _sub_queries := array_append(
@@ -152,7 +152,7 @@ begin
 
    _query := _query
        || ' (' || array_to_string(_sub_queries, ' union all ') || ')'
-       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, score desc';
+       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, posts.score desc';
 
    raise notice '%', _query;
    return query execute _query;
@@ -163,11 +163,11 @@ $$ language 'plpgsql';
 -- B4
 --
 create or replace function ranked_weighted_match(variadic _words text[])
-returns setof posts_ranked as $$
+returns table (post_id int, "rank" float) as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.*, sum(t_all.tf_idf) rank from posts, ';
+   _query text := 'select posts.id, sum(t_all.tf_idf) rank from posts, ';
 begin
    foreach _word in array _words loop
        _sub_queries := array_append(
@@ -178,7 +178,7 @@ begin
 
    _query := _query
        || ' (' || array_to_string(_sub_queries, ' union all ') || ')'
-       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, score desc';
+       || ' t_all where t_all.post_id = posts.id group by posts.id order by rank desc, posts.score desc';
 
    raise notice '%', _query;
    return query execute _query;
