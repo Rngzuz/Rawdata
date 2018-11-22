@@ -1,5 +1,3 @@
-DROP VIEW IF EXISTS posts_with_tags CASCADE;
-
 DROP TABLE IF EXISTS
     authors,
     comments,
@@ -180,25 +178,8 @@ CREATE TABLE searches (
 );
 
 --
--- posts_with_tags
+-- posts_ranked
 --
-CREATE VIEW posts_with_tags AS
-SELECT posts.*, array_agg(posts_tags.name) tags
-FROM posts
-JOIN posts_tags
-ON posts.id = posts_tags.post_id
-GROUP BY posts.id;
-
---
--- posts_with_tags_and_marked
---
-CREATE VIEW posts_with_tags_and_marked AS
-SELECT
-    posts.*,
-    ARRAY_AGG(posts_tags.name) tags,
-    (posts."id" in (SELECT post_id FROM marked_posts)) as marked,
-    (select note from marked_posts where post_id = posts."id") note
-FROM posts
-JOIN posts_tags
-ON posts.id = posts_tags.post_id
-GROUP BY posts.id;
+CREATE view posts_ranked AS
+    SELECT posts.*, NULL::FLOAT "rank"
+    FROM posts;

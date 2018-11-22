@@ -108,11 +108,11 @@ alter table post_word_index add foreign key (word) references post_word_count (w
 -- B1
 --
 create or replace function exact_match(variadic _words text[])
-returns table (id int, title text, body text, score int) as $$
+returns setof posts as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.id, title, body, score from posts, ';
+   _query text := 'select posts.* from posts, ';
    _count int := 0;
 begin
    foreach _word in array _words loop
@@ -135,14 +135,13 @@ $$ language 'plpgsql';
 
 --
 -- B2
--- 
-
+--
 create or replace function best_match(variadic _words text[])
-returns table (id int, rank bigint, title text, body text, score int) as $$
+returns setof posts_ranked as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.id, sum(t_all.score) rank, title, body, posts.score from posts, ';
+   _query text := 'select posts.*, cast(sum(t_all.score) as float) rank from posts, ';
 begin
    foreach _word in array _words loop
        _sub_queries := array_append(
@@ -164,11 +163,11 @@ $$ language 'plpgsql';
 -- B4
 --
 create or replace function ranked_weighted_match(variadic _words text[])
-returns table (id int, rank float, title text, body text, score int) as $$
+returns setof posts_ranked as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.id, sum(t_all.tf_idf) rank, title, body, posts.score from posts, ';
+   _query text := 'select posts.*, sum(t_all.tf_idf) rank from posts, ';
 begin
    foreach _word in array _words loop
        _sub_queries := array_append(
@@ -200,8 +199,8 @@ BEGIN
       FROM
         post_word_index t1
       LEFT JOIN post_word_index t2 ON t1.post_id = t2.post_id
-      WHERE  t2.word = lower(_word) AND t1.word != lower(_word) -- check so that we do not return the query as 
-      GROUP BY t1.word 
+      WHERE  t2.word = lower(_word) AND t1.word != lower(_word) -- check so that we do not return the query as
+      GROUP BY t1.word
       ORDER BY freq DESC;
 END
 $$ language 'plpgsql';
