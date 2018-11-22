@@ -55,13 +55,5 @@ namespace Rawdata.Data.Services
                 .Take(size)
                 .ToListAsync();
         }
-
-        public async Task<IList<MatchResult>> GetExactMatch(params string[] words)
-        {
-            return await Context
-                .Query<MatchResult>()
-                .FromSql($"select * from exact_match({words})")
-                .ToListAsync();
-        }
     }
 }

@@ -18,18 +18,22 @@ namespace Rawdata.Data
         public DbSet<MarkedPost> MarkedPosts { get; set; }
         public DbSet<Search> Searches { get; set; }
 
+        public DbQuery<SearchResult> SearchResults { get; set; }
+        public DbQuery<RankedSearchResult> RankedSearchResults { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            //            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
-            optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
+            // optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-            BuildMatchResult(modelBuilder);
+
+            BuildSearchResult(modelBuilder);
+
             //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
             BuildCommentConfig(modelBuilder);
@@ -45,16 +49,14 @@ namespace Rawdata.Data
             BuildSearchConfig(modelBuilder);
         }
 
-        private void BuildMatchResult(ModelBuilder builder)
+        private void BuildSearchResult(ModelBuilder builder)
         {
-            builder.Query<MatchResult>();
+            builder.Query<SearchResult>().Property(m => m.PostId).HasColumnName("post_id");
+            builder.Query<SearchResult>().HasOne(m => m.Post);
 
-            builder.Entity<MatchResult>()
-                .Property(m => m.PostId)
-                .HasColumnName("post_id");
-
-            builder.Entity<MatchResult>()
-                .HasOne(m => m.Post);
+            builder.Query<RankedSearchResult>().Property(m => m.PostId).HasColumnName("post_id");
+            builder.Query<RankedSearchResult>().Property(m => m.Rank).HasColumnName("rank");
+            builder.Query<RankedSearchResult>().HasOne(m => m.Post);
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -143,7 +145,7 @@ namespace Rawdata.Data
         private void BuildPostTagConfig(ModelBuilder builder)
         {
             builder.Entity<PostTag>().ToTable("posts_tags");
-            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId});
+            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId });
 
             builder.Entity<PostTag>().Property(pt => pt.QuestionId).HasColumnName("post_id");
             builder.Entity<PostTag>().Property(pt => pt.TagName).HasColumnName("name");
@@ -162,7 +164,7 @@ namespace Rawdata.Data
         private void BuildPostLinkConfig(ModelBuilder builder)
         {
             builder.Entity<PostLink>().ToTable("post_links");
-            builder.Entity<PostLink>().HasKey(pl => new { pl.PostId, pl.LinkedId});
+            builder.Entity<PostLink>().HasKey(pl => new { pl.PostId, pl.LinkedId });
             builder.Entity<PostLink>().Property(pl => pl.PostId).HasColumnName("post_id");
             builder.Entity<PostLink>().Property(pl => pl.LinkedId).HasColumnName("link_id");
 

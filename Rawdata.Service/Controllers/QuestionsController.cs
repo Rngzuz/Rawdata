@@ -46,16 +46,5 @@ namespace Rawdata.Service.Controllers
                 DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
             );
         }
-
-
-        [HttpGet(Name = "exact")]
-        public async Task<IActionResult> QueryQuestions([FromQuery] string[] words)
-        {
-            var result = await QuestionService
-                .GetExactMatch(words);
-
-            return Ok(result);
-        }
-
     }
 }

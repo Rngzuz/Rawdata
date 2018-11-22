@@ -70,6 +70,7 @@ namespace Rawdata.Service
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
             services.AddScoped<IAuthorService, AuthorService>();
+            services.AddScoped<ISearchResultService, SearchResultService>();
 
             // Create and inject DtoMapper
             services.AddScoped<IMapper>(p => CreateMapper(p));
