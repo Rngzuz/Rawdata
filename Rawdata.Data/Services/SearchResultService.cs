@@ -42,5 +42,19 @@ namespace Rawdata.Data.Services
                 .Take(size)
                 .Include(m => m.Post);
         }
+
+        public IQueryable<WeightedKeyword> GetWeightedKeywords(int size, string word)
+        {
+            return Context.WeightedKeywords
+                .FromSql($"select * from word_to_word({word})")
+                .Take(size);
+        }
+
+        public IQueryable<WordAssociation> GetWordAssociation(int size, string word)
+        {
+            return Context.WordAssociations
+                .FromSql($"select * from get_word_association({word})")
+                .Take(size);
+        }
     }
 }

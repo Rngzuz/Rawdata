@@ -51,5 +51,25 @@ namespace Rawdata.Service.Controllers
             => await SearchResultService
                 .GetRankedWeightedMatch(paging.Page, paging.Size, words)
                 .ToListAsync();
+
+        [HttpGet("words", Name = "GetWords")]
+        public async Task<IActionResult> GetWords([FromQuery] string word, [FromQuery] int size = 100)
+        {
+            var result = await SearchResultService
+                .GetWeightedKeywords(size, word)
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("context", Name = "GetContext")]
+        public async Task<IActionResult> GetContext([FromQuery] string word, [FromQuery] int size = 100)
+        {
+            var result = await SearchResultService
+                .GetWordAssociation(size, word)
+                .ToListAsync();
+
+            return Ok(result);
+        }
     }
 }

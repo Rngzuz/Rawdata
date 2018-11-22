@@ -20,6 +20,8 @@ namespace Rawdata.Data
 
         public DbQuery<SearchResult> SearchResults { get; set; }
         public DbQuery<RankedSearchResult> RankedSearchResults { get; set; }
+        public DbQuery<WeightedKeyword> WeightedKeywords { get; set; }
+        public DbQuery<WordAssociation> WordAssociations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,6 +35,8 @@ namespace Rawdata.Data
             base.OnModelCreating(modelBuilder);
 
             BuildSearchResult(modelBuilder);
+            BuildWeightedKeywordConfig(modelBuilder);
+            BuilWordAssociationConfig(modelBuilder);
 
             //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
@@ -57,6 +61,19 @@ namespace Rawdata.Data
             builder.Query<RankedSearchResult>().Property(m => m.PostId).HasColumnName("post_id");
             builder.Query<RankedSearchResult>().Property(m => m.Rank).HasColumnName("rank");
             builder.Query<RankedSearchResult>().HasOne(m => m.Post);
+        }
+
+        private void BuildWeightedKeywordConfig(ModelBuilder builder)
+        {
+            builder.Query<WeightedKeyword>().Property(m => m.Word).HasColumnName("word");
+            builder.Query<WeightedKeyword>().Property(m => m.Weight).HasColumnName("freq");
+        }
+
+        private void BuilWordAssociationConfig(ModelBuilder builder)
+        {
+            builder.Query<WordAssociation>().Property(m => m.Word1).HasColumnName("word1");
+            builder.Query<WordAssociation>().Property(m => m.Word2).HasColumnName("word2");
+            builder.Query<WordAssociation>().Property(m => m.Grade).HasColumnName("grade");
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
