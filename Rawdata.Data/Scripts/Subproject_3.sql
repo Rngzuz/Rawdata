@@ -107,7 +107,7 @@ alter table post_word_index add foreign key (word) references post_word_count (w
 --
 -- B1
 --
-create or replace function exact_match(variadic _words text[])
+create or replace function exact_match(_words text[])
 returns table (post_id int) as $$
 declare
    _word text;
@@ -136,7 +136,7 @@ $$ language 'plpgsql';
 --
 -- B2
 --
-create or replace function best_match(variadic _words text[])
+create or replace function best_match(_words text[])
 returns table (post_id int, "rank" float) as $$
 declare
    _word text;
@@ -162,7 +162,7 @@ $$ language 'plpgsql';
 --
 -- B4
 --
-create or replace function ranked_weighted_match(variadic _words text[])
+create or replace function ranked_weighted_match(_words text[])
 returns table (post_id int, "rank" float) as $$
 declare
    _word text;
