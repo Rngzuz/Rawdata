@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Dynamic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
@@ -16,7 +13,6 @@ namespace Rawdata.Service.Controllers
     [ApiController, Route("api/search"), Produces("application/json")]
     public class SearchController : BaseController
     {
-        protected readonly IUserService UserService;
         protected readonly ISearchResultService SearchResultService;
 
         public SearchController(IMapper dtoMapper, ISearchResultService searchResultService) : base(dtoMapper)
@@ -24,33 +20,51 @@ namespace Rawdata.Service.Controllers
             SearchResultService = searchResultService;
         }
 
-        [HttpGet(Name = "GetExactMatch")]
-        public async Task<IActionResult> Get([FromQuery] PagingDto paging, [FromQuery] string[] words, [FromQuery] string action)
+        [HttpGet("exact", Name = "GetExactMatch")]
+        public async Task<IActionResult> GetExactMatch([FromQuery]Paging paging)
         {
-            switch (action) {
-                case "exact":
-                    return Ok(await GetExactMatch(paging, words));
-                case "best":
-                    return Ok(await GetBestMatch(paging, words));
-                default:
-                    return Ok(await GetRankedWeightedMatch(paging, words));
+            var result = await SearchResultService
+               .GetExactMatch(paging.Page, paging.Size, paging.Words)
+               .ToListAsync();
+
+            //TODO: We want to find a better approach to map
+            var items = new List<dynamic>();
+
+            foreach (var item in result) {
+                dynamic obj = new ExpandoObject();
+
+                if (item.Post is Question) {
+                    obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
+                }
+                else {
+                    obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
+                }
+
+                items.Add(obj);
             }
+
+            return Ok(items);
         }
 
-        protected async Task<IList<SearchResult>> GetExactMatch(PagingDto paging, params string[] words)
-            => await SearchResultService
-                .GetExactMatch(paging.Page, paging.Size, words)
+        [HttpGet("best", Name = "GetBestMatch")]
+        public async Task<IActionResult> GetBestMatch([FromQuery]Paging paging)
+        {
+            var result = await SearchResultService
+                .GetBestMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
 
-        protected async Task<IList<RankedSearchResult>> GetBestMatch(PagingDto paging, params string[] words)
-            => await SearchResultService
-                .GetBestMatch(paging.Page, paging.Size, words)
+            return Ok(DirtyMap(result));
+        }
+
+        [HttpGet("ranked", Name = "GetRankedWeightedMatch")]
+        public async Task<IActionResult> GetRankedWeightedMatch([FromQuery]Paging paging)
+        {
+            var result = await SearchResultService
+                .GetRankedWeightedMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
 
-        protected async Task<IList<RankedSearchResult>> GetRankedWeightedMatch(PagingDto paging, params string[] words)
-            => await SearchResultService
-                .GetRankedWeightedMatch(paging.Page, paging.Size, words)
-                .ToListAsync();
+            return Ok(DirtyMap(result));
+        }
 
         [HttpGet("words", Name = "GetWords")]
         public async Task<IActionResult> GetWords([FromQuery] string word, [FromQuery] int size = 100)
@@ -70,6 +84,28 @@ namespace Rawdata.Service.Controllers
                 .ToListAsync();
 
             return Ok(result);
+        }
+
+        //TODO: We want to find a better approach to map
+        protected IList<dynamic> DirtyMap(IList<RankedSearchResult> result)
+        {
+            var items = new List<dynamic>();
+
+            foreach (var item in result) {
+                dynamic obj = new ExpandoObject();
+                obj.Rank = item.Rank;
+
+                if (item.Post is Question) {
+                    obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
+                }
+                else {
+                    obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
+                }
+
+                items.Add(obj);
+            }
+
+            return items;
         }
     }
 }

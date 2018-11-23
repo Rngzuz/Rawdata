@@ -21,7 +21,7 @@ namespace Rawdata.Service.Models
             public string Author { get; set; }
         }
     }
-    
+
     public class QuestionDto : QuestionListDto
     {
         public IList<AnswerDto> Answers { get; set; }
