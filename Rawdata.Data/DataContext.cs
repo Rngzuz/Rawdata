@@ -116,14 +116,16 @@ namespace Rawdata.Data
 
         private void BuildPostConfig(ModelBuilder builder)
         {
+            builder.Entity<Post>().ToTable("posts");
+
             builder.Entity<Post>()
-                .ToTable("posts")
-                .HasDiscriminator<int>("type_id")
+                .HasDiscriminator<int>("TypeId")
                 .HasValue<Question>(1)
                 .HasValue<Answer>(2);
 
             builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
+            builder.Entity<Post>().Property(p => p.TypeId).HasColumnName("type_id");
             builder.Entity<Post>().Property(p => p.CreationDate).HasColumnName("creation_date");
             builder.Entity<Post>().Property(p => p.Score).HasColumnName("score");
             builder.Entity<Post>().Property(p => p.Body).HasColumnName("body");
