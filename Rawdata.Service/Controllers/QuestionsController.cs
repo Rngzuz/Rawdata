@@ -32,19 +32,5 @@ namespace Rawdata.Service.Controllers
                 DtoMapper.Map<QuestionDto>(result)
             );
         }
-
-        [HttpGet(Name = QUERY_QUESTIONS)]
-        public async Task<IActionResult> QueryQuestions([FromQuery] PagingDto paging, [FromQuery] string[] tags, [FromQuery] bool answeredOnly)
-        {
-            var result = await QuestionService
-                .QueryQuestions(GetUserId(), paging.Search, tags, answeredOnly, paging.Page, paging.Size)
-                .Include(q => q.Author)
-                .Include(q => q.PostTags)
-                .ToListAsync();
-
-            return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
-            );
-        }
     }
 }
