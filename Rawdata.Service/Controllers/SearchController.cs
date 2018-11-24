@@ -30,6 +30,8 @@ namespace Rawdata.Service.Controllers
                .GetExactMatch(paging.Page, paging.Size, paging.Words)
                .ToListAsync();
 
+            await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
+
             return Ok(await DirtyMap(result));
         }
 
@@ -39,6 +41,8 @@ namespace Rawdata.Service.Controllers
             var result = await SearchResultService
                 .GetBestMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
+
+            await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
             return Ok(await DirtyMap(result));
         }
@@ -50,6 +54,8 @@ namespace Rawdata.Service.Controllers
                 .GetRankedWeightedMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
 
+            await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
+
             return Ok(await DirtyMap(result));
         }
 
@@ -60,6 +66,9 @@ namespace Rawdata.Service.Controllers
                 .GetWeightedKeywords(size, word)
                 .ToListAsync();
 
+            await UserService.SaveToSearchHistory(GetUserId(), word);
+
+
             return Ok(result);
         }
 
@@ -69,6 +78,8 @@ namespace Rawdata.Service.Controllers
             var result = await SearchResultService
                 .GetWordAssociation(size, word)
                 .ToListAsync();
+
+            await UserService.SaveToSearchHistory(GetUserId(), word);
 
             return Ok(result);
         }
@@ -100,13 +111,15 @@ namespace Rawdata.Service.Controllers
                 if (item.Post is Question q) {
                     obj.Title = q.Title;
 
-                    obj.Links = new {
+                    obj.Links = new
+                    {
                         Self = Url.Link(GET_QUESTION_BY_ID, new { Id = q.Id }),
                         Author = Url.Link(GET_AUTHOR_BY_ID, new { Id = q.AuthorId })
                     };
                 }
                 else if (item.Post is Answer a) {
-                    obj.Links = new {
+                    obj.Links = new
+                    {
                         Self = Url.Link(GET_ANSWER_BY_ID, new { Id = a.Id }),
                         Parent = Url.Link(GET_QUESTION_BY_ID, new { Id = a.ParentId }),
                         Author = Url.Link(GET_AUTHOR_BY_ID, new { Id = a.AuthorId })
@@ -120,27 +133,3 @@ namespace Rawdata.Service.Controllers
         }
     }
 }
-
-
-// var markedPosts = UserService.GetMarkedPosts(GetUserId()).ToList();
-
-//             foreach (var item in result) {
-//                 dynamic obj = new ExpandoObject();
-//                 obj.Rank = item.Rank;
-
-//                 var markedPost = markedPosts.SingleOrDefault(mp => mp.PostId == item.PostId);
-//                 obj.Marked = markedPost != null;
-//                 if (obj.Marked)
-//                 {
-//                     obj.Note = markedPost?.Note;
-//                 }
-
-//                 if (item.Post is Question) {
-//                     obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
-//                 }
-//                 else {
-//                     obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
-//                 }
-
-//                 items.Add(obj);
-//             }

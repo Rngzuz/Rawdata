@@ -15,5 +15,6 @@ namespace Rawdata.Data.Services.Interfaces
         IQueryable<MarkedComment> GetMarkedComments(int userId);
         IQueryable<MarkedPost> GetMarkedPosts(int? userId);
         Task<IList<Search>> GetUserHistory(int userId);
+        Task SaveToSearchHistory(int? userId, string searchText);
     }
 }

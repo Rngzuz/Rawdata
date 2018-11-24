@@ -51,6 +51,18 @@ namespace Rawdata.Data.Services
             return Context.MarkedComments.Where(mc => mc.UserId == userId);
         }
 
+        public async Task SaveToSearchHistory(int? userId, string searchText)
+        {
+            if (userId.HasValue) {
+                // using sql so we can ignore dupolicate conflicts
+                try {
+                    await Context.Database
+                        .ExecuteSqlCommandAsync($"insert into searches values ({userId}, {searchText}) on conflict do nothing");
+                }
+                catch { }
+            }
+        }
+
 
         public void DeleteUser(User user)
         {
@@ -71,8 +83,7 @@ namespace Rawdata.Data.Services
             var markedPost =
                 await Context.MarkedPosts.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.PostId == postId);
 
-            if (markedPost == null)
-            {
+            if (markedPost == null) {
                 return false;
             }
 
