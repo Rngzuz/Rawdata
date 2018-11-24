@@ -206,6 +206,6 @@ GROUP BY posts.id;
 --
 -- posts_ranked
 --
-CREATE view posts_ranked AS
-    SELECT posts.*, NULL::FLOAT "rank"
+CREATE VIEW posts_ranked AS
+    SELECT posts.*, NULL::FLOAT "rank", NULL::BOOLEAN marked, NULL::TEXT note
     FROM posts;

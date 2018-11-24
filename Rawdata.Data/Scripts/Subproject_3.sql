@@ -108,11 +108,11 @@ alter table post_word_index add foreign key (word) references post_word_count (w
 -- B1
 --
 create or replace function exact_match(_words text[])
-returns table (post_id int) as $$
+returns table (post_id int, "rank" float) as $$
 declare
    _word text;
    _sub_queries text[];
-   _query text := 'select posts.id from posts, ';
+   _query text := 'select posts.id, null::float rank from posts, ';
    _count int := 0;
 begin
    foreach _word in array _words loop

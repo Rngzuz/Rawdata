@@ -40,8 +40,8 @@ namespace Rawdata.Data.Services
         {
             return await Context.Searches.Where(search => search.UserId == userId).ToListAsync();
         }
-        
-        public IQueryable<MarkedPost> GetMarkedPosts(int userId)
+
+        public IQueryable<MarkedPost> GetMarkedPosts(int? userId)
         {
             return Context.MarkedPosts.Where(mp => mp.UserId == userId);
         }
@@ -50,7 +50,7 @@ namespace Rawdata.Data.Services
         {
             return Context.MarkedComments.Where(mc => mc.UserId == userId);
         }
-        
+
 
         public void DeleteUser(User user)
         {

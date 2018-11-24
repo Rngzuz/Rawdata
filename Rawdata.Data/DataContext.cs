@@ -19,7 +19,6 @@ namespace Rawdata.Data
         public DbSet<Search> Searches { get; set; }
 
         public DbQuery<SearchResult> SearchResults { get; set; }
-        public DbQuery<RankedSearchResult> RankedSearchResults { get; set; }
         public DbQuery<WeightedKeyword> WeightedKeywords { get; set; }
         public DbQuery<WordAssociation> WordAssociations { get; set; }
 
@@ -56,11 +55,8 @@ namespace Rawdata.Data
         private void BuildSearchResult(ModelBuilder builder)
         {
             builder.Query<SearchResult>().Property(m => m.PostId).HasColumnName("post_id");
+            builder.Query<SearchResult>().Property(m => m.Rank).HasColumnName("rank");
             builder.Query<SearchResult>().HasOne(m => m.Post);
-
-            builder.Query<RankedSearchResult>().Property(m => m.PostId).HasColumnName("post_id");
-            builder.Query<RankedSearchResult>().Property(m => m.Rank).HasColumnName("rank");
-            builder.Query<RankedSearchResult>().HasOne(m => m.Post);
         }
 
         private void BuildWeightedKeywordConfig(ModelBuilder builder)

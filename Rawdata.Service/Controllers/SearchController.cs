@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace Rawdata.Service.Controllers
     public class SearchController : BaseController
     {
         protected readonly ISearchResultService SearchResultService;
+        protected readonly IUserService UserService;
 
-        public SearchController(IMapper dtoMapper, ISearchResultService searchResultService) : base(dtoMapper)
+        public SearchController(IMapper dtoMapper, ISearchResultService searchResultService, IUserService userService) : base(dtoMapper)
         {
             SearchResultService = searchResultService;
+            UserService = userService;
         }
 
         [HttpGet("exact", Name = "GetExactMatch")]
@@ -27,23 +30,7 @@ namespace Rawdata.Service.Controllers
                .GetExactMatch(paging.Page, paging.Size, paging.Words)
                .ToListAsync();
 
-            //TODO: We want to find a better approach to map
-            var items = new List<dynamic>();
-
-            foreach (var item in result) {
-                dynamic obj = new ExpandoObject();
-
-                if (item.Post is Question) {
-                    obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
-                }
-                else {
-                    obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
-                }
-
-                items.Add(obj);
-            }
-
-            return Ok(items);
+            return Ok(await DirtyMap(result));
         }
 
         [HttpGet("best", Name = "GetBestMatch")]
@@ -53,7 +40,7 @@ namespace Rawdata.Service.Controllers
                 .GetBestMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
 
-            return Ok(DirtyMap(result));
+            return Ok(await DirtyMap(result));
         }
 
         [HttpGet("ranked", Name = "GetRankedWeightedMatch")]
@@ -63,7 +50,7 @@ namespace Rawdata.Service.Controllers
                 .GetRankedWeightedMatch(paging.Page, paging.Size, paging.Words)
                 .ToListAsync();
 
-            return Ok(DirtyMap(result));
+            return Ok(await DirtyMap(result));
         }
 
         [HttpGet("words", Name = "GetWords")]
@@ -87,19 +74,43 @@ namespace Rawdata.Service.Controllers
         }
 
         //TODO: We want to find a better approach to map
-        protected IList<dynamic> DirtyMap(IList<RankedSearchResult> result)
+        protected async Task<IList<dynamic>> DirtyMap(IList<SearchResult> result)
         {
             var items = new List<dynamic>();
+            var markedPosts = await UserService
+                .GetMarkedPosts(GetUserId())
+                .ToListAsync();
 
             foreach (var item in result) {
                 dynamic obj = new ExpandoObject();
-                obj.Rank = item.Rank;
+                var markedPost = markedPosts
+                    .SingleOrDefault(mp => mp.PostId == item.PostId);
 
-                if (item.Post is Question) {
-                    obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
+                obj.Body = item.Post.Body;
+                obj.Score = item.Post.Score;
+                obj.Rank = item.Rank;
+                obj.CreationDate = item.Post.CreationDate;
+                obj.AuthorDisplayName = item.Post.Author.DisplayName;
+                obj.Marked = markedPost != null;
+
+                if (obj.Marked) {
+                    obj.Note = markedPost.Note;
                 }
-                else {
-                    obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
+
+                if (item.Post is Question q) {
+                    obj.Title = q.Title;
+
+                    obj.Links = new {
+                        Self = Url.Link(GET_QUESTION_BY_ID, new { Id = q.Id }),
+                        Author = Url.Link(GET_AUTHOR_BY_ID, new { Id = q.AuthorId })
+                    };
+                }
+                else if (item.Post is Answer a) {
+                    obj.Links = new {
+                        Self = Url.Link(GET_ANSWER_BY_ID, new { Id = a.Id }),
+                        Parent = Url.Link(GET_QUESTION_BY_ID, new { Id = a.ParentId }),
+                        Author = Url.Link(GET_AUTHOR_BY_ID, new { Id = a.AuthorId })
+                    };
                 }
 
                 items.Add(obj);
@@ -109,3 +120,27 @@ namespace Rawdata.Service.Controllers
         }
     }
 }
+
+
+// var markedPosts = UserService.GetMarkedPosts(GetUserId()).ToList();
+
+//             foreach (var item in result) {
+//                 dynamic obj = new ExpandoObject();
+//                 obj.Rank = item.Rank;
+
+//                 var markedPost = markedPosts.SingleOrDefault(mp => mp.PostId == item.PostId);
+//                 obj.Marked = markedPost != null;
+//                 if (obj.Marked)
+//                 {
+//                     obj.Note = markedPost?.Note;
+//                 }
+
+//                 if (item.Post is Question) {
+//                     obj.Post = DtoMapper.Map<QuestionDto>(item.Post);
+//                 }
+//                 else {
+//                     obj.Post = DtoMapper.Map<AnswerDto>(item.Post);
+//                 }
+
+//                 items.Add(obj);
+//             }

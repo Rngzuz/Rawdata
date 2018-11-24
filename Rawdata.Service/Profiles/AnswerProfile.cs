@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Rawdata.Data.Models;
 using Rawdata.Service.Models;
 using Rawdata.Service.Controllers;
+using System;
 
 namespace Rawdata.Service.Profiles
 {
@@ -25,7 +26,7 @@ namespace Rawdata.Service.Profiles
                 )
                 .ForPath(
                     dest => dest.Links.Self,
-                    opt => opt.MapFrom(src => url.Link(BaseController.GET_ANSWER_BY_ID, new {src.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_ANSWER_BY_ID, new { src.Id }))
                 )
                 .ForPath(
                     dest => dest.Links.Parent,

@@ -11,26 +11,28 @@ namespace Rawdata.Data.Services
         {
         }
 
-        public IQueryable<RankedSearchResult> GetBestMatch(int page, int size, params string[] words)
+        public IQueryable<SearchResult> GetBestMatch(int page, int size, params string[] words)
         {
-            return Context.RankedSearchResults
+            return Context.SearchResults
                 .FromSql($"select * from best_match({words})")
                 .OrderByDescending(m => m.Rank)
                 .ThenByDescending(m => m.Post.Score)
                 .Skip(size * (page - 1))
                 .Take(size)
-                .Include(m => m.Post);
+                .Include(m => m.Post)
+                    .ThenInclude(p => p.Author);
         }
 
-        public IQueryable<RankedSearchResult> GetRankedWeightedMatch(int page, int size, params string[] words)
+        public IQueryable<SearchResult> GetRankedWeightedMatch(int page, int size, params string[] words)
         {
-            return Context.RankedSearchResults
+            return Context.SearchResults
                 .FromSql($"select * from ranked_weighted_match({words})")
                 .OrderByDescending(m => m.Rank)
                 .ThenByDescending(m => m.Post.Score)
                 .Skip(size * (page - 1))
                 .Take(size)
-                .Include(m => m.Post);
+                .Include(m => m.Post)
+                    .ThenInclude(p => p.Author);
         }
 
         public IQueryable<SearchResult> GetExactMatch(int page, int size, params string[] words)
@@ -40,7 +42,8 @@ namespace Rawdata.Data.Services
                 .OrderByDescending(m => m.Post.Score)
                 .Skip(size * (page - 1))
                 .Take(size)
-                .Include(m => m.Post);
+                .Include(m => m.Post)
+                    .ThenInclude(p => p.Author);
         }
 
         public IQueryable<WeightedKeyword> GetWeightedKeywords(int size, string word)

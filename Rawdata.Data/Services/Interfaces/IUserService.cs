@@ -13,7 +13,7 @@ namespace Rawdata.Data.Services.Interfaces
         IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note);
         Task<bool> UpdateMarkedPostNote(int? userId, int postId, string note);
         IQueryable<MarkedComment> GetMarkedComments(int userId);
-        IQueryable<MarkedPost> GetMarkedPosts(int userId);
+        IQueryable<MarkedPost> GetMarkedPosts(int? userId);
         Task<IList<Search>> GetUserHistory(int userId);
     }
 }
