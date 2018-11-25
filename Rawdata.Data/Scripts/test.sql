@@ -64,9 +64,9 @@ BEGIN
     RETURN QUERY
         SELECT
             post_id,
-            CAST(SUM(score) AS FLOAT) "rank"
+            SUM(CAST(score AS FLOAT)) "rank"
         FROM get_best_match_index(_words)
-        GROUP BY post_id, score
+        GROUP BY post_id
         ORDER BY "rank" DESC;
 END
 $$
@@ -142,3 +142,41 @@ LANGUAGE 'plpgsql';
     -- Don't know how to do a query with it, but essentially you just
     -- aggregate all the post_ids+words in a temporary table instead
     -- of doing a union between multiple tables.
+
+
+
+--
+-- ranked_weighted_match
+--
+CREATE OR REPLACE FUNCTION ranked_weighted_match(_words TEXT[])
+RETURNS SETOF match_result AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT
+            post_id,
+            SUM(tf_idf) "rank"
+        FROM get_ranked_weighted_match_index(_words)
+        GROUP BY post_id
+        ORDER BY "rank" DESC;
+END
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION get_ranked_weighted_match_index(_words TEXT[])
+RETURNS TABLE (post_id INT, tf_idf FLOAT) AS
+$$
+DECLARE
+    _word TEXT;
+BEGIN
+    FOREACH _word IN ARRAY _words LOOP
+        RETURN QUERY
+            SELECT DISTINCT
+                pwi.post_id,
+                pwi.tf_idf
+            FROM post_word_index pwi
+            WHERE word = _word;
+    END LOOP;
+END
+$$
+LANGUAGE 'plpgsql';
