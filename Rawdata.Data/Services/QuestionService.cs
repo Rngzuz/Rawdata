@@ -27,6 +27,15 @@ namespace Rawdata.Data.Services
                 .Include(q => q.PostTags)
                 .FirstOrDefaultAsync();
         }
-        
+
+        public IQueryable<Question> GetNewestQuestions(int page, int size)
+        {
+            return Context.Questions
+                .OrderByDescending(q => q.Score)
+                .ThenByDescending(q => q.CreationDate)
+                .Skip(size * (page - 1))
+                .Take(size)
+                .Include(q => q.Author);
+        }
     }
 }

@@ -32,5 +32,20 @@ namespace Rawdata.Service.Controllers
                 DtoMapper.Map<QuestionDto>(result)
             );
         }
+
+        [HttpGet(Name = GET_NEWEST_QUESTIONS)]
+        public async Task<IActionResult> GetNewestQuestions([FromQuery] Paging paging)
+        {
+            var result = await QuestionService.GetNewestQuestions(paging.Page, paging.Size).ToListAsync();
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(
+                DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result)
+            );
+        }
     }
 }

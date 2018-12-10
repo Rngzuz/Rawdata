@@ -8,5 +8,6 @@ namespace Rawdata.Data.Services.Interfaces
     public interface IQuestionService
     {
         Task<Question> GetQuestionById(int id);
+        IQueryable<Question> GetNewestQuestions(int page, int size);
     }
 }

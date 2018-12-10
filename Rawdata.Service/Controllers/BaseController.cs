@@ -18,6 +18,7 @@ namespace Rawdata.Service.Controllers
         public const string UPDATE_MARKED_POST = "UpdateMarkedPost";
 
         public const string GET_QUESTION_BY_ID = "GetQuestionById";
+        public const string GET_NEWEST_QUESTIONS = "GetNewestQuestions";
         public const string QUERY_QUESTIONS = "QueryQuestions";
 
         public const string GET_ANSWER_BY_ID = "GetAnswerById";
