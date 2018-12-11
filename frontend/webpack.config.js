@@ -3,6 +3,7 @@ const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     entry: './src/main.js',
+    devServer: { historyApiFallback: true },
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, './dist')
@@ -10,6 +11,11 @@ module.exports = {
     optimization: {
         splitChunks: {
             chunks: 'all'
+        }
+    },
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src')
         }
     },
     module: {

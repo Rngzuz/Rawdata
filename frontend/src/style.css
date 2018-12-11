@@ -1,0 +1,40 @@
+so-app {
+    padding-top: 56px;
+    min-height: 100vh;
+}
+
+so-app, so-home, so-loader, so-navbar {
+    display: block;
+}
+
+mark {
+    padding: .02rem .4rem .1rem .4rem;
+    font-size: 87.5%;
+    background-color: #fff2b3;
+    border-radius: .2rem;
+}
+
+#content {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#loader {
+    z-index: 1;
+    position: absolute;
+    top: calc(50% + 56px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.navbar {
+    box-shadow: 0 0 4px rgba(0, 0, 0, .35);
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.navbar > .container {
+    position: relative;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+}

@@ -1,4 +1,4 @@
-import { observable } from 'knockout'
+import { observable, observableArray } from 'knockout'
 
 class Store {
     constructor(initialState = {}) {
@@ -21,5 +21,6 @@ class Store {
 }
 
 export default new Store({
-    testData: 'Hello World!'
+    search: observableArray(['unit', 'test']),
+    isLoading: observable(true)
 })
