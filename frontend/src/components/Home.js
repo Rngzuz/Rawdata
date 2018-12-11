@@ -34,7 +34,7 @@ class Home {
 }
 
 const template = /* html */ `
-<div data-bind="visible: !isLoading()" class="card">
+<div data-bind="visible: !isLoading() && items().length > 0" class="card">
     <ul class="list-group list-group-flush" data-bind="foreach: items">
         <li class="list-group-item d-flex justify-content-between align-items-center py-4">
             <div class="mr-3 text-center">
