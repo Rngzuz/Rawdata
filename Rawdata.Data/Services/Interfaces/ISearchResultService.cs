@@ -6,7 +6,7 @@ namespace Rawdata.Data.Services.Interfaces
 {
     public interface ISearchResultService
     {
-        IQueryable<SearchResult> GetExactMatch(int page, int size, params string[] words);
+        Task<PaginatedResult<SearchResult>> GetExactMatchAsync(int page, int size, params string[] words);
         IQueryable<SearchResult> GetBestMatch(int page, int size, params string[] words);
         IQueryable<SearchResult> GetRankedWeightedMatch(int page, int size, params string[] words);
         IQueryable<WeightedKeyword> GetWeightedKeywords(int size, string word);
