@@ -46,19 +46,20 @@ namespace Rawdata.Data.Services
 
             var totalCount = await query.CountAsync();
 
-            var query2 = Context.SearchResults
+            var results = await Context.SearchResults
                 .FromSql($"select * from exact_match({words})")
                 .OrderByDescending(m => m.Post.Score)
                 .Skip(size * (page - 1))
                 .Take(size)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p.Author);
-
+                    .ThenInclude(p => p.Author)
+                .ToListAsync();
 
             return new PaginatedResult<SearchResult>
             {
-                Items = (IList<SearchResult>)query2,
-                PageCount = totalCount / size
+                Items = results,
+                CurrentPage = page,
+                PageCount = CalculatePages(totalCount, size)
             };
         }
 
@@ -74,6 +75,19 @@ namespace Rawdata.Data.Services
             return Context.WordAssociations
                 .FromSql($"select * from get_word_association({word})")
                 .Take(size);
+        }
+
+        private int CalculatePages(int totalCount, int size)
+        {
+            int remainder = totalCount % size;
+            int pageCount = totalCount / size;
+
+            if (remainder > 0)
+            {
+                pageCount++;
+            }
+
+            return pageCount;
         }
     }
 }

@@ -28,11 +28,17 @@ namespace Rawdata.Service.Controllers
         {
             var result = await SearchResultService
                 .GetExactMatchAsync(paging.Page, paging.Size, paging.Words);
-                //.ToListAsync();
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result.Items));
+            var response = new
+            {
+                items = await DirtyMap(result.Items),
+                currentPage = result.CurrentPage,
+                pageCount = result.PageCount
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("best", Name = "GetBestMatch")]
@@ -130,5 +136,6 @@ namespace Rawdata.Service.Controllers
 
             return items;
         }
+
     }
 }
