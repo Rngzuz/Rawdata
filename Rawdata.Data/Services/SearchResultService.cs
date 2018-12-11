@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
+
 
 namespace Rawdata.Data.Services
 {
@@ -35,15 +38,28 @@ namespace Rawdata.Data.Services
                     .ThenInclude(p => p.Author);
         }
 
-        public IQueryable<SearchResult> GetExactMatch(int page, int size, params string[] words)
+        public async Task<PaginatedResult<SearchResult>> GetExactMatchAsync(int page, int size, params string[] words)
         {
-            return Context.SearchResults
+            var query = Context.SearchResults
+                 .FromSql($"select * from exact_match({words})")
+                 .OrderByDescending(m => m.Post.Score);
+
+            var totalCount = await query.CountAsync();
+
+            var query2 = Context.SearchResults
                 .FromSql($"select * from exact_match({words})")
                 .OrderByDescending(m => m.Post.Score)
                 .Skip(size * (page - 1))
                 .Take(size)
                 .Include(m => m.Post)
                     .ThenInclude(p => p.Author);
+
+
+            return new PaginatedResult<SearchResult>
+            {
+                Items = (IList<SearchResult>)query2,
+                PageCount = totalCount / size
+            };
         }
 
         public IQueryable<WeightedKeyword> GetWeightedKeywords(int size, string word)

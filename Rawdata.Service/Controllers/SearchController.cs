@@ -27,12 +27,12 @@ namespace Rawdata.Service.Controllers
         public async Task<IActionResult> GetExactMatch([FromQuery]Paging paging)
         {
             var result = await SearchResultService
-               .GetExactMatch(paging.Page, paging.Size, paging.Words)
-               .ToListAsync();
+                .GetExactMatchAsync(paging.Page, paging.Size, paging.Words);
+                //.ToListAsync();
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result));
+            return Ok(await DirtyMap(result.Items));
         }
 
         [HttpGet("best", Name = "GetBestMatch")]
@@ -67,7 +67,6 @@ namespace Rawdata.Service.Controllers
                 .ToListAsync();
 
             await UserService.SaveToSearchHistory(GetUserId(), word);
-
 
             return Ok(result);
         }

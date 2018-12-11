@@ -17,6 +17,7 @@ using Rawdata.Data.Services;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Profiles;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Cors;
 
 namespace Rawdata.Service
 {
@@ -32,6 +33,18 @@ namespace Rawdata.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => {
+                options.AddPolicy("AllowAll",
+                    builder => {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                    });
+            });
+
+
             services
                 .AddMvc()
                 .AddJsonOptions(options => {
@@ -97,6 +110,7 @@ namespace Rawdata.Service
                 options.RoutePrefix = "api";
             });
 
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseMvc();
         }
