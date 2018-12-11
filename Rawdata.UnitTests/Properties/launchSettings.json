@@ -6,6 +6,7 @@
       "applicationUrl": "http://localhost:55400/",
       "sslPort": 0
     }
+  },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",

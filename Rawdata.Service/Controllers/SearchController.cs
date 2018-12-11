@@ -45,24 +45,22 @@ namespace Rawdata.Service.Controllers
         public async Task<IActionResult> GetBestMatch([FromQuery]Paging paging)
         {
             var result = await SearchResultService
-                .GetBestMatch(paging.Page, paging.Size, paging.Words)
-                .ToListAsync();
+                .GetBestMatch(paging.Page, paging.Size, paging.Words);
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result));
+            return Ok(await DirtyMap(result.Items));
         }
 
         [HttpGet("ranked", Name = "GetRankedWeightedMatch")]
         public async Task<IActionResult> GetRankedWeightedMatch([FromQuery]Paging paging)
         {
             var result = await SearchResultService
-                .GetRankedWeightedMatch(paging.Page, paging.Size, paging.Words)
-                .ToListAsync();
+                .GetRankedWeightedMatch(paging.Page, paging.Size, paging.Words);
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result));
+            return Ok(await DirtyMap(result.Items));
         }
 
         [HttpGet("words", Name = "GetWords")]
