@@ -68,7 +68,6 @@ namespace Rawdata.Service.Controllers
 
             await UserService.SaveToSearchHistory(GetUserId(), word);
 
-
             return Ok(result);
         }
 

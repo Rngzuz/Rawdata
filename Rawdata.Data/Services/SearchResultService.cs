@@ -37,6 +37,16 @@ namespace Rawdata.Data.Services
 
         public IQueryable<SearchResult> GetExactMatch(int page, int size, params string[] words)
         {
+            // var query = Context.SearchResults
+            //     .FromSql($"select * from exact_match({words})")
+            //     .OrderByDescending(m => m.Post.Score);
+
+            // var totalCount = await query.CountAsync();
+
+            // var obj = new PaginatedResult<SearchResult> {
+            //     PageCount = totalCount / size
+            // };
+
             return Context.SearchResults
                 .FromSql($"select * from exact_match({words})")
                 .OrderByDescending(m => m.Post.Score)
