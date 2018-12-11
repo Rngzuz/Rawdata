@@ -1,3 +1,4 @@
+import { omit } from 'lodash-es'
 import { observable, observableArray } from 'knockout'
 
 class Store {
@@ -21,6 +22,6 @@ class Store {
 }
 
 export default new Store({
-    search: observableArray(['unit', 'test']),
+    search: observableArray([]),
     isLoading: observable(true)
 })
