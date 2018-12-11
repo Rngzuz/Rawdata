@@ -29,7 +29,7 @@ class AuthService {
     }
 
     signOut() {
-
+        localStorage.removeItem('token')
     }
 }
 

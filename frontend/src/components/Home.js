@@ -37,21 +37,18 @@ const template = /* html */ `
 <div data-bind="visible: !isLoading()" class="card">
     <ul class="list-group list-group-flush" data-bind="foreach: items">
         <li class="list-group-item d-flex justify-content-between align-items-center py-4">
-
             <div class="mr-3 text-center">
                 <span class="badge badge-primary badge-pill" data-bind="text: score"></span>
-                <small>score</small>
+                <small class="text-muted">score</small>
             </div>
-
-
-
             <article>
-                <!-- ko if: $data.title -->
-                    <h5 class="card-title" data-bind="highlightText: $data.title, units: $component.words()"></h5>
-                <!-- /ko -->
+                <h5 class="card-title" data-bind="visible: $data.title !== undefined">
+                    <span data-bind="highlightText: $data.title, units: $component.words()"></span>
+                </h5>
                 <div data-bind="highlightText: body.substring(0, 350), units: $component.words()"></div>
-
-                <cite class="mt-4" data-bind="text: $data.authorDisplayName, attr: { title: $data.authorDisplayName }"></cite>
+                <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
+                    <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
+                </cite>
             </article>
         </li>
     </ul>
