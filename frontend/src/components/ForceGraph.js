@@ -1,9 +1,10 @@
 import * as d3 from 'd3'
 import Store from '@/Store.js'
-import {Component} from './Component.js'
-import {pureComputed} from 'knockout'
+import { Component } from './Component.js'
+import { pureComputed } from 'knockout'
 
-import graphData from './ForceGraphData'
+// @ts-ignore
+import graphTestData from './graphData.json'
 
 class ForceGraph extends Component {
     constructor(args) {
@@ -12,76 +13,99 @@ class ForceGraph extends Component {
             () => Store.state().isLoading()
         )
 
-        this.graph = graphData
-        this.init()
+        this.init(graphTestData)
     }
 
-    init() {
-        Store.state().isLoading(true)
+    init(graphData) {
+        Store.state().isLoading(false)
 
-        const svg = d3.select(this.$el.querySelector('svg'))
-        console.log(svg)
+        const svg = d3
+            .select(this.$el.querySelector('svg'))
+
         const width = +svg.attr("width")
         const height = +svg.attr("height")
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10)
+        const color = d3
+            .scaleOrdinal(d3.schemeCategory10)
 
-        const simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {
-                return d.id;
-            }).strength(0.001))
+        const simulation = d3
+            .forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id).strength(0.001))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(width / 2, height / 2))
 
-        const link = svg.append("g")
+        const link = svg
+            .append("g")
             .attr("class", "links")
             .selectAll("line")
-            .data(this.graph.links)
-            .enter().append("line")
-            .attr("stroke-width", function (d) {
-                return Math.sqrt(d.value) * 1.0;
-            })
+            .data(graphData.links)
+            .enter()
+            .append("line")
+            .attr("stroke-width", d => Math.sqrt(d.value) * 1.0)
 
-        const node = svg.append("g")
+        const node = svg
+            .append("g")
             .attr("class", "nodes")
             .selectAll("g")
-            .data(this.graph.nodes)
-            .enter().append("g")
+            .data(graphData.nodes)
+            .enter()
+            .append("g")
 
-        node.append("title")
-            .text(function (d) {
-                return d.id * 2;
-            });
+        node
+            .append("circle")
+            .attr("r", 8)
+            .attr("fill", d => color(d.group))
+            .call(
+                d3.drag()
+                .on("start", d => this.dragstarted(d, simulation))
+                .on("drag",  d => this.dragged(d, simulation))
+                .on("end", d => this.dragended(d, simulation))
+            )
+
+        node
+            .append("text")
+            .text(d => d.id)
+            .style("font-size", "14px")
+            .attr('x', 8)
+            .attr('y', 3)
+
+        node
+            .append("title")
+            .text(d => d.id * 2)
 
         simulation
-            .nodes(this.graph.nodes)
+            .nodes(graphData.nodes)
             .on("tick", () => {
                 link
-                    .attr("x1", function (d) {
-                        return d.source.x;
-                    })
-                    .attr("y1", function (d) {
-                        return d.source.y;
-                    })
-                    .attr("x2", function (d) {
-                        return d.target.x;
-                    })
-                    .attr("y2", function (d) {
-                        return d.target.y;
-                    })
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y)
 
-                node
-                    .attr("transform", function (d) {
-                        return "translate(" + d.x + "," + d.y + ")";
-                    })
-            });
+                node.attr("transform", d => "translate(" + d.x + "," + d.y + ")")
+            })
 
-        simulation.force("link")
-            .links(this.graph.links)
+        simulation
+            .force("link")
+            .links(graphData.links)
+    }
 
-        Store.state().isLoading(false)
 
-        console.log(svg)
+    dragstarted(d, simulation) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    dragged(d, simulation) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    dragended(d, simulation) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
     }
 }
 

@@ -3,7 +3,7 @@ so-app {
     min-height: 100vh;
 }
 
-so-app, so-home, so-loader, so-navbar {
+so-app, so-home, so-loader, so-navbar, so-forcegraph {
     display: block;
 }
 
@@ -37,4 +37,20 @@ mark {
     position: relative;
     padding-right: 1rem !important;
     padding-left: 1rem !important;
+}
+
+/* force graph stuff */
+.links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+
+.nodes circle {
+    stroke: rgb(2, 142, 235);
+    stroke-width: 1.5px;
+}
+
+text {
+    font-family: sans-serif;
+    font-size: 10px;
 }
