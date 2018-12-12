@@ -51,6 +51,12 @@ class SearchService {
         return await response.json()
     }
 
+    async getForceGraphInput(word, grade = 8) {
+        const response = await fetch(`${this.baseUrl}/forcegraph?word=${word}&grade=${grade}`)
+
+        return await response.json()
+    }
+
     buildQuery(path, words, page, size) {
         const queryString =
             words.map(value => `words=${value}`).join('&')

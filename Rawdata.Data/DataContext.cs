@@ -21,6 +21,7 @@ namespace Rawdata.Data
         public DbQuery<SearchResult> SearchResults { get; set; }
         public DbQuery<WeightedKeyword> WeightedKeywords { get; set; }
         public DbQuery<WordAssociation> WordAssociations { get; set; }
+        public DbQuery<ForceGraphInput> ForceGraphInputs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,6 +37,7 @@ namespace Rawdata.Data
             BuildSearchResult(modelBuilder);
             BuildWeightedKeywordConfig(modelBuilder);
             BuilWordAssociationConfig(modelBuilder);
+            BuildForceGraphInputConfig(modelBuilder);
 
             //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
@@ -71,6 +73,11 @@ namespace Rawdata.Data
             builder.Query<WordAssociation>().Property(m => m.Word1).HasColumnName("word1");
             builder.Query<WordAssociation>().Property(m => m.Word2).HasColumnName("word2");
             builder.Query<WordAssociation>().Property(m => m.Grade).HasColumnName("grade");
+        }
+
+        private void BuildForceGraphInputConfig(ModelBuilder builder)
+        {
+            builder.Query<ForceGraphInput>().Property(m => m.Input).HasColumnName("input");
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
