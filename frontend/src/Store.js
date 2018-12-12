@@ -21,6 +21,40 @@ class Store {
     }
 }
 
+// const initStore = {
+
+//     state: {
+//         search: observableArray([]),
+//         isLoading: observable(true)
+//     },
+
+//     getters: {
+//         search: state => state.search(),
+//         isLoading: state => state.isLoading(),
+//         test: 'string'
+//     },
+
+//     mutations: {
+//         SET_TEST(state, payload) {
+//             state.test = 'hello' + payload
+//         },
+//         SET_SEARCH(state, payload) {
+//             state.search(payload)
+//         }
+//     },
+
+//     actions: {
+//         async doSomethingWithSearch(context) {
+//             const { state, commit } = context
+
+//             const data = await getSomeRandomData()
+
+//             commit('SET_SEARCH', data)
+//         }
+//     }
+
+// }
+
 export default new Store({
     search: observableArray([]),
     isLoading: observable(true)

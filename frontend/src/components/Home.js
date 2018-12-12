@@ -35,16 +35,10 @@ class Home {
             return { ...item, body: newBody }
         })
 
-        // console.log(result.find((x, i) => {
-        //     const test = x.title && x.title.indexOf('<select>') >= 1
-        //     if (test) console.log(i)
-        //     return test
-        // }))
-
         setTimeout(() => {
             Store.state().isLoading(false)
             this.items(items)
-        }, 2000)
+        }, 1100)
     }
 }
 

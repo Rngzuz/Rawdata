@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rawdata.Data", "Rawdata.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rawdata.Service", "Rawdata.Service\Rawdata.Service.csproj", "{6E7D1DC4-AF0F-45D2-81D6-A343E50936DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rawdata.Tests", "Rawdata.Tests\Rawdata.Tests.csproj", "{FC9E12EF-C261-4910-A15C-97311B07E683}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,18 +41,6 @@ Global
 		{6E7D1DC4-AF0F-45D2-81D6-A343E50936DD}.Release|x64.Build.0 = Release|Any CPU
 		{6E7D1DC4-AF0F-45D2-81D6-A343E50936DD}.Release|x86.ActiveCfg = Release|Any CPU
 		{6E7D1DC4-AF0F-45D2-81D6-A343E50936DD}.Release|x86.Build.0 = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|x64.Build.0 = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Debug|x86.Build.0 = Debug|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|x64.ActiveCfg = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|x64.Build.0 = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|x86.ActiveCfg = Release|Any CPU
-		{FC9E12EF-C261-4910-A15C-97311B07E683}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

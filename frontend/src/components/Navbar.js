@@ -5,7 +5,6 @@ import { Component } from './Component.js'
 class Navbar extends Component {
     constructor(args) {
         super(args)
-        this.isCollapsed = true
         this.rawSearch = observable('')
     }
 
@@ -20,7 +19,7 @@ class Navbar extends Component {
     }
 
     toggleCollapse() {
-        const elem = document.getElementById('collapse')
+        const elem = this.$el.querySelector('#collapse')
         elem.classList.toggle('show')
     }
 }
