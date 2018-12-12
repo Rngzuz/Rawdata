@@ -67,6 +67,12 @@ $$ LANGUAGE plpgsql;
 --
 -- word excerpt
 --
+CREATE INDEX ON words (id);
+CREATE INDEX ON words (what);
+CREATE INDEX ON words (word);
+CREATE INDEX ON words (sen);
+CREATE INDEX ON words (idx);
+
 
 CREATE OR REPLACE FUNCTION word_excerpt(_words TEXT[])
 RETURNS TABLE (post_id int, sentences text[]) AS $$
@@ -91,7 +97,6 @@ BEGIN
 	RETURN QUERY EXECUTE _query;
 END
 $$ LANGUAGE 'plpgsql';
-
 
 --
 -- exact_match
