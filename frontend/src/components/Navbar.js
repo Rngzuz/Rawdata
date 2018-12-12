@@ -10,8 +10,13 @@ class Navbar extends Component {
     }
 
     updateSearch() {
-        const words = this.rawSearch().split(/\s/)
-        Store.state().search(words)
+        const rawSearch = this.rawSearch()
+
+        if (/\w/.test(rawSearch)) {
+            Store.state().search(rawSearch.split(/\s/))
+        } else {
+            Store.state().search([])
+        }
     }
 
     toggleCollapse() {

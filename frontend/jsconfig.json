@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "checkJs": true,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["./src/*"],
+            "Root/*": ["./src/*"],
+            "Bindings/*": ["./src/bindings/*"],
+            "Components/*": ["./src/components/*"],
+            "Services/*": ["./src/services/*"]
+        },
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

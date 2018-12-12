@@ -3,6 +3,12 @@ class SearchService {
         this.baseUrl = 'http://localhost:5000/api/search'
     }
 
+    async getNewest() {
+        const response = await fetch(`http://localhost:5000/api/questions`)
+
+        return await response.json()
+    }
+
     async getBestMatch(words, page = 1, size = 50) {
         const response = await fetch(
             this.buildQuery('best', words, page, size),
