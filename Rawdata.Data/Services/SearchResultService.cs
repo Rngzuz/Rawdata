@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -101,7 +102,15 @@ namespace Rawdata.Data.Services
                 .FromSql($"select * from get_word_association({word})")
                 .Take(size);
         }
-        
+
+        public async Task<ForceGraphInput> GetForceGraphInput(string word, int grade)
+        {
+            return await Context
+                .ForceGraphInputs
+                .FromSql($"select STRING_AGG(line, ' ') as input from generate_force_graph_input({word}, {grade}) ").SingleOrDefaultAsync();
+
+        }
+
         private int CalculatePages(int totalCount, int size)
         {
             int remainder = totalCount % size;

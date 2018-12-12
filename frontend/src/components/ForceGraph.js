@@ -3,8 +3,7 @@ import Store from '@/Store.js'
 import { Component } from './Component.js'
 import { pureComputed } from 'knockout'
 
-// @ts-ignore
-import graphTestData from './graphData.json'
+import SearchService from "@/services/SearchService";
 
 class ForceGraph extends Component {
     constructor(args) {
@@ -13,11 +12,22 @@ class ForceGraph extends Component {
             () => Store.state().isLoading()
         )
 
-        this.init(graphTestData)
+        Store.state().search.subscribe(v => {
+            d3.select(this.$el.querySelector('svg')).selectAll("*").remove()
+            Store.state().isLoading(true)
+            this.fetchGraphInput(v[0])
+        })
     }
 
+    async fetchGraphInput(word) {
+        Store.state().isLoading(true)
+
+        let result = await SearchService.getForceGraphInput(word)
+        this.init(result)
+    }
+
+
     init(graphData) {
-        Store.state().isLoading(false)
 
         const svg = d3
             .select(this.$el.querySelector('svg'))
@@ -88,6 +98,9 @@ class ForceGraph extends Component {
         simulation
             .force("link")
             .links(graphData.links)
+
+
+        Store.state().isLoading(false)
     }
 
 

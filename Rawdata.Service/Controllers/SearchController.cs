@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Models;
@@ -99,6 +101,17 @@ namespace Rawdata.Service.Controllers
             await UserService.SaveToSearchHistory(GetUserId(), word);
 
             return Ok(result);
+        }
+
+        [HttpGet("forcegraph", Name = "GetForceGraphInput"), Produces("application/json")]
+        public async Task<IActionResult> GetForceGraphInput([FromQuery] string word, [FromQuery] int grade = 8)
+        {
+            var result = await SearchResultService
+                .GetForceGraphInput(word, grade);
+
+            await UserService.SaveToSearchHistory(GetUserId(), word);
+        
+            return Ok(JObject.Parse(result.Input));
         }
 
         //TODO: We want to find a better approach to map

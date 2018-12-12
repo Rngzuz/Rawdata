@@ -66,6 +66,17 @@ class SearchService extends BaseService {
 
         return await response.json()
     }
+
+    async getForceGraphInput(word, grade = 8) {
+        const endpoint = this.buildUrl({
+            path: '/search/forcegraph',
+            searchParams: { word, grade }
+        })
+
+        const response = await fetch(endpoint, this.requestOptions)
+
+        return await response.json()
+    }
 }
 
 export default new SearchService()
