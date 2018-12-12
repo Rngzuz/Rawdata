@@ -28,16 +28,27 @@ class Home {
             result = await SearchService.getNewest()
         } else {
             result = await SearchService.getBestMatch(words, 1, 50)
-        }
 
-        const items = result.map(item => {
-            const newBody = item.body.replace(/<(?:.|\n)*?>/gm, '')
-            return { ...item, body: newBody }
-        })
+            console.log(result)
+
+            result = result.items.map(item => {
+                const body = item.excerpts
+                    .map(sentence => {
+                        // Need to copy the string by value to use the g flag in regex
+                        const tmpSentence = sentence
+
+                        return tmpSentence
+                            .replace(/\s*([^\w\s\.\,]|n't)\s*/gi, '$1')
+                            .replace(/[\s\.]*$/s, '')
+                    })
+                    .join(' ... ')
+                return { ...item, body }
+            })
+        }
 
         setTimeout(() => {
             Store.state().isLoading(false)
-            this.items(items)
+            this.items(result)
         }, 1100)
     }
 }
@@ -54,7 +65,7 @@ const template = /* html */ `
                 <h5 class="card-title" data-bind="visible: $data.title !== undefined">
                     <span data-bind="highlightText: $data.title, units: $component.words()"></span>
                 </h5>
-                <p data-bind="highlightText: $data.body.substring(0, 350), units: $component.words()"></p>
+                <p data-bind="highlightText: $data.body, units: $component.words()"></p>
                 <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                     <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                 </cite>

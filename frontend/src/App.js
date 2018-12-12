@@ -1,5 +1,7 @@
 import Store from './Store.js'
 import { pureComputed } from 'knockout'
+import { BaseService } from 'Services/BaseService.js'
+
 
 class App {
     constructor() {
@@ -11,15 +13,16 @@ class App {
 
 const template = /* html */ `
 <so-navbar id="navbar"></so-navbar>
-<so-loader id="loader" data-bind="visible: isLoading" params="size: 200"></so-loader>
 
-<!-- <header id="banner" class="bg-info border-bottom">
+<header id="banner" class="bg-info border-bottom">
     <div style="height: 400px;"></div>
-</header> -->
+</header>
 
 <main id="content" class="container">
-    <so-forcegraph></so-forcegraph>
+    <so-home></so-home>
 </main>
+
+<so-loader id="loader" data-bind="visible: isLoading" params="size: 200"></so-loader>
 `
 
 export default { name: 'so-app', viewModel: App, template }
