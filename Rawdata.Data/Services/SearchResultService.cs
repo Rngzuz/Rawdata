@@ -16,68 +16,74 @@ namespace Rawdata.Data.Services
 
         public async Task<PaginatedResult<SearchResult>> GetBestMatch(int page, int size, params string[] words)
         {
-            var results = await Context.SearchResults
-                .FromSql($"select * from best_match({words})")
+            var query = Context.SearchResults
+                .FromSql($"select * from best_match_context({words})")
                 .OrderByDescending(m => m.Rank)
-                .ThenByDescending(m => m.Post.Score)
+                .ThenByDescending(m => m.Post.Score);
+
+            var totalCount = await query.CountAsync();
+
+            var results = await query
                 .Skip(size * (page - 1))
                 .Take(size)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p.Author)
+                .ThenInclude(p => p.Author)
                 .ToListAsync();
-
-            var tCount = totalCount(words);
             
             return new PaginatedResult<SearchResult>
             {
                 Items = results,
                 CurrentPage = page,
-                PageCount = CalculatePages(tCount.Result, size)
+                PageCount = CalculatePages(totalCount, size)
             };
 
         }
 
         public async Task<PaginatedResult<SearchResult>> GetRankedWeightedMatch(int page, int size, params string[] words)
         {
-            var results = await Context.SearchResults
-                .FromSql($"select * from ranked_weighted_match({words})")
+            var query = Context.SearchResults
+                .FromSql($"select * from ranked_weighted_match_context({words})")
                 .OrderByDescending(m => m.Rank)
-                .ThenByDescending(m => m.Post.Score)
+                .ThenByDescending(m => m.Post.Score);
+
+            var totalCount = await query.CountAsync();
+
+            var results = await query
                 .Skip(size * (page - 1))
                 .Take(size)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p.Author)
+                .ThenInclude(p => p.Author)
                 .ToListAsync();
-
-            var tCount = totalCount(words);
 
             return new PaginatedResult<SearchResult>
             {
                 Items = results,
                 CurrentPage = page,
-                PageCount = CalculatePages(tCount.Result, size)
+                PageCount = CalculatePages(totalCount, size)
             };
     
         }
 
         public async Task<PaginatedResult<SearchResult>> GetExactMatchAsync(int page, int size, params string[] words)
         {
-           
-            var results = await Context.SearchResults
-                .FromSql($"select * from exact_match({words})")
-                .OrderByDescending(m => m.Post.Score)
+            var query = Context.SearchResults
+                .FromSql($"select * from exact_match_context({words})")
+                .OrderByDescending(m => m.Post.Score);
+
+            var totalCount = await query.CountAsync();
+
+            var results = await query
                 .Skip(size * (page - 1))
                 .Take(size)
                 .Include(m => m.Post)
                     .ThenInclude(p => p.Author)
                 .ToListAsync();
-            var tCount = totalCount(words);
-
+           
             return new PaginatedResult<SearchResult>
             {
                 Items = results,
                 CurrentPage = page,
-                PageCount = CalculatePages(tCount.Result, size)
+                PageCount = CalculatePages(totalCount, size)
             };
 
         }
@@ -95,15 +101,7 @@ namespace Rawdata.Data.Services
                 .FromSql($"select * from get_word_association({word})")
                 .Take(size);
         }
-
-        private async Task<int> totalCount(params string[] words)
-        {
-            var query = Context.SearchResults
-                .FromSql($"select * from exact_match({words})")
-                .OrderByDescending(m => m.Post.Score);
-
-            return await query.CountAsync();
-        }
+        
         private int CalculatePages(int totalCount, int size)
         {
             int remainder = totalCount % size;

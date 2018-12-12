@@ -49,7 +49,14 @@ namespace Rawdata.Service.Controllers
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result.Items));
+            var response = new
+            {
+                items = await DirtyMap(result.Items),
+                currentPage = result.CurrentPage,
+                pageCount = result.PageCount
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("ranked", Name = "GetRankedWeightedMatch")]
@@ -60,7 +67,14 @@ namespace Rawdata.Service.Controllers
 
             await UserService.SaveToSearchHistory(GetUserId(), string.Join(" ", paging.Words));
 
-            return Ok(await DirtyMap(result.Items));
+            var response = new
+            {
+                items = await DirtyMap(result.Items),
+                currentPage = result.CurrentPage,
+                pageCount = result.PageCount
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("words", Name = "GetWords")]
@@ -75,8 +89,8 @@ namespace Rawdata.Service.Controllers
             return Ok(result);
         }
 
-        [HttpGet("context", Name = "GetContext")]
-        public async Task<IActionResult> GetContext([FromQuery] string word, [FromQuery] int size = 100)
+        [HttpGet("association", Name = "GetAssociation")]
+        public async Task<IActionResult> GetAssociation([FromQuery] string word, [FromQuery] int size = 100)
         {
             var result = await SearchResultService
                 .GetWordAssociation(size, word)
@@ -100,7 +114,7 @@ namespace Rawdata.Service.Controllers
                 var markedPost = markedPosts
                     .SingleOrDefault(mp => mp.PostId == item.PostId);
 
-                obj.Body = item.Post.Body;
+                obj.Excerpts = item.Excerpts;
                 obj.Score = item.Post.Score;
                 obj.Rank = item.Rank;
                 obj.CreationDate = item.Post.CreationDate;

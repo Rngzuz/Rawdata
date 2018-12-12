@@ -65,6 +65,35 @@ RETURNS SETOF marked_comments AS $$
 $$ LANGUAGE plpgsql;
 
 --
+-- word excerpt
+--
+
+CREATE OR REPLACE FUNCTION word_excerpt(_words TEXT[])
+RETURNS TABLE (post_id int, sentences text[]) AS $$
+DECLARE
+	_word TEXT;
+	_sub_queries TEXT[];
+	_query TEXT := 'select post_id, ARRAY_AGG(sentence order by sentence) from (select post_id, array_to_string(ARRAY_AGG(word order by sen, idx), '' '') sentence from';
+BEGIN
+	FOREACH _word IN array _words LOOP
+		_sub_queries := array_append(
+			_sub_queries,
+			'(select distinct post_id, sentence from post_word_index where word = ''' || _word || ''')'
+	        );
+	END LOOP;
+
+	_query := _query
+		|| ' ((' || array_to_string(_sub_queries, ' union distinct ') || ')'
+		|| 't_union join (select id,sen, idx, word from words where what = ''body'') words on t_union.post_id = words.id and t_union.sentence = words.sen) t_joined
+	group by post_id, sen) t_sentences group by post_id';
+
+	RAISE NOTICE '%', _query;
+	RETURN QUERY EXECUTE _query;
+END
+$$ LANGUAGE 'plpgsql';
+
+
+--
 -- exact_match
 --
 CREATE OR REPLACE FUNCTION exact_match(_words TEXT[])
@@ -72,7 +101,7 @@ RETURNS TABLE (post_id INT, "rank" FLOAT) AS $$
 DECLARE
    _word TEXT;
    _sub_queries TEXT[];
-   _query TEXT := 'select posts.id, null::float rank from posts, ';
+   _query TEXT := 'select posts.id, cast(score as float) rank from posts, ';
    _count INT := 0;
 BEGIN
    FOREACH _word IN array _words LOOP
@@ -94,8 +123,25 @@ END
 $$ LANGUAGE 'plpgsql';
 
 --
--- best_match
+-- exact_match_context
 --
+CREATE OR REPLACE FUNCTION exact_match_context(_words TEXT[])
+RETURNS TABLE (post_id INT, "rank" FLOAT, sentences text[]) AS $$
+BEGIN
+
+   RETURN QUERY
+   SELECT rank.post_id, rank.rank, excerpt.sentences FROM (
+	(SELECT * FROM word_excerpt(_words)) excerpt 
+	JOIN
+	(SELECT * FROM exact_match(_words)) rank
+	ON excerpt.post_id = rank.post_id
+   ) order by rank desc;
+END
+$$ LANGUAGE 'plpgsql';
+
+--
+-- best_match
+-- 
 CREATE OR REPLACE FUNCTION best_match(_words TEXT[])
 RETURNS TABLE (post_id INT, "rank" FLOAT) AS $$
 DECLARE
@@ -116,6 +162,23 @@ BEGIN
 
    RAISE NOTICE '%', _query;
    RETURN QUERY EXECUTE _query;
+END
+$$ LANGUAGE 'plpgsql';
+
+--
+-- best_match_context
+--
+CREATE OR REPLACE FUNCTION best_match_context(_words TEXT[])
+RETURNS TABLE (post_id INT, "rank" FLOAT, sentences text[]) AS $$
+BEGIN
+
+   RETURN QUERY
+   SELECT rank.post_id, rank.rank, excerpt.sentences FROM (
+	(SELECT * FROM word_excerpt(_words)) excerpt 
+	JOIN
+	(SELECT * FROM best_match(_words)) rank
+	ON excerpt.post_id = rank.post_id
+   ) order by rank desc;
 END
 $$ LANGUAGE 'plpgsql';
 
@@ -142,6 +205,24 @@ BEGIN
 
    RAISE NOTICE '%', _query;
    RETURN QUERY EXECUTE _query;
+END
+$$ LANGUAGE 'plpgsql';
+
+
+--
+-- ranked_weighted_match_context
+--
+CREATE OR REPLACE FUNCTION ranked_weighted_match_context(_words TEXT[])
+RETURNS TABLE (post_id INT, "rank" FLOAT, sentences text[]) AS $$
+BEGIN
+
+   RETURN QUERY
+   SELECT rank.post_id, rank.rank, excerpt.sentences FROM (
+	(SELECT * FROM word_excerpt(_words)) excerpt 
+	JOIN
+	(SELECT * FROM ranked_weighted_match(_words)) rank
+	ON excerpt.post_id = rank.post_id
+   ) order by rank desc;
 END
 $$ LANGUAGE 'plpgsql';
 
