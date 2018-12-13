@@ -3,7 +3,12 @@ const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     entry: './src/main.js',
-    devServer: { historyApiFallback: true },
+    devServer: {
+        historyApiFallback: true,
+        proxy: {
+            '/api': 'http://localhost:5000'
+        }
+    },
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, './dist')

@@ -1,6 +1,6 @@
 class AuthService {
     constructor() {
-        this.baseUrl = 'http://localhost:5000/api'
+        this.baseUrl = '/api'
     }
 
     async register(user) {

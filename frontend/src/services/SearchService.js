@@ -2,7 +2,7 @@ import { BaseService } from './BaseService.js';
 
 class SearchService extends BaseService {
     constructor() {
-        super('http://localhost:5000/api')
+        super('/api')
     }
 
     async getNewest() {
