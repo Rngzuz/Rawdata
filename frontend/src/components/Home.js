@@ -26,10 +26,20 @@ class Home {
 
         if (words.length <= 0) {
             result = await SearchService.getNewest()
+
+            result = result.map(item => {
+                return {
+                    ...item,
+                    body: item.body
+                        .substring(0, 500)
+                        .replace(/<(?:.|\n)*?>/gm, '')
+                        .trimStart()
+                        .trimEnd()
+                }
+            })
+
         } else {
             result = await SearchService.getBestMatch(words, 1, 50)
-
-            console.log(result)
 
             result = result.items.map(item => {
                 const body = item.excerpts
@@ -42,6 +52,7 @@ class Home {
                             .replace(/[\s\.]*$/s, '')
                     })
                     .join(' ... ')
+
                 return { ...item, body }
             })
         }
@@ -65,7 +76,10 @@ const template = /* html */ `
                 <h5 class="card-title" data-bind="visible: $data.title !== undefined">
                     <span data-bind="highlightText: $data.title, units: $component.words()"></span>
                 </h5>
-                <p data-bind="highlightText: $data.body, units: $component.words()"></p>
+                <div data-bind="highlightText: $data.body, units: $component.words()">
+                    <span>...</span>
+                </div>
+
                 <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                     <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                 </cite>

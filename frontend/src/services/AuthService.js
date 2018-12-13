@@ -1,22 +1,26 @@
-class AuthService {
+import { BaseService } from './BaseService.js'
+
+class AuthService extends BaseService {
     constructor() {
-        this.baseUrl = '/api'
+        super('/api')
     }
 
     async register(user) {
-        const response = await fetch(`${this.baseUrl}/register`, {
+        const endpoint = this.buildUrl({ path: '/register' })
+
+        const response = await fetch(endpoint, {
             method: 'POST',
             body: JSON.stringify(user),
             headers: { 'Content-Type': 'application/json' }
         })
 
-        console.log(response)
-
         return await response.json()
     }
 
     async signIn(credentials) {
-        const response = await fetch(`${this.baseUrl}/oauth`, {
+        const endpoint = this.buildUrl({ path: '/oauth' })
+
+        const response = await fetch(endpoint, {
             method: 'POST',
             body: JSON.stringify(credentials),
             headers: { 'Content-Type': 'application/json' }

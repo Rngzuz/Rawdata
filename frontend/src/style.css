@@ -3,7 +3,7 @@ so-app {
     min-height: 100vh;
 }
 
-so-app, so-home, so-loader, so-navbar, so-forcegraph {
+so-app, so-home, so-loader, so-navbar, so-forcegraph, so-search {
     display: block;
 }
 
@@ -37,6 +37,16 @@ mark {
     position: relative;
     padding-right: 1rem !important;
     padding-left: 1rem !important;
+}
+
+so-search {
+    padding-top: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .5)
 }
 
 /* force graph stuff */

@@ -16,10 +16,15 @@ export default {
             if (units && units.length > 0) {
                 // Match the words and insert them wrapped in the <mark> tag
                 const regex = new RegExp(`\\b(${units.join('|')})\\b`, 'gmi')
-                element.innerHTML = encodedText.replace(regex, '<mark>$&</mark>')
+                
+                element.innerHTML =
+                    encodedText.replace(regex, '<mark>$&</mark>')
+                    + element.innerHTML
             } else {
                 // Insert encoded text
-                element.innerHTML = encodedText
+                element.innerHTML =
+                    encodedText
+                    + element.innerHTML
             }
         }
     }

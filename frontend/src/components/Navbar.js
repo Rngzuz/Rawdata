@@ -42,6 +42,15 @@ const template = /* html */ `
             </ul>
 
             <form class="form-inline my-2 my-lg-0" data-bind="submit: updateSearch">
+                <div class="custom-control custom-radio">
+                    <input id="bestMatch" class="custom-control-input" type="radio" name="matching" value="1" checked>
+                    <label class="custom-control-label" for="bestMatch">best</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input id="exactMatch" class="custom-control-input" type="radio" name="matching" value="2" checked>
+                    <label class="custom-control-label" for="exactMatch">exact</label>
+                </div>
+
                 <input type="text" class="form-control" placeholder="Search..." data-bind="value: rawSearch">
             </form>
         </div>

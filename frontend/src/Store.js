@@ -56,6 +56,6 @@ class Store {
 // }
 
 export default new Store({
-    search: observableArray(['unit', 'test']),
+    search: observableArray([]),
     isLoading: observable(true)
 })
