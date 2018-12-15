@@ -3,7 +3,13 @@ so-app {
     min-height: 100vh;
 }
 
-so-app, so-home, so-loader, so-navbar, so-forcegraph, so-search {
+so-app,
+so-home,
+so-loader,
+so-navbar,
+so-forcegraph,
+so-search,
+so-word-cloud {
     display: block;
 }
 
@@ -47,6 +53,14 @@ so-search {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, .5)
+}
+
+.card-rounded-bottom {
+    border-radius: 0 0 .25rem .25rem;
+}
+
+.card-body-list {
+    padding: .75rem 1.25rem;
 }
 
 /* force graph stuff */

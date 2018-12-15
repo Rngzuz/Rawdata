@@ -1,30 +1,29 @@
 import Store from '@/Store.js'
 import SearchService from 'Services/SearchService.js'
-import { observableArray, pureComputed } from 'knockout'
+import { observableArray, computed } from 'knockout'
 
 class Home {
     constructor() {
-        this.isLoading = pureComputed(
-            () => Store.state().isLoading()
-        )
+        this.isLoading = computed({
+            read: Store.getters.isLoading,
+            write: newValue => Store.dispatch('updateIsLoading', newValue)
+        })
 
-        this.words = pureComputed(
-            () => Store.state().search()
-        )
-
+        this.words = Store.getters.searchParams
         this.items = observableArray()
-        this.fetchItems(this.words())
 
-        Store.state().search.subscribe(v => {
-            Store.state().isLoading(true)
-            this.fetchItems(this.words())
+        this.fetchItems()
+
+        Store.subscribe('searchParams', value => {
+            this.isLoading(true)
+            this.fetchItems(value)
         })
     }
 
     async fetchItems(words) {
         let result
 
-        if (words.length <= 0) {
+        if (!words || words.length <= 0) {
             result = await SearchService.getNewest()
 
             result = result.map(item => {
@@ -58,14 +57,14 @@ class Home {
         }
 
         setTimeout(() => {
-            Store.state().isLoading(false)
+            this.isLoading(false)
             this.items(result)
         }, 1100)
     }
 }
 
 const template = /* html */ `
-<div data-bind="visible: !isLoading() && items().length > 0" class="card">
+<div data-bind="visible: !isLoading()" class="card">
     <ul class="list-group list-group-flush" data-bind="foreach: items">
         <li class="list-group-item d-flex justify-content-between align-items-center py-4">
             <div class="mr-3 text-center flex-shrink-1">
@@ -79,7 +78,6 @@ const template = /* html */ `
                 <div data-bind="highlightText: $data.body, units: $component.words()">
                     <span>...</span>
                 </div>
-
                 <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                     <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                 </cite>

@@ -8,8 +8,14 @@ class Search extends Component {
 
 const template = /* html */ `
 <div class="container">
-    <div class="card">
-        <div class="card-body">hello</div>
+    <div class="card card-rounded-bottom border-0">
+        <div class="card-body-list">hello</div>
+
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+            <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+            <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+        </div>
     </div>
 </div>
 `

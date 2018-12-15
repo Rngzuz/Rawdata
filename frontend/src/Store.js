@@ -1,61 +1,63 @@
-import { omit } from 'lodash-es'
 import { observable, observableArray } from 'knockout'
+import { reduce } from 'lodash-es'
 
 class Store {
-    constructor(initialState = {}) {
-        this.state = observable(initialState)
-    }
+    constructor(initStore) {
+        const { state, getters = {}, mutations, actions } = initStore
 
-    set(payload) {
-        this.state(payload)
-    }
+        const commit = (type, payload) =>
+            mutations[type]
+            .call(this, state, payload)
 
-    update(payload) {
-        const newState = { ...this.state, ...payload }
-        this.state(newState)
-    }
+        const dispatch = (type, payload) =>
+            actions[type]
+            .call(this, {
+                state,
+                getters: this.getters,
+                commit,
+                payload
+            })
 
-    delete(payload) {
-        const newState = omit({ ...this.state() }, payload)
-        this.state(newState)
+        const reduceGetters = (accumulator, getter, key) => {
+            accumulator[key] = getter(state)
+            return accumulator
+        }
+
+        const subscribe = (key, fn) => state[key].subscribe(fn)
+
+        this.commit = commit
+        this.dispatch = dispatch
+        this.getters = reduce(getters, reduceGetters, {})
+        this.subscribe = subscribe
     }
 }
 
-// const initStore = {
-
-//     state: {
-//         search: observableArray([]),
-//         isLoading: observable(true)
-//     },
-
-//     getters: {
-//         search: state => state.search(),
-//         isLoading: state => state.isLoading(),
-//         test: 'string'
-//     },
-
-//     mutations: {
-//         SET_TEST(state, payload) {
-//             state.test = 'hello' + payload
-//         },
-//         SET_SEARCH(state, payload) {
-//             state.search(payload)
-//         }
-//     },
-
-//     actions: {
-//         async doSomethingWithSearch(context) {
-//             const { state, commit } = context
-
-//             const data = await getSomeRandomData()
-
-//             commit('SET_SEARCH', data)
-//         }
-//     }
-
-// }
-
 export default new Store({
-    search: observableArray([]),
-    isLoading: observable(true)
+    state: {
+        isLoading: observable(true),
+        searchParams: observableArray([])
+    },
+    getters: {
+        isLoading: state => state.isLoading,
+        searchParams: state => state.searchParams
+    },
+    mutations: {
+        SET_IS_LOADING(state, payload) {
+            state.isLoading(payload)
+        },
+        SET_SEARCH_PARAMS(state, payload) {
+            state.searchParams(payload)
+        }
+    },
+    actions: {
+        updateIsLoading({ state, commit, payload }) {
+            commit('SET_IS_LOADING', payload)
+        },
+        updateSearchParams({ commit, payload }) {
+            const searchParams = /\w/.test(payload) ?
+                payload.split(/\s/) : []
+
+            commit('SET_SEARCH_PARAMS', searchParams)
+        }
+    }
 })
