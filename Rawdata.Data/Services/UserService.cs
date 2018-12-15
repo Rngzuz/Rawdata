@@ -13,16 +13,25 @@ namespace Rawdata.Data.Services
         {
         }
 
-        public virtual Task<User> GetUserById(int id)
+        public virtual Task<User> GetUserById(int? id)
         {
             return Context.Users
-                .SingleOrDefaultAsync(u => u.Id == id);
+                .Where(u => u.Id == id)
+                .Include(u => u.MarkedComments)
+                    .ThenInclude(mc => mc.Comment)
+                        .ThenInclude(c => c.Author)
+                .Include(u => u.MarkedPosts)
+                    .ThenInclude(mp => mp.Post)
+                        .ThenInclude(p => p.Author)
+                .Include(u => u.Searches)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<User> GetUserByEmail(string email)
         {
             return await Context.Users
-                .SingleOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                .Where(u => u.Email.ToLower() == email.ToLower())
+                .SingleOrDefaultAsync();
         }
 
         public async Task<User> RegisterUser(User user)
@@ -43,7 +52,10 @@ namespace Rawdata.Data.Services
 
         public IQueryable<MarkedPost> GetMarkedPosts(int? userId)
         {
-            return Context.MarkedPosts.Where(mp => mp.UserId == userId);
+            return Context.MarkedPosts
+                .Where(mp => mp.UserId == userId)
+                .Include(mp => mp.Post)
+                .ThenInclude(p => p.Author);
         }
 
         public IQueryable<MarkedComment> GetMarkedComments(int userId)
@@ -53,13 +65,18 @@ namespace Rawdata.Data.Services
 
         public async Task SaveToSearchHistory(int? userId, string searchText)
         {
-            if (userId.HasValue) {
+            if (userId.HasValue)
+            {
                 // using sql so we can ignore dupolicate conflicts
-                try {
+                try
+                {
                     await Context.Database
-                        .ExecuteSqlCommandAsync($"insert into searches values ({userId}, {searchText}) on conflict do nothing");
+                        .ExecuteSqlCommandAsync(
+                            $"insert into searches values ({userId}, {searchText}) on conflict do nothing");
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
 
@@ -83,7 +100,8 @@ namespace Rawdata.Data.Services
             var markedPost =
                 await Context.MarkedPosts.SingleOrDefaultAsync(mp => mp.UserId == userId && mp.PostId == postId);
 
-            if (markedPost == null) {
+            if (markedPost == null)
+            {
                 return false;
             }
 
