@@ -73,7 +73,7 @@ class SearchService extends BaseService {
             searchParams: { word, grade }
         })
 
-        const response = await fetch(endpoint, this.requestOptions)
+        const response = await fetch(endpoint)
 
         return await response.json()
     }

@@ -1,54 +1,55 @@
-import * as cloud from 'd3-cloud'
-import {Canvas} from 'canvas'
-import Store from '@/Store.js'
+import * as d3 from 'd3'
+import cloud from 'd3-cloud'
+
 import { Component } from './Component.js'
-import { pureComputed } from 'knockout'
+import SearchService from 'Services/SearchService.js'
 
 class WordCloud extends Component {
     constructor(args) {
         super(args)
-        this.isLoading = pureComputed(
-            () => Store.state().isLoading()
-        )
 
-        // Store.state().search.subscribe(v => {
-        //     d3.select(this.$el.querySelector('svg')).selectAll("*").remove()
-        //     Store.state().isLoading(true)
-        //     this.fetchGraphInput(v[0])
-        // })
-        this.init()
+        if (this.$params.word) {
+            this.loadGraphInput(this.$params.word)
+        }
     }
 
-    // async fetchGraphInput(word) {
-    //     Store.state().isLoading(true)
-    //
-    //     let result = await SearchService.getForceGraphInput(word, 8)
-    //     this.init(result)
-    // }
+    async loadGraphInput(word) {
+        let result = await SearchService.getWords(word, 100)
+        this.drawWordCloud(result)
+    }
 
+    drawWordCloud(result) {
+        const words = result.map(item => ({
+            text: item.word,
+            size: item.weight
+        }))
 
-    init() {
-
-        var words = ["Hello", "world", "normally", "you", "want", "more", "words", "than", "this"]
-            .map(function(d) {
-                return {text: d, size: 10 + Math.random() * 90};
-            });
-
-        cloud().size([960, 500])
-            .canvas(() => {return new Canvas(1, 1);})
+        const layout = cloud()
+            .size([1110, 500])
             .words(words)
             .padding(5)
-            .rotate(function() { return ~~(Math.random() * 2) * 90; })
-            .font("Impact")
-            .fontSize(function(d) { return d.size; })
-            .start();
-    }
+            .rotate(() => ~~(Math.random() * 2) * 90)
+            .font('Impact')
+            .fontSize(d => d.size)
+            .start()
 
+        d3.select(this.$el.querySelector('svg'))
+            .append('g')
+            .attr('transform', `translate(${layout.size()[0] / 2},${layout.size()[1] / 2})`)
+            .selectAll('text')
+            .data(words)
+            .enter()
+            .append('text')
+            .style('font-size', d => d.size + 'px')
+            .style('font-family', 'Impact')
+            .attr('text-anchor', 'middle')
+            .attr('transform', d => `translate(${[d.x, d.y]})rotate(${d.rotate})`)
+            .text(d => d.text)
+    }
 }
 
 const template = /* html */ `
-<canvas id="canvas" width="960" height="500">
-</canvas>
+<svg data-bind="visible: $params.word" width="1110" height="500"></svg>
 `
 
 export default {
