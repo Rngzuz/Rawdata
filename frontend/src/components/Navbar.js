@@ -38,13 +38,10 @@ const template = /* html */ `
                     <a class="nav-link" href="/home" data-bind="click: (_, event) => navigate(event, 'home')">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user-profile" data-bind="visible: $store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'user-profile')">User profile</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="/force-Graph" data-bind="click: (_, event) => navigate(event, 'force-graph')">Force Graph</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/register" data-bind="click: (_, event) => navigate(event, 'register')">Register</a>
+                    <a class="nav-link" href="/user-profile" data-bind="visible: $store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'user-profile')">User profile</a>
                 </li>
             </ul>
 
@@ -52,13 +49,17 @@ const template = /* html */ `
                 <input type="text" class="form-control" placeholder="Search..." data-bind="value: rawSearch">
             </form>
 
-            <button class="btn btn-outline-success"
+            <button class="btn btn-outline-success mr-2"
                 data-bind="visible: !$store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'sign-in')"
                 type="button">Sign in</button>
 
             <button class="btn btn-outline-danger"
                 data-bind="visible: $store.getters.isAuthenticated(), click: () => $store.dispatch('updateIsAuthenticated', false)"
                 type="button">Sign Out</button>
+                
+            <button class="btn btn-outline-primary"
+                data-bind="visible: !$store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'register')"
+                type="button">Register</button>
         </div>
     </div>
 </nav>

@@ -46,6 +46,10 @@ mark {
     padding-left: 1rem !important;
 }
 
+.btn-sign-in {
+    padding-right: 5rem;
+}
+
 so-search {
     padding-top: 56px;
     position: fixed;

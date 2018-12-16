@@ -12,23 +12,28 @@ class Register extends Component {
     }
 
     async register() {
+        this.isLoading(true)
         const userData = {"displayName": this.username(),"email": this.email(), "password": this.password()}
 
         let registerResult = await AuthService.register(userData)
 
         if(registerResult.email !== undefined) {
             const credentials = {"email": registerResult.email, "password":this.password()}
-            let signInResult = await AuthService.signIn()
+            let signInResult = await AuthService.signIn(credentials)
 
             this.$store.dispatch('updateIsAuthenticated', true)
-            this.$router.setRoute('home')
-        }
+            this.$router.setRoute('user-profile')
+        } else (
+            alert('Registration Failed')
+        )
+
+        this.isLoading(false)
     }
 
 }
 
 const template = /* html */ `
-<div class="card">
+<div class="card" data-bind="visible: !isLoading()">
     <div class="card-body">
         <form data-bind="submit: register">
             <div class="form-group">
