@@ -13,6 +13,10 @@ namespace Rawdata.Service.Profiles
         {
             CreateMap<Comment, CommentDto>()
                 .ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.Id)
+                )
+                .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)
                 )
@@ -38,6 +42,10 @@ namespace Rawdata.Service.Profiles
         public MarkedCommentProfile(IUrlHelper url)
         {
             CreateMap<MarkedComment, MarkedCommentDto>()
+                .ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.CommentId)
+                )
                 .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Comment.Author.DisplayName)

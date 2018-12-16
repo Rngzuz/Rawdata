@@ -229,6 +229,7 @@ namespace Rawdata.Service.Controllers
         {
             dynamic dto = new ExpandoObject();
 
+            dto.id = markedPost.PostId;
             dto.body = markedPost.Post.Body;
             dto.Score = markedPost.Post.Score;
             dto.Score = markedPost.Post.Score;

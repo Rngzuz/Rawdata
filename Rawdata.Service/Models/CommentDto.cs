@@ -5,7 +5,8 @@ using Rawdata.Data.Models;
 namespace Rawdata.Service.Models
 {
     public class CommentDto
-    {
+    {    
+        public int Id { get; set; }
         public int Score { get; set; }
         public string Text { get; set; }
         public DateTime CreationDate { get; set; }
