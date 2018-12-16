@@ -1,31 +1,23 @@
 export class BaseService {
-    constructor(baseUrl, requestOptions = {}) {
+    constructor(baseUrl) {
         this.baseUrl = baseUrl
+    }
 
+    get requestOptions() {
         const token = localStorage.getItem('token')
 
-        // if (token) {
-        //     this.requestOptions = {
-        //         credentials: 'include',
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`
-        //         },
-        //         ...requestOptions
-        //     }
-        // } else {
-        //     this.requestOptions = requestOptions
-        // }
-
-
-        this.requestOptions = {
-            credentials: 'include',
-            headers: {
-                'Authorization': `Bearer eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJ1bmlxdWVfbmFtZSI6IlRlc3RVc2VyIiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIiwibmJmIjoxNTQ0OTcyMjgwLCJleHAiOjE1NDc2NTA2ODAsImlhdCI6MTU0NDk3MjI4MH0.FcRidF3TrRvLqZAIPGjtnKrWyWE2uXiLvp0RGewEYTXMw69Tc5Y5EezrE73jyH35`
-                // 'Authorization': `Bearer ${token}`
-                ,'Content-Type': 'application/json'
-            },
-            ...requestOptions
+        if (token) {
+            return {
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                ...requestOptions
+            }
         }
+
+        return {}
     }
 
     objectToSearchParams(object) {

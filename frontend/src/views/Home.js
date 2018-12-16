@@ -1,6 +1,7 @@
 import SearchService from 'Services/SearchService.js'
 import { observableArray } from 'knockout'
 import { Component, wrapComponent } from 'Components/Component.js'
+import { getPlainExcerpt, getMarkedExcerpt, stripHtmlAndMark } from 'Bindings/highlightText.js'
 
 class Home extends Component {
     constructor(args) {
@@ -9,55 +10,55 @@ class Home extends Component {
         this.words = this.$store.getters.searchParams
         this.items = observableArray()
 
-        this.isLoading(true)
-        this.fetchItems()
+        this.fetchPosts(
+            this.$store.getters.searchParams()
+        )
 
-        this.$store.subscribe('searchParams', value => {
-            this.isLoading(true)
-            this.fetchItems(value)
+        this.$store.subscribe('searchParams', words => {
+            this.fetchPosts(words)
         })
     }
 
-    async fetchItems(words) {
-        let result
+    async fetchPosts(words) {
+        this.isLoading(true)
 
-        if (!words || words.length <= 0) {
-            result = await SearchService.getNewest()
+        let posts
 
-            result = result.map(item => {
-                return {
-                    ...item,
-                    body: item.body
-                        .substring(0, 500)
-                        .replace(/<(?:.|\n)*?>/gm, '')
-                        .trimStart()
-                        .trimEnd()
+        if (words.length > 0) {
+            const json = await SearchService
+                .getBestMatch(words, 1, 50)
+
+            posts = json.items.map(post => {
+                const newPost = {
+                    ...post,
+                    body: getMarkedExcerpt(post.body, words)
                 }
+
+                if (post.title) {
+                    newPost.title = stripHtmlAndMark(post.title, words)
+                }
+
+                return newPost
             })
-
         } else {
-            result = await SearchService.getBestMatch(words, 1, 50)
+            const json = await SearchService
+                .getNewest()
 
-            result = result.items.map(item => {
-                const body = item.excerpts
-                    .map(sentence => {
-                        // Need to copy the string by value to use the g flag in regex
-                        const tmpSentence = sentence
-
-                        return tmpSentence
-                            .replace(/\s*([^\w\s\.\,]|n't)\s*/gi, '$1')
-                            .replace(/[\s\.]*$/s, '')
-                    })
-                    .join(' ... ')
-
-                return { ...item, body }
+            posts = json.map(post => {
+                return {
+                    ...post,
+                    body: getPlainExcerpt(post.body)
+                }
             })
         }
 
-        setTimeout(() => {
-            this.isLoading(false)
-            this.items(result)
-        }, 1100)
+        this.items(posts)
+        this.isLoading(false)
+    }
+
+    navigate(event, routeName, params = {}) {
+        event.preventDefault()
+        this.$router.setRoute(routeName, params)
     }
 }
 
@@ -70,15 +71,12 @@ const template = /* html */ `
                 <small class="d-block text-muted">score</small>
             </div>
             <article class="flex-grow-1">
-                <h5 class="card-title" data-bind="visible: $data.title !== undefined">
-                    <span data-bind="highlightText: $data.title, units: $component.words()"></span>
-                </h5>
-                <div data-bind="highlightText: $data.body, units: $component.words()">
-                    <span>...</span>
-                </div>
+                <h5 class="card-title" data-bind="visible: $data.title, html: $data.title"></h5>
+                <div data-bind="html: $data.body + '...'"></div>
                 <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                     <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                 </cite>
+                <button type="button" data-bind="click: (_, event) => $component.navigate(event, 'question', { id: $data.questionId })">Read more</button>
             </article>
         </li>
     </ul>

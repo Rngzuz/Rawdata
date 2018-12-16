@@ -58,7 +58,7 @@ namespace Rawdata.Data
         {
             builder.Query<SearchResult>().Property(m => m.PostId).HasColumnName("post_id");
             builder.Query<SearchResult>().Property(m => m.Rank).HasColumnName("rank");
-            builder.Query<SearchResult>().Property(m => m.Excerpts).HasColumnName("sentences");
+            // builder.Query<SearchResult>().Property(m => m.Excerpts).HasColumnName("sentences");
             builder.Query<SearchResult>().HasOne(m => m.Post);
         }
 
