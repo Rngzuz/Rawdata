@@ -1,9 +1,11 @@
+const domParser = new DOMParser()
+
 const getSentences = text => {
-    const element = document.createElement('div')
-    element.innerHTML = text
+    const doc = domParser
+        .parseFromString(text, 'text/html')
 
     return Array
-        .from(element.children)
+        .from(doc.body.children)
         .filter(tag => !/(hr|br|img)/i.test(tag.tagName))
         .map(tag => {
             return tag.innerHTML
@@ -25,24 +27,23 @@ const getRelevantSentences = (texts, toMark, joinBy, length = 400) => {
         .replace(regex, '<mark>$&</mark>')
 }
 
-const escapeHtmlAndMark = (text, toMark) => {
-    const regex = new RegExp(`\\b(${toMark.join('|')})\\b`, 'gi')
-
-    return text
-        .replace(/[<>]/g, i => '&#' + i.charCodeAt(0) + ';')
-        .replace(regex, '<mark>$&</mark>')
-}
-
 const escapeHtml = text => {
     return text.replace(/[<>]/g, i => '&#' + i.charCodeAt(0) + ';')
 }
 
+const escapeHtmlAndMark = (text, toMark) => {
+    const regex = new RegExp(`\\b(${toMark.join('|')})\\b`, 'gi')
+
+    return escapeHtml(text)
+        .replace(regex, '<mark>$&</mark>')
+}
+
 const getPlainExcerpt = (text, length = 400) => {
-    const element = document.createElement('div')
-    element.innerHTML = text
+    const doc = domParser
+        .parseFromString(text, 'text/html')
 
     return Array
-        .from(element.children)
+        .from(doc.body.children)
         .filter(tag => /(p|code)/i.test(tag.tagName))
         .map(tag => tag.textContent)
         .join(' ')
