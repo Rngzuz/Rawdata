@@ -1,4 +1,3 @@
-import Store from '../Store'
 import { observable, observableArray, computed } from 'knockout'
 import { Component, wrapComponent } from '../components/Component.js'
 import UserService from '../services/UserService.js'
@@ -26,14 +25,20 @@ class UserProfile extends Component {
         this.isLoading(false)
     }
 
-    async unmarkPost(postId) {
-        this.isLoading(true)
+    async unmarkPost(post, event) {
+        event.preventDefault()
+        this.markedPosts.destroy(post)
 
-        let result = await UserService.toggleMarkedPost(postId)
-        console.log(result)
+        let result = await UserService.toggleMarkedPost(post.id)
+        console.log('Post Unmarked: ', post )
+    }
 
+    async unmarkComment(comment, event) {
+        event.preventDefault()
+        this.markedComments.destroy(comment)
 
-        this.isLoading(false)
+        let result = await UserService.toggleMarkedComment(comment.id)
+        console.log('Comment Unmarked: ', comment )
     }
 }
 
@@ -58,16 +63,18 @@ const template = /* html */ `
                 </div>
                 <article class="flex-grow-1">
                     <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-
+                    
                     <h5 class="card-title" data-bind="visible: $data.title, text: $data.title"></h5>
-
+                    
                     <div data-bind="text: $data.body"></div>
 
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
                 </article>
-                <i class="far fa-star fa-2x marked-star"></i>
+                <div>
+                <i class="fas fa-star fa-2x marked-star" data-bind="click: (post, event) => $component.unmarkPost(post, event)"></i>
+                </div>
             </li>
         </ul>
     </div>
@@ -89,6 +96,8 @@ const template = /* html */ `
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
                 </article>
+                
+                <i class="fas fa-star fa-2x marked-star" data-bind="click: (comment, event) => $component.unmarkComment(comment, event)"></i>
             </li>
         </ul>
     </div>

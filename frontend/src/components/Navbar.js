@@ -38,7 +38,10 @@ const template = /* html */ `
                     <a class="nav-link" href="/home" data-bind="click: (_, event) => navigate(event, 'home')">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user-profile" data-bind="click: (_, event) => navigate(event, 'user-profile')">User profile</a>
+                    <a class="nav-link" href="/user-profile" data-bind="visible: $store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'user-profile')">User profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/force-Graph" data-bind="click: (_, event) => navigate(event, 'force-graph')">Force Graph</a>
                 </li>
             </ul>
 

@@ -111,9 +111,17 @@ pre:last-child, p:last-child {
     font-size: 25px;
     font-style: italic;
     padding-bottom: 1.5rem;
+    color: #007bff;
 }
 
 .marked-star {
-   padding-right: 1.25rem;
-   padding-left: 1.25rem;
+     padding-right: 1.25rem;
+     padding-left: 1.25rem;
+     color: #007bff;
+ }
+
+.marked-edit {
+    padding-right: 1.0rem;
+    padding-left: 1.25rem;
+    color: #007bff;
 }

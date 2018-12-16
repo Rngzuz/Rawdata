@@ -1,7 +1,7 @@
 import { observable } from 'knockout'
 
 class Router {
-    constructor (routes) {
+    constructor(routes) {
         this.routes = routes
         this.currentRoute = observable({ ...routes[0], params: {} })
     }
@@ -45,5 +45,10 @@ export default new Router([
         name: 'failure',
         component: 'so-failure',
         title: 'Failure'
+    },
+    {
+        name: 'force-graph',
+        component: 'so-force-graph',
+        title: 'Force Graph'
     }
 ])
