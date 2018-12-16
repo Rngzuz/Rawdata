@@ -18,7 +18,6 @@ class Question extends Component {
         this.isLoading(true)
         const response = await fetch(`http://localhost:5000/api/questions/${this.$params.id}`)
         this.question(await response.json())
-        console.log(this.question())
         this.isLoading(false)
     }
 }
@@ -28,15 +27,10 @@ const template = /* html */ `
     <h2 class="mt-5 mb-3" data-bind="text: question().title"></h2>
 
     <article class="card mb-5">
-
-
-
         <section class="card-body" data-bind="html: question().body"></section>
-
         <footer class="card-footer text-muted">
             <cite data-bind="text: question().authorDisplayName"></cite>
         </footer>
-
     </article>
 
     <!-- ko foreach: question().answers -->

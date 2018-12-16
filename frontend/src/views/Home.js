@@ -1,7 +1,7 @@
 import SearchService from 'Services/SearchService.js'
 import { observableArray } from 'knockout'
 import { Component, wrapComponent } from 'Components/Component.js'
-import { getPlainExcerpt, getMarkedExcerpt, stripHtmlAndMark } from 'Bindings/highlightText.js'
+import { getPlainExcerpt, getMarkedExcerpt, escapeHtmlAndMark, escapeHtml } from 'Bindings/highlightText.js'
 
 class Home extends Component {
     constructor(args) {
@@ -35,7 +35,7 @@ class Home extends Component {
                 }
 
                 if (post.title) {
-                    newPost.title = stripHtmlAndMark(post.title, words)
+                    newPost.title = escapeHtmlAndMark(post.title, words)
                 }
 
                 return newPost
@@ -45,10 +45,17 @@ class Home extends Component {
                 .getNewest()
 
             posts = json.map(post => {
-                return {
+
+                const newPost = {
                     ...post,
                     body: getPlainExcerpt(post.body)
                 }
+
+                if (post.title) {
+                    newPost.title = escapeHtml(post.title, words)
+                }
+
+                return newPost
             })
         }
 
@@ -63,24 +70,22 @@ class Home extends Component {
 }
 
 const template = /* html */ `
-<div data-bind="visible: !isLoading()" class="card">
-    <ul class="list-group list-group-flush" data-bind="foreach: items">
-        <li class="list-group-item d-flex justify-content-between align-items-center py-4">
-            <div class="mr-3 text-center flex-shrink-1">
-                <span class="d-block badge badge-primary badge-pill" data-bind="text: score"></span>
-                <small class="d-block text-muted">score</small>
-            </div>
-            <article class="flex-grow-1">
-                <h5 class="card-title" data-bind="visible: $data.title, html: $data.title"></h5>
-                <div data-bind="html: $data.body + '...'"></div>
-                <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
-                    <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
-                </cite>
-                <button type="button" data-bind="click: (_, event) => $component.navigate(event, 'question', { id: $data.questionId })">Read more</button>
-            </article>
-        </li>
-    </ul>
-</div>
+
+
+<section data-bind="visible: !isLoading(), foreach: items">
+    <article class="card mb-3">
+        <section class="card-body">
+            <h5 class="card-title" data-bind="visible: $data.title, html: $data.title"></h5>
+            <div class="mb-4" data-bind="html: $data.body + '...'"></div>
+            <button type="button" class="btn btn-primary btn-sm"
+                    data-bind="click: (_, event) => $component.navigate(event, 'question', { id: $data.questionId })">Read more</button>
+        </section>
+        <footer class="card-footer text-muted">
+            <cite data-bind="text: $data.authorDisplayName"></cite>
+        </footer>
+    </article>
+</section>
+
 `
 
 export default wrapComponent(Home, template)
