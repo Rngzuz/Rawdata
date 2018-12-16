@@ -11,6 +11,7 @@ import highlightText from './bindings/highlightText.js'
 // Views
 import Home from 'Views/Home.js'
 import SignIn from 'Views/SignIn.js'
+import UserProfile from 'Views/UserProfile.js'
 
 // Components
 import App from './App.js'
@@ -22,6 +23,7 @@ import WordCloud from 'Components/WordCloud.js'
 
 ko.components.register('so-home', Home)
 ko.components.register('so-sign-in', SignIn)
+ko.components.register('so-user-profile', UserProfile)
 
 ko.components.register('so-app', App)
 ko.components.register('so-loader', Loader)
