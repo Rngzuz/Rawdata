@@ -1,6 +1,6 @@
-import Store from '@/Store.js'
+import Store from '../Store'
 import {observable, pureComputed, observableArray, computed} from 'knockout'
-import {Component} from './Component.js'
+import {Component} from '../components/Component.js'
 
 import UserService from '../services/UserService.js'
 
@@ -34,7 +34,7 @@ class UserProfile extends Component {
 }
 
 const template = /* html */ `
-<div>
+<div data-bind="visible: !isLoading()">
     <so-loader id="loader" data-bind="visible: isLoading()" params="size: 200"></so-loader>
     <div class="card-user-profile">
             <div >
@@ -45,7 +45,7 @@ const template = /* html */ `
     </div>       
 
     <h2 class="display-4">Marked Posts</h2>
-    <div data-bind="visible: !isLoading()" class="card">
+    <div class="card">
         <ul class="list-group list-group-flush" data-bind="foreach: markedPosts">
             <li class="list-group-item d-flex justify-content-between align-items-center py-4">
                 <div class="mr-3 text-center flex-shrink-1">
@@ -68,7 +68,7 @@ const template = /* html */ `
     </div>
     
     <h2 class="display-4 profile-title">Marked Comments</h2>
-    <div data-bind="visible: !isLoading()" class="card">
+    <div class="card">
         <ul class="list-group list-group-flush" data-bind="foreach: markedComments">
             <li class="list-group-item d-flex justify-content-between align-items-center py-4">
                 <div class="mr-3 text-center flex-shrink-1">
@@ -86,7 +86,6 @@ const template = /* html */ `
             </li>
         </ul>
     </div>
-<!--<p>User profile</p>-->
 </div>    
 `
 
