@@ -7,16 +7,16 @@ class Store {
 
         const commit = (type, payload) =>
             mutations[type]
-            .call(this, state, payload)
+                .call(this, state, payload)
 
         const dispatch = (type, payload) =>
             actions[type]
-            .call(this, {
-                state,
-                getters: this.getters,
-                commit,
-                payload
-            })
+                .call(this, {
+                    state,
+                    getters: this.getters,
+                    commit,
+                    payload
+                })
 
         const reduceGetters = (accumulator, getter, key) => {
             accumulator[key] = getter(state)
@@ -34,16 +34,19 @@ class Store {
 
 export default new Store({
     state: {
-        currentView: observable('so-home'),
-        isLoading: observable(true),
+        isAuthenticated: observable(false),
+        isLoading: observable(false),
         searchParams: observableArray([])
     },
     getters: {
-        currentView: state => state.currentView,
+        isAuthenticated: state => state.isAuthenticated,
         isLoading: state => state.isLoading,
         searchParams: state => state.searchParams
     },
     mutations: {
+        SET_IS_AUTHENTICATED(state, payload) {
+            state.isAuthenticated(payload)
+        },
         SET_IS_LOADING(state, payload) {
             state.isLoading(payload)
         },
@@ -52,7 +55,10 @@ export default new Store({
         }
     },
     actions: {
-        updateIsLoading({ state, commit, payload }) {
+        updateIsAuthenticated({ commit, payload }) {
+            commit('SET_IS_AUTHENTICATED', payload)
+        },
+        updateIsLoading({ commit, payload }) {
             commit('SET_IS_LOADING', payload)
         },
         updateSearchParams({ commit, payload }) {

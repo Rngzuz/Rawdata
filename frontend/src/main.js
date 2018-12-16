@@ -1,4 +1,5 @@
 import ko from 'knockout'
+import Store from './Store.js'
 
 // Stylesheets
 import 'bootstrap/dist/css/bootstrap.min.css'

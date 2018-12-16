@@ -1,21 +1,18 @@
-import Store from '@/Store.js'
 import SearchService from 'Services/SearchService.js'
-import { observableArray, computed } from 'knockout'
+import { observableArray } from 'knockout'
+import { Component, wrapComponent } from 'Components/Component.js'
 
-class Home {
-    constructor() {
-        this.isLoading = computed({
-            read: Store.getters.isLoading,
-            write: newValue => Store.dispatch('updateIsLoading', newValue)
-        })
+class Home extends Component {
+    constructor(args) {
+        super(args)
 
-        this.words = Store.getters.searchParams
+        this.words = this.$store.getters.searchParams
         this.items = observableArray()
 
         this.isLoading(true)
         this.fetchItems()
 
-        Store.subscribe('searchParams', value => {
+        this.$store.subscribe('searchParams', value => {
             this.isLoading(true)
             this.fetchItems(value)
         })
@@ -88,4 +85,4 @@ const template = /* html */ `
 </div>
 `
 
-export default { viewModel: Home, template }
+export default wrapComponent(Home, template)

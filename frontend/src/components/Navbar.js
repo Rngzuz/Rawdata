@@ -1,6 +1,6 @@
 import Store from '@/Store.js'
 import { observable } from 'knockout'
-import { Component } from './Component.js'
+import { Component, wrapComponent } from './Component.js'
 
 class Navbar extends Component {
     constructor(args) {
@@ -18,9 +18,9 @@ class Navbar extends Component {
         this.collapsible.classList.toggle('show')
     }
 
-    setCurrentView(event, newView) {
+    navigate(event, routeName, params = {}) {
         event.preventDefault()
-        this.$params.currentView(newView)
+        this.$router.setRoute(routeName, params)
     }
 }
 
@@ -34,24 +34,24 @@ const template = /* html */ `
         <div id="collapse" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/home" data-bind="click: (_, event) => setCurrentView(event, 'so-home')">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about" data-bind="click: (_, event) => setCurrentView(event, 'so-sign-in')">Sign in</a>
+                    <a class="nav-link" href="/home" data-bind="click: (_, event) => navigate(event, 'home')">Home</a>
                 </li>
             </ul>
 
-            <form class="form-inline my-2 my-lg-0" data-bind="submit: updateSearch">
+            <form class="form-inline my-2 mr-0 my-lg-0 mr-lg-2" data-bind="submit: updateSearch">
                 <input type="text" class="form-control" placeholder="Search..." data-bind="value: rawSearch">
             </form>
+
+            <button class="btn btn-outline-success"
+                data-bind="visible: !$store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'sign-in')"
+                type="button">Sign in</button>
+
+            <button class="btn btn-outline-danger"
+                data-bind="visible: $store.getters.isAuthenticated(), click: () => $store.dispatch('updateIsAuthenticated', false)"
+                type="button">Sign Out</button>
         </div>
     </div>
 </nav>
 `
 
-export default {
-    viewModel: {
-        createViewModel: (...args) => new Navbar(args)
-    },
-    template
-}
+export default wrapComponent(Navbar, template)
