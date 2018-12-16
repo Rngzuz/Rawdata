@@ -31,5 +31,10 @@ export default new Router([
         name: 'sign-in',
         component: 'so-sign-in',
         title: 'Sign in'
+    },
+    {
+        name: 'user-profile',
+        component: 'so-user-profile',
+        title: 'User profile'
     }
 ])

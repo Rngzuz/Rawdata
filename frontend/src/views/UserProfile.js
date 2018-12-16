@@ -1,17 +1,12 @@
 import Store from '../Store'
-import {observable, pureComputed, observableArray, computed} from 'knockout'
-import {Component} from '../components/Component.js'
-
+import { observable, observableArray, computed } from 'knockout'
+import { Component, wrapComponent } from '../components/Component.js'
 import UserService from '../services/UserService.js'
-
 
 class UserProfile extends Component {
     constructor(args) {
         super(args)
-        this.isLoading = computed({
-            read: Store.getters.isLoading,
-            write: newValue => Store.dispatch('updateIsLoading', newValue)
-        })
+
         this.isLoading(true)
 
         this.profile = observable({});
@@ -22,7 +17,6 @@ class UserProfile extends Component {
     }
 
     async fetchUserProfile() {
-
         let result = await UserService.getUserProfile()
         console.log(result)
 
@@ -37,12 +31,12 @@ const template = /* html */ `
 <div data-bind="visible: !isLoading()">
     <so-loader id="loader" data-bind="visible: isLoading()" params="size: 200"></so-loader>
     <div class="card-user-profile">
-            <div >
-                <h2 class="display-4" data-bind="text: profile().displayName">User Name here</h2>
-                <p><strong>Email: </strong><span data-bind="text: profile().email"></span> </p>
-                <p><strong>Profile created: </strong><span data-bind="text: profile().creationDate"></span> </p> 
-            </div>
-    </div>       
+        <div>
+            <h2 class="display-4" data-bind="text: profile().displayName">User Name here</h2>
+            <p><strong>Email: </strong><span data-bind="text: profile().email"></span> </p>
+            <p><strong>Profile created: </strong><span data-bind="text: profile().creationDate"></span> </p>
+        </div>
+    </div>
 
     <h2 class="display-4">Marked Posts</h2>
     <div class="card">
@@ -54,11 +48,11 @@ const template = /* html */ `
                 </div>
                 <article class="flex-grow-1">
                     <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-                    
+
                     <h5 class="card-title" data-bind="visible: $data.title, text: $data.title"></h5>
-                    
+
                     <div data-bind="text: $data.body"></div>
-                    
+
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
@@ -66,7 +60,7 @@ const template = /* html */ `
             </li>
         </ul>
     </div>
-    
+
     <h2 class="display-4 profile-title">Marked Comments</h2>
     <div class="card">
         <ul class="list-group list-group-flush" data-bind="foreach: markedComments">
@@ -77,9 +71,9 @@ const template = /* html */ `
                 </div>
                 <article class="flex-grow-1">
                     <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-                
+
                     <div data-bind="text: $data.text"> </div>
-                    
+
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
@@ -87,12 +81,7 @@ const template = /* html */ `
             </li>
         </ul>
     </div>
-</div>    
+</div>
 `
 
-export default {
-    viewModel: {
-        createViewModel: (...args) => new UserProfile(args)
-    },
-    template
-}
+export default wrapComponent(UserProfile, template)
