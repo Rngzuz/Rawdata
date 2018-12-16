@@ -53,12 +53,12 @@ const template = /* html */ `
                     <small class="d-block text-muted">score</small>
                 </div>
                 <article class="flex-grow-1">
-                    <h5 class="card-title" data-bind="visible: $data.title !== undefined">
-                        <span data-bind="text: $data.title"></span>
-                    </h5>
-                    <div >
-                        <span data-bind="text: $data.body"></span>
-                    </div>
+                    <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
+                    
+                    <h5 class="card-title" data-bind="visible: $data.title, text: $data.title"></h5>
+                    
+                    <div data-bind="text: $data.body"></div>
+                    
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
@@ -76,9 +76,10 @@ const template = /* html */ `
                     <small class="d-block text-muted">score</small>
                 </div>
                 <article class="flex-grow-1">
-                    <div >
-                        <span data-bind="text: $data.text"></span>
-                    </div>
+                    <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
+                
+                    <div data-bind="text: $data.text"> </div>
+                    
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>

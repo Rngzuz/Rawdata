@@ -91,3 +91,9 @@ text {
     padding-top: 1.25rem;
 }
 
+.profile-note {
+    font-size: 25px;
+    font-style: italic;
+    padding-bottom: 1.5rem;
+}
+
