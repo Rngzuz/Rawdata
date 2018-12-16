@@ -16,7 +16,7 @@ namespace Rawdata.Data.Services
         public async Task<Question> GetQuestionById(int id)
         {
             return await Context.Questions
-                .FromSql($"select * from posts_with_tags where id = {id}")
+                .Where(q => q.Id == id)
                 .Include(q => q.Answers)
                     .ThenInclude(a => a.Author)
                 .Include(q => q.Answers)

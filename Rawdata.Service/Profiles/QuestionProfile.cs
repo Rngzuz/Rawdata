@@ -18,6 +18,10 @@ namespace Rawdata.Service.Profiles
 
             CreateMap<Question, QuestionListDto>()
                 .ForMember(
+                    dest => dest.QuestionId,
+                    opt => opt.MapFrom(src => src.Id)
+                )
+                .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)
                 )
@@ -36,7 +40,7 @@ namespace Rawdata.Service.Profiles
 
             CreateMap<Question, QuestionDto>()
                 .ForMember(
-                    dest => dest.Id,
+                    dest => dest.QuestionId,
                     opt => opt.MapFrom(src => src.Id)
                 )
                 .ForMember(

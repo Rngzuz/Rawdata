@@ -11,6 +11,7 @@ class Navbar extends Component {
 
     updateSearch() {
         const rawSearch = this.rawSearch()
+        this.$router.setRoute('home')
         Store.dispatch('updateSearchParams', rawSearch)
     }
 

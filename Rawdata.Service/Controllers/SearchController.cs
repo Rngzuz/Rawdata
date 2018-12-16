@@ -34,7 +34,7 @@ namespace Rawdata.Service.Controllers
 
             var response = new
             {
-                items = await DirtyMap(result.Items),
+                items = await MapToSearchResultDto(result.Items),
                 currentPage = result.CurrentPage,
                 pageCount = result.PageCount
             };
@@ -52,7 +52,7 @@ namespace Rawdata.Service.Controllers
 
             var response = new
             {
-                items = await DirtyMap(result.Items),
+                items = await MapToSearchResultDto(result.Items),
                 currentPage = result.CurrentPage,
                 pageCount = result.PageCount
             };
@@ -70,7 +70,7 @@ namespace Rawdata.Service.Controllers
 
             var response = new
             {
-                items = await DirtyMap(result.Items),
+                items = await MapToSearchResultDto(result.Items),
                 currentPage = result.CurrentPage,
                 pageCount = result.PageCount
             };
@@ -114,7 +114,7 @@ namespace Rawdata.Service.Controllers
         }
 
         //TODO: We want to find a better approach to map
-        protected async Task<IList<dynamic>> DirtyMap(IList<SearchResult> result)
+        protected async Task<IList<dynamic>> MapToSearchResultDto(IList<SearchResult> result)
         {
             var items = new List<dynamic>();
             var markedPosts = await UserService
@@ -126,8 +126,7 @@ namespace Rawdata.Service.Controllers
                 var markedPost = markedPosts
                     .SingleOrDefault(mp => mp.PostId == item.PostId);
 
-                obj.Id = item.PostId;
-                obj.Excerpts = item.Excerpts;
+                obj.Body = item.Post.Body;
                 obj.Score = item.Post.Score;
                 obj.Rank = item.Rank;
                 obj.CreationDate = item.Post.CreationDate;
@@ -139,6 +138,7 @@ namespace Rawdata.Service.Controllers
                 }
 
                 if (item.Post is Question q) {
+                    obj.QuestionId = q.Id;
                     obj.Title = q.Title;
 
                     obj.Links = new
@@ -148,6 +148,8 @@ namespace Rawdata.Service.Controllers
                     };
                 }
                 else if (item.Post is Answer a) {
+                    obj.QuestionId = a.ParentId;
+
                     obj.Links = new
                     {
                         Self = Url.Link(GET_ANSWER_BY_ID, new { Id = a.Id }),

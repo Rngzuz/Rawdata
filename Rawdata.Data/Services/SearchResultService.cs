@@ -18,7 +18,7 @@ namespace Rawdata.Data.Services
         public async Task<PaginatedResult<SearchResult>> GetBestMatch(int page, int size, params string[] words)
         {
             var query = Context.SearchResults
-                .FromSql($"select * from best_match_context({words})")
+                .FromSql($"select * from best_match({words})")
                 .OrderByDescending(m => m.Rank)
                 .ThenByDescending(m => m.Post.Score);
 
@@ -30,7 +30,7 @@ namespace Rawdata.Data.Services
                 .Include(m => m.Post)
                 .ThenInclude(p => p.Author)
                 .ToListAsync();
-            
+
             return new PaginatedResult<SearchResult>
             {
                 Items = results,
@@ -43,7 +43,7 @@ namespace Rawdata.Data.Services
         public async Task<PaginatedResult<SearchResult>> GetRankedWeightedMatch(int page, int size, params string[] words)
         {
             var query = Context.SearchResults
-                .FromSql($"select * from ranked_weighted_match_context({words})")
+                .FromSql($"select * from ranked_weighted_match({words})")
                 .OrderByDescending(m => m.Rank)
                 .ThenByDescending(m => m.Post.Score);
 
@@ -62,13 +62,13 @@ namespace Rawdata.Data.Services
                 CurrentPage = page,
                 PageCount = CalculatePages(totalCount, size)
             };
-    
+
         }
 
         public async Task<PaginatedResult<SearchResult>> GetExactMatchAsync(int page, int size, params string[] words)
         {
             var query = Context.SearchResults
-                .FromSql($"select * from exact_match_context({words})")
+                .FromSql($"select * from exact_match({words})")
                 .OrderByDescending(m => m.Post.Score);
 
             var totalCount = await query.CountAsync();
@@ -79,7 +79,7 @@ namespace Rawdata.Data.Services
                 .Include(m => m.Post)
                     .ThenInclude(p => p.Author)
                 .ToListAsync();
-           
+
             return new PaginatedResult<SearchResult>
             {
                 Items = results,

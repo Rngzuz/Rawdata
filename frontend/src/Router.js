@@ -10,7 +10,6 @@ class Router {
         const route = this.routes
             .find(route => route.name === routeName)
 
-
         if (routeName !== this.currentRoute().name) {
             this.currentRoute({ ...route, params })
         }
@@ -36,5 +35,15 @@ export default new Router([
         name: 'user-profile',
         component: 'so-user-profile',
         title: 'User profile'
+    },
+    {
+        name: 'question',
+        component: 'so-question',
+        title: 'Question'
+    },
+    {
+        name: 'failure',
+        component: 'so-failure',
+        title: 'Failure'
     }
 ])
