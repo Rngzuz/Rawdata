@@ -55,12 +55,15 @@ namespace Rawdata.Data.Services
             return Context.MarkedPosts
                 .Where(mp => mp.UserId == userId)
                 .Include(mp => mp.Post)
-                .ThenInclude(p => p.Author);
+                .ThenInclude(p => p.Author)
+                .OrderByDescending(mp => mp.Post.Score);
         }
 
         public IQueryable<MarkedComment> GetMarkedComments(int userId)
         {
-            return Context.MarkedComments.Where(mc => mc.UserId == userId);
+            return Context.MarkedComments
+                .Where(mc => mc.UserId == userId)
+                .OrderByDescending(mp => mp.Comment.Score);;
         }
 
         public async Task SaveToSearchHistory(int? userId, string searchText)

@@ -71,7 +71,7 @@ namespace Rawdata.Service.Controllers
             //TODO fix this 2 request hack
             user = await UserService.GetUserById(id);
             IList<MarkedPost> markedPosts = await UserService.GetMarkedPosts(id).ToListAsync();
-            userDto = await MapUserToDto(user, markedPosts);
+            userDto = MapUserToDto(user, markedPosts);
 //            }
 //            catch {
 //                return StatusCode(500);
@@ -156,7 +156,7 @@ namespace Rawdata.Service.Controllers
         {
             IList<MarkedPost> markedPosts = await UserService.GetMarkedPosts(userId).ToListAsync();
 
-            ICollection<dynamic> markedPostsDto = MapMarkedPostToDto(markedPosts);
+            ICollection<dynamic> markedPostsDto = MapMarkedPostsToDto(markedPosts);
 
             return Ok(
                 markedPostsDto
@@ -167,8 +167,15 @@ namespace Rawdata.Service.Controllers
         [Authorize, HttpPost("posts", Name = TOGGLE_MARKED_POST)]
         public async Task<IActionResult> ToggleMarkedPost([FromBody] TogglePostDto postDto)
         {
+            int? id = GetUserId();
+
+            if (id == null)
+            {
+                return Unauthorized();
+            }
+            
             var result = await UserService
-                .ToggleMarkedPost(GetUserId(), postDto.PostId, postDto.Note)
+                .ToggleMarkedPost(id, postDto.PostId, postDto.Note)
                 .Include(p => p.Post)
                 .ThenInclude(p => p.Author)
                 .SingleOrDefaultAsync();
@@ -179,20 +186,8 @@ namespace Rawdata.Service.Controllers
                 return StatusCode(204);
             }
 
-            //Else check if question or not and return appropriate DTO
-            var question = await QuestionService.GetQuestionById(result.PostId);
-            if (question != null)
-            {
-                return Ok(
-                    DtoMapper.Map<MarkedPost, MarkedQuestionDto>(result)
-                );
-            }
-            else
-            {
-                return Ok(
-                    DtoMapper.Map<MarkedPost, MarkedAnswerDto>(result)
-                );
-            }
+            return Ok(MapMarkedPostToDto(result));
+            
         }
 
         protected dynamic MapUserToDto(User user, ICollection<MarkedPost> markedPosts)
@@ -203,7 +198,7 @@ namespace Rawdata.Service.Controllers
             userDto.Email = user.Email;
             userDto.CreationDate = user.CreationDate;
             userDto.SearchHistory = DtoMapper.Map<ICollection<Search>, ICollection<SearchDto>>(user.Searches);
-            userDto.MarkedPosts = MapMarkedPostToDto(markedPosts);
+            userDto.MarkedPosts = MapMarkedPostsToDto(markedPosts);
 //            userDto.MarkedPosts = await MapMarkedPostToDto(user.MarkedPosts);
             userDto.MarkedComments =
                 DtoMapper.Map<ICollection<MarkedComment>, ICollection<MarkedCommentDto>>(user.MarkedComments);
@@ -217,45 +212,51 @@ namespace Rawdata.Service.Controllers
         }
 
 
-        protected ICollection<dynamic> MapMarkedPostToDto(ICollection<MarkedPost> result)
+        private ICollection<dynamic> MapMarkedPostsToDto(ICollection<MarkedPost> result)
         {
             var items = new List<dynamic>();
 
             foreach (var item in result)
             {
-                dynamic obj = new ExpandoObject();
-
-                obj.body = item.Post.Body;
-                obj.Score = item.Post.Score;
-                obj.Score = item.Post.Score;
-                obj.CreationDate = item.Post.CreationDate;
-                obj.AuthorDisplayName = item.Post.Author.DisplayName;
-                obj.Note = item.Note;
-
-                if (item.Post is Question q)
-                {
-                    obj.Title = q.Title;
-
-                    obj.Links = new
-                    {
-                        Self = Url.Link(GET_QUESTION_BY_ID, new {Id = q.Id}),
-                        Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = q.AuthorId})
-                    };
-                }
-                else if (item.Post is Answer a)
-                {
-                    obj.Links = new
-                    {
-                        Self = Url.Link(GET_ANSWER_BY_ID, new {Id = a.Id}),
-                        Parent = Url.Link(GET_QUESTION_BY_ID, new {Id = a.ParentId}),
-                        Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = a.AuthorId})
-                    };
-                }
-
+                dynamic obj = MapMarkedPostToDto(item);
                 items.Add(obj);
             }
 
             return items;
+        }
+
+        private dynamic MapMarkedPostToDto(MarkedPost markedPost)
+        {
+            dynamic dto = new ExpandoObject();
+
+            dto.body = markedPost.Post.Body;
+            dto.Score = markedPost.Post.Score;
+            dto.Score = markedPost.Post.Score;
+            dto.CreationDate = markedPost.Post.CreationDate;
+            dto.AuthorDisplayName = markedPost.Post.Author.DisplayName;
+            dto.Note = markedPost.Note;
+
+            if (markedPost.Post is Question q)
+            {
+                dto.Title = q.Title;
+
+                dto.Links = new
+                {
+                    Self = Url.Link(GET_QUESTION_BY_ID, new {Id = q.Id}),
+                    Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = q.AuthorId})
+                };
+            }
+            else if (markedPost.Post is Answer a)
+            {
+                dto.Links = new
+                {
+                    Self = Url.Link(GET_ANSWER_BY_ID, new {Id = a.Id}),
+                    Parent = Url.Link(GET_QUESTION_BY_ID, new {Id = a.ParentId}),
+                    Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = a.AuthorId})
+                };
+            }
+
+            return dto;
         }
     }
 }

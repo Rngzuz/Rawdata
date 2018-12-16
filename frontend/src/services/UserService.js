@@ -12,6 +12,28 @@ class UserService extends BaseService {
         return await response.json()
     }
 
+    async toggleMarkedPost(postId, note) {
+        const endpoint = this.buildUrl({path: 'posts'})
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            body: {"postId": postId, "note": note},
+            headers: { 'Content-Type': 'application/json' }
+        })
+
+        return await response.json()
+    }
+
+    async updateMarkedPostNote(postId, note) {
+        const endpoint = this.buildUrl({path: 'posts/'+postId})
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            body: {"postId": postId, "note": note},
+            headers: { 'Content-Type': 'application/json' }
+        })
+
+        return await response.json()
+    }
+
 }
 
 export default new UserService()

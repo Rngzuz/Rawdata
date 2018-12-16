@@ -25,6 +25,16 @@ class UserProfile extends Component {
         this.markedComments(result.markedComments)
         this.isLoading(false)
     }
+
+    async unmarkPost(postId) {
+        this.isLoading(true)
+
+        let result = await UserService.toggleMarkedPost(postId)
+        console.log(result)
+
+
+        this.isLoading(false)
+    }
 }
 
 const template = /* html */ `
@@ -57,6 +67,7 @@ const template = /* html */ `
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
                 </article>
+                <i class="far fa-star fa-2x marked-star"></i>
             </li>
         </ul>
     </div>
