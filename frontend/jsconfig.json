@@ -5,10 +5,10 @@
         "baseUrl": "./",
         "paths": {
             "@/*": ["./src/*"],
-            "Root/*": ["./src/*"],
             "Bindings/*": ["./src/bindings/*"],
             "Components/*": ["./src/components/*"],
-            "Services/*": ["./src/services/*"]
+            "Services/*": ["./src/services/*"],
+            "Views/*": ["./src/views/*"],
         },
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true

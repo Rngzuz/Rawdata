@@ -6,6 +6,7 @@ class Navbar extends Component {
     constructor(args) {
         super(args)
         this.rawSearch = observable('')
+        this.collapsible = this.$el.querySelector('#collapse')
     }
 
     updateSearch() {
@@ -14,8 +15,12 @@ class Navbar extends Component {
     }
 
     toggleCollapse() {
-        const elem = this.$el.querySelector('#collapse')
-        elem.classList.toggle('show')
+        this.collapsible.classList.toggle('show')
+    }
+
+    setCurrentView(event, newView) {
+        event.preventDefault()
+        this.$params.currentView(newView)
     }
 }
 
@@ -29,10 +34,10 @@ const template = /* html */ `
         <div id="collapse" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/home">Home</a>
+                    <a class="nav-link" href="/home" data-bind="click: (_, event) => setCurrentView(event, 'so-home')">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/about">About</a>
+                    <a class="nav-link" href="/about" data-bind="click: (_, event) => setCurrentView(event, 'so-sign-in')">Sign in</a>
                 </li>
             </ul>
 

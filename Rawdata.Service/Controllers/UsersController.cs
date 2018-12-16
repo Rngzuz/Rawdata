@@ -156,7 +156,7 @@ namespace Rawdata.Service.Controllers
         {
             IList<MarkedPost> markedPosts = await UserService.GetMarkedPosts(userId).ToListAsync();
 
-            ICollection<dynamic> markedPostsDto = await MapMarkedPostToDto(markedPosts);
+            ICollection<dynamic> markedPostsDto = MapMarkedPostToDto(markedPosts);
 
             return Ok(
                 markedPostsDto
@@ -195,7 +195,7 @@ namespace Rawdata.Service.Controllers
             }
         }
 
-        protected async Task<dynamic> MapUserToDto(User user, ICollection<MarkedPost> markedPosts)
+        protected dynamic MapUserToDto(User user, ICollection<MarkedPost> markedPosts)
         {
             dynamic userDto = new ExpandoObject();
 
@@ -203,7 +203,7 @@ namespace Rawdata.Service.Controllers
             userDto.Email = user.Email;
             userDto.CreationDate = user.CreationDate;
             userDto.SearchHistory = DtoMapper.Map<ICollection<Search>, ICollection<SearchDto>>(user.Searches);
-            userDto.MarkedPosts = await MapMarkedPostToDto(markedPosts);
+            userDto.MarkedPosts = MapMarkedPostToDto(markedPosts);
 //            userDto.MarkedPosts = await MapMarkedPostToDto(user.MarkedPosts);
             userDto.MarkedComments =
                 DtoMapper.Map<ICollection<MarkedComment>, ICollection<MarkedCommentDto>>(user.MarkedComments);
@@ -217,7 +217,7 @@ namespace Rawdata.Service.Controllers
         }
 
 
-        protected async Task<ICollection<dynamic>> MapMarkedPostToDto(ICollection<MarkedPost> result)
+        protected ICollection<dynamic> MapMarkedPostToDto(ICollection<MarkedPost> result)
         {
             var items = new List<dynamic>();
 

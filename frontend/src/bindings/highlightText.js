@@ -1,5 +1,36 @@
 import { unwrap } from 'knockout'
 
+const getSentences = text => {
+    const element = document.createElement('div')
+    element.innerHTML = text
+
+    return Array
+        .from(element.children)
+        .filter(tag => !/(hr|br|img|pre)/i.test(tag.tagName))
+        .map(tag => {
+            return tag.innerHTML
+                .replace(/<(\/|).+?>/g, '')
+                .replace(/(^[\s\:\;]+|[\s\:\;]+$)/g, '')
+                .split(/[\.\?\:!]\s+?/g)
+        })
+        .flatMap(strings => [...strings])
+}
+
+const getRelevantSentences = (texts, toMark, joinBy) => {
+    const regex = new RegExp(`\\b(${toMark.join('|')})\\b`, 'gi')
+
+    return texts
+        .filter(string => regex.test(string))
+        .join(joinBy)
+        .replace(/[<>]/g, i => '&#' + i.charCodeAt(0) + ';')
+        .replace(regex, '<mark>$&</mark>')
+}
+
+const getMarkedText = (text, toMark, joinBy = ' ... ') =>
+    getRelevantSentences(getSentences(text), toMark, joinBy) + joinBy
+
+export { getMarkedText }
+
 export default {
     init(element, valueAccessor, allBindings) {
         // Get value passed to the binding and unwrap the observable

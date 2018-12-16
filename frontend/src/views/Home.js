@@ -12,6 +12,7 @@ class Home {
         this.words = Store.getters.searchParams
         this.items = observableArray()
 
+        this.isLoading(true)
         this.fetchItems()
 
         Store.subscribe('searchParams', value => {

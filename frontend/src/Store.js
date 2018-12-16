@@ -34,10 +34,12 @@ class Store {
 
 export default new Store({
     state: {
+        currentView: observable('so-home'),
         isLoading: observable(true),
         searchParams: observableArray([])
     },
     getters: {
+        currentView: state => state.currentView,
         isLoading: state => state.isLoading,
         searchParams: state => state.searchParams
     },
