@@ -8,6 +8,7 @@ import './style.css'
 import Home from 'Views/Home.js'
 import SignIn from 'Views/SignIn.js'
 import UserProfile from 'Views/UserProfile.js'
+import Register from 'Views/Register.js'
 import Question from 'Views/Question.js'
 import Failure from 'Views/Failure.js'
 
@@ -24,6 +25,7 @@ ko.options.deferUpdates = true
 ko.components.register('so-home', Home)
 ko.components.register('so-sign-in', SignIn)
 ko.components.register('so-user-profile', UserProfile)
+ko.components.register('so-register', Register)
 ko.components.register('so-question', Question)
 ko.components.register('so-failure', Failure)
 

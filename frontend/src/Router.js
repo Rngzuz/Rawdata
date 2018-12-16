@@ -50,5 +50,10 @@ export default new Router([
         name: 'force-graph',
         component: 'so-force-graph',
         title: 'Force Graph'
+    },
+    {
+        name: 'register',
+        component: 'so-register',
+        title: 'Register'
     }
 ])
