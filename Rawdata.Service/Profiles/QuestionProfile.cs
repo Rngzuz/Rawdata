@@ -14,7 +14,7 @@ namespace Rawdata.Service.Profiles
         {
             CreateMap<PostTag, string>()
                 .ConvertUsing(source => source.TagName);
-            
+
 
             CreateMap<Question, QuestionListDto>()
                 .ForMember(
@@ -35,6 +35,10 @@ namespace Rawdata.Service.Profiles
                 );
 
             CreateMap<Question, QuestionDto>()
+                .ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.Id)
+                )
                 .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)

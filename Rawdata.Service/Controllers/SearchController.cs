@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rawdata.Data.Models;
 using Rawdata.Data.Services.Interfaces;
@@ -110,7 +109,7 @@ namespace Rawdata.Service.Controllers
                 .GetForceGraphInput(word, grade);
 
             await UserService.SaveToSearchHistory(GetUserId(), word);
-        
+
             return Ok(JObject.Parse(result.Input));
         }
 
@@ -127,6 +126,7 @@ namespace Rawdata.Service.Controllers
                 var markedPost = markedPosts
                     .SingleOrDefault(mp => mp.PostId == item.PostId);
 
+                obj.Id = item.PostId;
                 obj.Excerpts = item.Excerpts;
                 obj.Score = item.Post.Score;
                 obj.Rank = item.Rank;
