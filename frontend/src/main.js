@@ -28,7 +28,7 @@ ko.components.register('so-user-profile', UserProfile)
 ko.components.register('so-app', App)
 ko.components.register('so-loader', Loader)
 ko.components.register('so-navbar', Navbar)
-ko.components.register('so-forcegraph', ForceGraph)
+ko.components.register('so-force-graph', ForceGraph)
 ko.components.register('so-search', Search)
 ko.components.register('so-word-cloud', WordCloud)
 

@@ -1,26 +1,23 @@
 import * as d3 from 'd3'
-import Store from '@/Store.js'
 import { Component } from './Component.js'
 import { pureComputed } from 'knockout'
 
 import SearchService from "@/services/SearchService";
+import {wrapComponent} from "@/components/Component"
 
 class ForceGraph extends Component {
     constructor(args) {
         super(args)
-        this.isLoading = pureComputed(
-            () => Store.state().isLoading()
-        )
 
-        Store.state().search.subscribe(v => {
+        this.$store.subscribe('searchParams', value => {
+            this.isLoading(true)
             d3.select(this.$el.querySelector('svg')).selectAll("*").remove()
-            Store.state().isLoading(true)
-            this.fetchGraphInput(v[0])
+            this.fetchGraphInput(value[0])
         })
     }
 
     async fetchGraphInput(word) {
-        Store.state().isLoading(true)
+        this.isLoading(true)
 
         let result = await SearchService.getForceGraphInput(word)
         this.init(result)
@@ -100,7 +97,7 @@ class ForceGraph extends Component {
             .links(graphData.links)
 
 
-        Store.state().isLoading(false)
+        this.isLoading(false)
     }
 
 
@@ -123,12 +120,9 @@ class ForceGraph extends Component {
 }
 
 const template = /* html */ `
+<div data-bind="visible: !isLoading()">
 <svg width="960" height="600"></svg>
+</div>
 `
 
-export default {
-    viewModel: {
-        createViewModel: (...args) => new ForceGraph(args)
-    },
-    template
-}
+export default wrapComponent(ForceGraph, template)

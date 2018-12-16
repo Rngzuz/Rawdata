@@ -39,6 +39,9 @@ const template = /* html */ `
                 <li class="nav-item">
                     <a class="nav-link" href="/user-profile" data-bind="click: (_, event) => navigate(event, 'user-profile')">User profile</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/force-Graph" data-bind="click: (_, event) => navigate(event, 'force-graph')">Force Graph</a>
+                </li>
             </ul>
 
             <form class="form-inline my-2 mr-0 my-lg-0 mr-lg-2" data-bind="submit: updateSearch">

@@ -36,5 +36,10 @@ export default new Router([
         name: 'user-profile',
         component: 'so-user-profile',
         title: 'User profile'
+    },
+    {
+        name: 'force-graph',
+        component: 'so-force-graph',
+        title: 'Force Graph'
     }
 ])
