@@ -9,6 +9,7 @@ so-loader,
 so-navbar,
 so-forcegraph,
 so-search,
+so-user-profile,
 so-word-cloud {
     display: block;
 }
@@ -78,3 +79,15 @@ text {
     font-family: sans-serif;
     font-size: 10px;
 }
+
+.card-user-profile {
+    padding-top: 1.25rem;
+    padding-bottom: 2.25rem;
+
+    font-size: 25px;
+}
+
+.profile-title {
+    padding-top: 1.25rem;
+}
+
