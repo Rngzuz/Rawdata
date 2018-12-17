@@ -23,7 +23,7 @@ class Question extends Component {
 }
 
 const template = /* html */ `
-<section data="visible: !isLoading">
+<section data="visible: !isLoading()">
     <h2 class="mt-5 mb-3" data-bind="text: question().title"></h2>
 
     <article class="card mb-5">
