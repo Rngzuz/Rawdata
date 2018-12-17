@@ -1,6 +1,6 @@
 import * as echarts from 'echarts'
+import * as randomColor from 'randomcolor'
 import { Component } from './Component.js'
-
 import SearchService from '@/services/SearchService'
 import { wrapComponent } from '@/components/Component'
 
@@ -90,7 +90,9 @@ class ForceGraph extends Component {
 
     mapNodes(nodes) {
         return nodes.map(node => {
-            node.itemStyle = null
+            node.itemStyle = {
+                color: randomColor.randomColor()
+            }
             node.symbolSize = 12
             node.value = node.symbolSize
             node.category = 'Word'
