@@ -1,14 +1,14 @@
 import * as echarts from 'echarts'
 import { Component } from './Component.js'
 
-import SearchService from "@/services/SearchService";
-import {wrapComponent} from "@/components/Component"
+import SearchService from '@/services/SearchService'
+import { wrapComponent } from '@/components/Component'
 
 class ForceGraph extends Component {
     constructor(args) {
         super(args)
 
-        this.chart = echarts.init(document.getElementById('chart'));
+        this.chart = echarts.init(document.getElementById('chart'))
         this.initGraph()
 
         this.$store.subscribe('searchParams', value => {
@@ -17,13 +17,14 @@ class ForceGraph extends Component {
         })
 
         let timeout
+
         window.addEventListener('resize', () => {
-            if(timeout !== undefined) {
+            if (timeout !== undefined) {
                 clearTimeout(timeout)
             }
             timeout = setTimeout(() => {
-                if(this.chart != null && this.chart !== undefined){
-                    this.chart.resize();
+                if (this.chart != null && this.chart !== undefined) {
+                    this.chart.resize()
                 }
             }, 300)
         })
@@ -63,7 +64,7 @@ class ForceGraph extends Component {
                 },
                 zoom: 2
             }]
-        });
+        })
     }
 
     drawForceGraph(graphData, searchTerm) {
@@ -72,51 +73,51 @@ class ForceGraph extends Component {
         const nodes = this.mapNodes(graphData.nodes)
         const links = this.mapEdges(graphData.links)
 
-        const nodesCount = nodes.length;
-        const edgeCount = links.length;
+        const nodesCount = nodes.length
+        const edgeCount = links.length
         this.chart.setOption({
             title: {
-                text: `Force Graph for "${searchTerm}"\n\nWords: ${nodesCount}\nAssociations: ${edgeCount}`,
+                text: `Force Graph for '${searchTerm}'\n\nWords: ${nodesCount}\nAssociations: ${edgeCount}`,
             },
             series: [{
                 data: nodes,
                 links: links,
             }]
-        });
+        })
 
         this.isLoading(false)
     }
 
     mapNodes(nodes) {
         return nodes.map(node => {
-            node.itemStyle = null;
-            node.symbolSize = 12;
-            node.value = node.symbolSize;
-            node.category = 'Word';
-            node.x = node.y = null;
-            node.draggable = true;
-            node.name = node.id;
+            node.itemStyle = null
+            node.symbolSize = 12
+            node.value = node.symbolSize
+            node.category = 'Word'
+            node.x = node.y = null
+            node.draggable = true
+            node.name = node.id
 
-            return node;
+            return node
         })
     }
 
     mapEdges(edges) {
-         return edges.map(link => {
-            let value = link.value % 2 > 0 ? (link.value / 2  + link.value % 2) : link.value
-            let width =  Math.sqrt(value)
+        return edges.map(link => {
+            let value = link.value % 2 > 0 ? (link.value / 2 + link.value % 2) : link.value
+            let width = Math.sqrt(value)
 
             link.lineStyle = {
                 width: width
             }
 
-            return link;
+            return link
         })
     }
 }
 
 const template = /* html */ `
-<div id="chart" style="width:100%; height:80vh;"></div>
+<div id="chart" style="width:100%;height:80vh;"></div>
 `
 
 export default wrapComponent(ForceGraph, template)
