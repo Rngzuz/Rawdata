@@ -1,47 +1,45 @@
 import { observable, observableArray } from 'knockout'
 import { reduce } from 'lodash-es'
 
-class Store {
-    constructor({ state, getters, mutations, actions }) {
-        const invokeGetters = (accumulator, getter, key) => {
-            accumulator[key] = getter(state)
-            return accumulator
-        }
-
-        Object.defineProperties(this, {
-            state: { value: state },
-            getters: { value: reduce(getters, invokeGetters, {}) },
-            mutations: { value: mutations },
-            actions: { value: actions }
-        })
-
-        this.subscribe = this.subscribe.bind(this)
-        this.commit = this.commit.bind(this)
-        this.dispatch = this.dispatch.bind(this)
-    }
-
-    subscribe(index, callback) {
-        return this.state[index]
-            .subscribe(callback)
-    }
-
-    commit(type, payload) {
-        return this.mutations[type]
-            .call(this, this.state, payload)
-    }
-
-    dispatch(type, payload) {
-        return this.actions[type]
-            .call(this, {
-                state: this.state,
-                getters: this.getters,
-                commit: this.commit,
-                payload
-            })
-    }
+// context: state, getters, commit, payload
+const createCommit = context => (type, payload) => {
+    return context.mutations[type]
+        .call(context, context.state, payload)
 }
 
-export default new Store({
+// context: state, getters, commit, payload
+const createDispatch = (context, commit) => (type, payload) => {
+    return context.actions[type]
+        .call(context, {
+            state: context.state,
+            getters: context.getters,
+            commit,
+            payload
+        })
+}
+
+const createSubscribe = context => (index, callback) => {
+    return context.state[index]
+        .subscribe(callback)
+}
+
+// init: state, getters, mutations, actions
+const createStore = context => {
+    const reduceGetters = (result, getter, key) => {
+        result[key] = getter(context.state)
+        return result
+    }
+
+    context.getters = reduce(context.getters, reduceGetters, {})
+
+    const subscribe = createSubscribe(context)
+    const commit = createCommit(context)
+    const dispatch = createDispatch(context, commit)
+
+    return { getters: context.getters, subscribe, commit, dispatch }
+}
+
+export default createStore({
     state: {
         isAuthenticated: observable(false),
         isLoading: observable(false),
@@ -57,6 +55,7 @@ export default new Store({
             state.isAuthenticated(payload)
         },
         SET_IS_LOADING(state, payload) {
+            console.log(this)
             state.isLoading(payload)
         },
         SET_SEARCH_PARAMS(state, payload) {

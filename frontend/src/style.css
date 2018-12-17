@@ -80,6 +80,11 @@ so-search {
     font-size: 1.1rem;
 }
 
+.score {
+    margin-top: .3rem;
+    font-size: 1.1rem;
+}
+
 /* force graph stuff */
 .links line {
     stroke: #999;

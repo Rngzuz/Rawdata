@@ -1,6 +1,5 @@
 import * as d3 from 'd3'
 import { Component } from './Component.js'
-import { pureComputed } from 'knockout'
 
 import SearchService from "@/services/SearchService";
 import {wrapComponent} from "@/components/Component"
