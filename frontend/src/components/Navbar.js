@@ -41,6 +41,9 @@ const template = /* html */ `
                     <a class="nav-link" href="/force-Graph" data-bind="click: (_, event) => navigate(event, 'force-graph')">Force Graph</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/word-cloud" data-bind="click: (_, event) => navigate(event, 'word-cloud')">Word Cloud</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/user-profile" data-bind="visible: $store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'user-profile')">User profile</a>
                 </li>
             </ul>

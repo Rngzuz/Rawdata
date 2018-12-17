@@ -52,6 +52,11 @@ export default new Router([
         title: 'Force Graph'
     },
     {
+        name: 'word-cloud',
+        component: 'so-word-cloud',
+        title: 'Word Cloud'
+    },
+    {
         name: 'register',
         component: 'so-register',
         title: 'Register'

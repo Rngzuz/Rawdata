@@ -1,60 +1,120 @@
-import * as d3 from 'd3'
-import cloud from 'd3-cloud'
+import * as echarts from 'echarts'
+import * as cloud from 'echarts-wordcloud'
+import * as randomColor from 'randomcolor'
+import {Component} from './Component.js'
 
-import { Component } from './Component.js'
-import SearchService from 'Services/SearchService.js'
+import SearchService from '@/services/SearchService'
+import {wrapComponent} from '@/components/Component'
 
 class WordCloud extends Component {
     constructor(args) {
         super(args)
 
-        if (this.$params.word) {
-            this.loadGraphInput(this.$params.word)
-        }
+        this.chart = echarts.init(document.getElementById('word-cloud'))
+        this.initGraph()
+
+        this.$store.subscribe('searchParams', value => {
+            this.isLoading(true)
+            this.loadCloudInput(value[0])
+        })
+
+        let timeout
+
+        window.addEventListener('resize', () => {
+            if (timeout !== undefined) {
+                clearTimeout(timeout)
+            }
+            timeout = setTimeout(() => {
+                if (this.chart != null && this.chart !== undefined) {
+                    this.chart.resize()
+                }
+            }, 300)
+        })
     }
 
-    async loadGraphInput(word) {
+    async loadCloudInput(word) {
         let result = await SearchService.getWords(word, 100)
-        this.drawWordCloud(result)
+        this.drawWordCloud(result, word)
+        console.log('result', result)
     }
 
-    drawWordCloud(result) {
-        const words = result.map(item => ({
-            text: item.word,
-            size: item.weight
-        }))
+    initGraph() {
+        this.chart.setOption({
+            title: {
+                subtext: '',
+                top: 'top',
+                left: 'right'
+            },
+            tooltip: {},
+            series: [{
+                type: 'wordCloud',
+                shape: 'circle',
+                left: 'center',
+                top: 'center',
+                width: '100%',
+                height: '100%',
+                right: null,
+                bottom: null,
+                sizeRange: [30, 90],
+                rotationRange: [-90, 90],
+                rotationStep: 45,
+                gridSize: 11,
+                drawOutOfBound: true,
+                textStyle: {
+                    normal: {
+                        fontFamily: 'sans-serif',
+                        fontWeight: 'bold',
+                        color: randomColor
+                    },
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    }
+                },
+                zoom: 2,
+                // Data is an array. Each array item must have name and value property.
+                data: [{
+                    name: 'Enter Search Term',
+                    value: 500,
+                    // Style of single text
+                    textStyle: {
+                        normal: {},
+                        emphasis: {}
+                    }
+                }]
+            }]
 
-        const layout = cloud()
-            .size([1110, 500])
-            .words(words)
-            .padding(5)
-            .rotate(() => ~~(Math.random() * 2) * 90)
-            .font('Impact')
-            .fontSize(d => d.size)
-            .start()
+        })
+    }
 
-        d3.select(this.$el.querySelector('svg'))
-            .append('g')
-            .attr('transform', `translate(${layout.size()[0] / 2},${layout.size()[1] / 2})`)
-            .selectAll('text')
-            .data(words)
-            .enter()
-            .append('text')
-            .style('font-size', d => d.size + 'px')
-            .style('font-family', 'Impact')
-            .attr('text-anchor', 'middle')
-            .attr('transform', d => `translate(${[d.x, d.y]})rotate(${d.rotate})`)
-            .text(d => d.text)
+    drawWordCloud(wordCloudData, searchTerm) {
+        const words = this.mapWord(wordCloudData)
+
+        this.chart.setOption({
+            title: {
+                text: `Word cloud for '${searchTerm}'`,
+            },
+            series: [{
+                data: words,
+            }]
+        })
+    }
+
+    mapWord(words) {
+        return words.map(word => {
+            word.name = word.word
+            word.value = word.weight
+            word.textStyle =  {
+                normal: {},
+                emphasis: {}
+            }
+            return word
+        })
     }
 }
 
 const template = /* html */ `
-<svg data-bind="visible: $params.word" width="1110" height="500"></svg>
+<div id="word-cloud" style="width:100%;height:80vh;"></div>
 `
 
-export default {
-    viewModel: {
-        createViewModel: (...args) => new WordCloud(args)
-    },
-    template
-}
+export default wrapComponent(WordCloud, template)
