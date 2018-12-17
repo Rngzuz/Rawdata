@@ -6,17 +6,31 @@ class SignIn extends Component {
     constructor(args) {
         super(args)
 
-        this.email = observable()
-        this.password = observable()
+        this.email = observable("")
+        this.password = observable("")
     }
 
     async signIn() {
+        if(!this.inputFilledOut()) {
+            alert('Please fill out all sign in data')
+            return;
+        }
+
         const credentials = {"email": this.email(), "password":this.password()}
 
         let response = await AuthService.signIn(credentials)
 
-        this.$store.dispatch('updateIsAuthenticated', true)
-        this.$router.setRoute('home')
+        if(response !== undefined) {
+            this.$store.dispatch('updateIsAuthenticated', true)
+            this.$router.setRoute('home')
+
+        } else {
+            alert('Sign in failed')
+        }
+    }
+
+    inputFilledOut() {
+        return this.email().length > 0 && this.password().length > 0
     }
 }
 

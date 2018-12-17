@@ -26,10 +26,16 @@ class AuthService extends BaseService {
             headers: { 'Content-Type': 'application/json' }
         })
 
-        const token = await response.text()
-        localStorage.setItem('token', token)
+        if(response.status !== 200) {
+            return undefined
 
-        return token
+        } else {
+
+            const token = await response.text()
+            localStorage.setItem('token', token)
+
+            return token
+        }
     }
 
     signOut() {

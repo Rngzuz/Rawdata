@@ -6,12 +6,17 @@ class Register extends Component {
     constructor(args) {
         super(args)
 
-        this.username = observable();
-        this.email = observable();
-        this.password = observable();
+        this.username = observable("");
+        this.email = observable("");
+        this.password = observable("");
     }
 
     async register() {
+        if(!this.inputFilledOut()) {
+            alert('Please fill out all registration data')
+            return;
+        }
+
         this.isLoading(true)
         const userData = {"displayName": this.username(),"email": this.email(), "password": this.password()}
 
@@ -28,6 +33,10 @@ class Register extends Component {
         )
 
         this.isLoading(false)
+    }
+
+    inputFilledOut() {
+        return this.username().length > 0 && this.email().length > 0 && this.password().length > 0
     }
 
 }
