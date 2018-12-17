@@ -1,4 +1,4 @@
-import * as d3 from 'd3'
+import * as echarts from 'echarts'
 import { Component } from './Component.js'
 import { pureComputed } from 'knockout'
 
@@ -9,120 +9,115 @@ class ForceGraph extends Component {
     constructor(args) {
         super(args)
 
+        this.chart = echarts.init(document.getElementById('chart'));
+        this.initGraph()
+
         this.$store.subscribe('searchParams', value => {
             this.isLoading(true)
-            d3.select(this.$el.querySelector('svg')).selectAll("*").remove()
             this.fetchGraphInput(value[0])
+        })
+
+        let timeout
+        window.addEventListener('resize', () => {
+            if(timeout !== undefined) {
+                clearTimeout(timeout)
+            }
+            timeout = setTimeout(() => {
+                if(this.chart != null && this.chart !== undefined){
+                    this.chart.resize();
+                }
+            }, 300)
         })
     }
 
+
     async fetchGraphInput(word) {
-        this.isLoading(true)
 
         let result = await SearchService.getForceGraphInput(word)
-        this.init(result)
+        this.drawForceGraph(result, word)
     }
 
+    initGraph() {
+        this.chart.setOption({
+            title: {
+                subtext: '',
+                top: 'top',
+                left: 'right'
+            },
+            tooltip: {},
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true,
+                    normal: {
+                        position: 'right'
+                    }
+                },
+                force: {
+                    repulsion: 100,
+                    gravity: 0.05,
+                    edgeLength: 100,
 
-    init(graphData) {
+                },
+                zoom: 2
+            }]
+        });
+    }
 
-        const svg = d3
-            .select(this.$el.querySelector('svg'))
+    drawForceGraph(graphData, searchTerm) {
+        this.isLoading(true)
 
-        const width = +svg.attr("width")
-        const height = +svg.attr("height")
+        const nodes = this.mapNodes(graphData.nodes)
+        const links = this.mapEdges(graphData.links)
 
-        const color = d3
-            .scaleOrdinal(d3.schemeCategory10)
-
-        const simulation = d3
-            .forceSimulation()
-            .force("link", d3.forceLink().id(d => d.id).strength(0.001))
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2))
-
-        const link = svg
-            .append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(graphData.links)
-            .enter()
-            .append("line")
-            .attr("stroke-width", d => Math.sqrt(d.value) * 1.0)
-
-        const node = svg
-            .append("g")
-            .attr("class", "nodes")
-            .selectAll("g")
-            .data(graphData.nodes)
-            .enter()
-            .append("g")
-
-        node
-            .append("circle")
-            .attr("r", 8)
-            .attr("fill", d => color(d.group))
-            .call(
-                d3.drag()
-                .on("start", d => this.dragstarted(d, simulation))
-                .on("drag",  d => this.dragged(d, simulation))
-                .on("end", d => this.dragended(d, simulation))
-            )
-
-        node
-            .append("text")
-            .text(d => d.id)
-            .style("font-size", "14px")
-            .attr('x', 8)
-            .attr('y', 3)
-
-        node
-            .append("title")
-            .text(d => d.id * 2)
-
-        simulation
-            .nodes(graphData.nodes)
-            .on("tick", () => {
-                link
-                    .attr("x1", d => d.source.x)
-                    .attr("y1", d => d.source.y)
-                    .attr("x2", d => d.target.x)
-                    .attr("y2", d => d.target.y)
-
-                node.attr("transform", d => "translate(" + d.x + "," + d.y + ")")
-            })
-
-        simulation
-            .force("link")
-            .links(graphData.links)
-
+        const nodesCount = nodes.length;
+        const edgeCount = links.length;
+        this.chart.setOption({
+            title: {
+                text: `Force Graph for "${searchTerm}"\n\nWords: ${nodesCount}\nAssociations: ${edgeCount}`,
+            },
+            series: [{
+                data: nodes,
+                links: links,
+            }]
+        });
 
         this.isLoading(false)
     }
 
+    mapNodes(nodes) {
+        return nodes.map(node => {
+            node.itemStyle = null;
+            node.symbolSize = 12;
+            node.value = node.symbolSize;
+            node.category = 'Word';
+            node.x = node.y = null;
+            node.draggable = true;
+            node.name = node.id;
 
-    dragstarted(d, simulation) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+            return node;
+        })
     }
 
-    dragged(d, simulation) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
+    mapEdges(edges) {
+         return edges.map(link => {
+            let value = link.value % 2 > 0 ? (link.value / 2  + link.value % 2) : link.value
+            let width =  Math.sqrt(value)
 
-    dragended(d, simulation) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+            link.lineStyle = {
+                width: width
+            }
+
+            return link;
+        })
     }
 }
 
 const template = /* html */ `
-<div data-bind="visible: !isLoading()">
-<svg width="960" height="600"></svg>
-</div>
+<div id="chart" style="width:100%; height:80vh;"></div>
 `
 
 export default wrapComponent(ForceGraph, template)

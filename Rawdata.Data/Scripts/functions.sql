@@ -306,7 +306,7 @@ BEGIN
     RETURN NEXT;
 
     FOR l IN (
-        SELECT '{"source":"'||lower(word1)||'", "target":"'||lower(word2)||'", "value":'||grade/2||'},'  FROM (
+        SELECT '{"source":"'||lower(word1)||'", "target":"'||lower(word2)||'", "value":'||grade||'},'  FROM (
             SELECT * FROM post_word_association WHERE word1 = w AND grade >= n
             UNION
             SELECT * FROM post_word_association
