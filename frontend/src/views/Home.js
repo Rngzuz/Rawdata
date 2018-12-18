@@ -13,6 +13,8 @@ class Home extends Component {
         this.currentPage = observable(1)
         this.pageCount = observable(1)
 
+        this.searchAlgo = observable('best')
+
         this.fetchPosts(
             this.$store.getters.searchParams()
         )
@@ -48,8 +50,22 @@ class Home extends Component {
         let posts
 
         if (words.length > 0) {
-            const json = await SearchService
-                .getBestMatch(words, page, size)
+            let json
+
+            switch (this.searchAlgo()) {
+                case 'best':
+                    json = await SearchService
+                        .getBestMatch(words, page, size)
+                    break;
+                case 'exact':
+                    json = await SearchService
+                        .getExactMatch(words, page, size)
+                    break;
+                case 'ranked':
+                    json = await SearchService
+                        .getRankedWeightedMatch(words, page, size)
+                    break;
+            }
 
             this.currentPage(json.currentPage)
             this.pageCount(json.pageCount)
@@ -93,7 +109,26 @@ class Home extends Component {
 
 const template = /* html */ `
 <!-- ko if: !isLoading() -->
-
+    <div class="form-inline mb-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" value="best" data-bind="checked: searchAlgo" checked>
+                <span>Best match</span>
+            </label>
+        </div>
+        <div class="form-check mx-4">
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" value="exact" data-bind="checked: searchAlgo">
+                <span>Exact match</span>
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" value="ranked" data-bind="checked: searchAlgo">
+                <span>Ranked weighted match</span>
+            </label>
+        </div>
+    </div>
 
     <section data-bind="component: { name: 'so-list', params: { items } } "></section>
 
