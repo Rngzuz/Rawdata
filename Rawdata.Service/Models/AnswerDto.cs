@@ -13,6 +13,9 @@ namespace Rawdata.Service.Models
         public string AuthorDisplayName { get; set; }
         public IList<CommentDto> Comments { get; set; }
         public AnswerDtoLink Links { get; set; }
+        
+        public bool Marked { get; set; }
+        public string Note { get; set; }
 
         public class AnswerDtoLink
         {
@@ -20,10 +23,5 @@ namespace Rawdata.Service.Models
             public string Parent { get; set; }
             public string Author { get; set; }
         }
-    }
-
-    public class MarkedAnswerDto : AnswerDto
-    {
-        public string Note { get; set; }
     }
 }

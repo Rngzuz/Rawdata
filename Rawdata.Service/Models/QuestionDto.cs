@@ -18,6 +18,7 @@ namespace Rawdata.Service.Models
         public QuestionDtoLink Links { get; set; }
         
         public bool Marked { get; set; }
+        public string Note { get; set; }
 
         public class QuestionDtoLink
         {
@@ -30,10 +31,5 @@ namespace Rawdata.Service.Models
     {
         public IList<AnswerDto> Answers { get; set; }
         public IList<CommentDto> Comments { get; set; }
-    }
-
-    public class MarkedQuestionDto : QuestionListDto
-    {
-        public string Note { get; set; }
     }
 }

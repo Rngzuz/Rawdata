@@ -45,7 +45,7 @@ namespace Rawdata.Data.Services
             return newUser;
         }
 
-        public async Task<IList<Search>> GetUserHistory(int userId)
+        public async Task<IList<Search>> GetUserHistory(int? userId)
         {
             return await Context.Searches.Where(search => search.UserId == userId).ToListAsync();
         }
@@ -59,7 +59,7 @@ namespace Rawdata.Data.Services
                 .OrderByDescending(mp => mp.Post.Score);
         }
 
-        public IQueryable<MarkedComment> GetMarkedComments(int userId)
+        public IQueryable<MarkedComment> GetMarkedComments(int? userId)
         {
             return Context.MarkedComments
                 .Where(mc => mc.UserId == userId)

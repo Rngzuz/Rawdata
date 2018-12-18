@@ -12,9 +12,9 @@ namespace Rawdata.Data.Services.Interfaces
         Task<User> RegisterUser(User user);
         IQueryable<MarkedPost> ToggleMarkedPost(int? userId, int postId, string note);
         Task<bool> UpdateMarkedPostNote(int? userId, int postId, string note);
-        IQueryable<MarkedComment> GetMarkedComments(int userId);
+        IQueryable<MarkedComment> GetMarkedComments(int? userId);
         IQueryable<MarkedPost> GetMarkedPosts(int? userId);
-        Task<IList<Search>> GetUserHistory(int userId);
+        Task<IList<Search>> GetUserHistory(int? userId);
         Task SaveToSearchHistory(int? userId, string searchText);
     }
 }

@@ -129,9 +129,6 @@ namespace Rawdata.Service
                 cfg.AddProfile(new CommentProfile(url));
                 cfg.AddProfile(new QuestionProfile(url));
                 cfg.AddProfile(new UserProfile(url));
-                cfg.AddProfile(new MarkedCommentProfile(url));
-                cfg.AddProfile(new MarkedQuestionProfile(url));
-                cfg.AddProfile(new MarkedAnswerProfile(url));
             });
 
             return mapperCfg.CreateMapper();

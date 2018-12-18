@@ -35,15 +35,64 @@ namespace Rawdata.Service.Controllers
             var markedPosts = await UserService
                 .GetMarkedPosts(GetUserId())
                 .ToListAsync();
-            
+
+            var markedComments = await UserService
+                .GetMarkedComments(GetUserId())
+                .ToListAsync();
+                
+            //Check if the question is marked
             var markedPost = markedPosts
                 .SingleOrDefault(mp => mp.PostId == id);
 
-            var dto = DtoMapper.Map<QuestionDto>(result);
-            dto.Marked = markedPost != null;
+            var questionDto = DtoMapper.Map<QuestionDto>(result);
+            questionDto.Marked = markedPost != null;
+
+            if (markedPost != null)
+            {
+                questionDto.Note = markedPost.Note;
+            }
             
+            //Check if question comments are marked
+            foreach (var commentDto in questionDto.Comments )
+            {
+                var markedComment = markedComments
+                    .SingleOrDefault(mc => mc.CommentId == commentDto.Id);
+
+                commentDto.Marked = markedComment != null;
+                if (markedComment != null)
+                {
+                    commentDto.Note = markedComment.Note;
+                }
+            }
+
+            
+            // for each answer check if it is marked and if the answer's comments are marked
+            foreach (var answerDto in questionDto.Answers )
+            {
+                var markedAnswer = markedPosts
+                    .SingleOrDefault(mp => mp.PostId == answerDto.Id);
+
+                answerDto.Marked = markedAnswer != null;
+                if (markedAnswer != null)
+                {
+                    answerDto.Note = markedAnswer.Note;
+                }
+
+                foreach (var answerCommentDto in answerDto.Comments)
+                {
+                    var markedComment = markedComments
+                        .SingleOrDefault(mc => mc.CommentId == answerCommentDto.Id);
+                    
+                    answerCommentDto.Marked = markedComment != null;
+                    if (markedComment != null)
+                    {
+                        answerCommentDto.Note = markedComment.Note;
+                    }
+                }
+            }
+           
             return Ok(
-                dto
+                questionDto
             );
         }
 
@@ -63,12 +112,16 @@ namespace Rawdata.Service.Controllers
             
             var dtos = DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result);
 
-            foreach (var dto in dtos)
+            foreach (var questionDto in dtos)
             {
                 var markedPost = markedPosts
-                    .SingleOrDefault(mp => mp.PostId == dto.Id);
+                    .SingleOrDefault(mp => mp.PostId == questionDto.Id);
                 
-                dto.Marked = markedPost != null;
+                questionDto.Marked = markedPost != null;
+                if (markedPost != null)
+                {
+                    questionDto.Note = markedPost.Note;
+                }
             }
 
             return Ok(

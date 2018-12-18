@@ -125,7 +125,7 @@ namespace Rawdata.Service.Controllers
                 .SingleOrDefaultAsync();
 
             return Ok(
-                DtoMapper.Map<MarkedComment, MarkedCommentDto>(result)
+                DtoMapper.Map<MarkedComment, CommentDto>(result)
             );
         }
 
@@ -201,7 +201,7 @@ namespace Rawdata.Service.Controllers
             userDto.MarkedPosts = MapMarkedPostsToDto(markedPosts);
 //            userDto.MarkedPosts = await MapMarkedPostToDto(user.MarkedPosts);
             userDto.MarkedComments =
-                DtoMapper.Map<ICollection<MarkedComment>, ICollection<MarkedCommentDto>>(user.MarkedComments);
+                DtoMapper.Map<ICollection<MarkedComment>, ICollection<CommentDto>>(user.MarkedComments);
             ;
             userDto.Links = new
             {

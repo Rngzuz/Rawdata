@@ -31,21 +31,8 @@ namespace Rawdata.Service.Profiles
                     // Generate absolute URL
                     opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
                 );
-
-            // Allow mapping to an empty collection
-            AllowNullCollections = true;
-        }
-    }
-
-    public class MarkedCommentProfile : Profile
-    {
-        public MarkedCommentProfile(IUrlHelper url)
-        {
-            CreateMap<MarkedComment, MarkedCommentDto>()
-                .ForMember(
-                    dest => dest.Id,
-                    opt => opt.MapFrom(src => src.CommentId)
-                )
+            
+            CreateMap<MarkedComment, CommentDto>()
                 .ForMember(
                     dest => dest.Id,
                     opt => opt.MapFrom(src => src.CommentId)
@@ -54,37 +41,28 @@ namespace Rawdata.Service.Profiles
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Comment.Author.DisplayName)
                 )
-                .ForMember(
-                    dest => dest.CreationDate, 
-                    opt => opt.MapFrom(src => src.Comment.CreationDate)
-                )
-                .ForMember(
-                    dest => dest.Score,
-                    opt => opt.MapFrom(src => src.Comment.Score)
-                )
-                .ForMember(
-                    dest => dest.Text,
-                    opt => opt.MapFrom(src => src.Comment.Text)
-                )
-                .ForMember(
-                    dest => dest.Marked,
-                    opt => opt.MapFrom(src => true)
-                )
-                 // For path is used for nested member variables
+                // For path is used for nested member variables
                 .ForPath(
                     dest => dest.Links.Self,
                     // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link(BaseController.GET_COMMENT_BY_ID, new { src.Comment.Id }))
+                    opt => opt.MapFrom(src => url.Link(BaseController.GET_COMMENT_BY_ID, new { src.CommentId }))
                 )
-               .ForPath(
+                .ForPath(
                     dest => dest.Links.Author,
                     // Generate absolute URL
                     opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.Comment.AuthorId }))
+                ).ForPath(
+                    dest => dest.Marked,
+                    opt => opt.MapFrom(src => true)
+                ).ForPath(
+                    dest => dest.Note,
+                    opt => opt.MapFrom(src => src.Note)
                 );
 
             // Allow mapping to an empty collection
             AllowNullCollections = true;
         }
-
+        
+        
     }
 }
