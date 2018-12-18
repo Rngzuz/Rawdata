@@ -55,8 +55,6 @@ class Home extends Component {
             this.currentPage(json.currentPage)
             this.pageCount(json.pageCount)
 
-            console.log(json)
-
             posts = json.items.map(post => {
                 const newPost = {
                     ...post,
@@ -96,6 +94,10 @@ class Home extends Component {
     navigate(event, routeName, params = {}) {
         event.preventDefault()
         this.$router.setRoute(routeName, params)
+    }
+
+    dispose() {
+        console.log('disposing home')
     }
 }
 

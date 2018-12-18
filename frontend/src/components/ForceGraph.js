@@ -150,6 +150,11 @@ class ForceGraph extends Component {
             return link
         })
     }
+
+    dispose() {
+        // Dispose chart when the component disposed
+        this.chart.dispose()
+    }
 }
 
 const template = /* html */ `

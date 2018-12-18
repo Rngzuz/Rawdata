@@ -21,8 +21,9 @@ const template = /* html */ `
 
 <main id="content" class="container" data-bind="component: getComponent()"></main>
 
-<so-loader id="loader" data-bind="visible: isLoading()" params="size: 200"></so-loader>
-<!--<so-search></so-search>-->
+<!-- ko if: isLoading -->
+    <so-loader id="loader" params="size: 200"></so-loader>
+<!-- /ko -->
 `
 
 export default { name: 'so-app', viewModel: App, template }

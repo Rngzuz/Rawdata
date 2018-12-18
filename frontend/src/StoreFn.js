@@ -3,13 +3,15 @@ import { reduce } from 'lodash-es'
 
 // context: state, getters, commit, payload
 const createCommit = context => (type, payload) => {
-    return context.mutations[type]
+    return context
+        .mutations[type]
         .call(context, context.state, payload)
 }
 
 // context: state, getters, commit, payload
 const createDispatch = (context, commit) => (type, payload) => {
-    return context.actions[type]
+    return context
+        .actions[type]
         .call(context, {
             state: context.state,
             getters: context.getters,
