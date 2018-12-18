@@ -66,7 +66,7 @@ export default new Store({
     },
     actions: {
         async toggleMarkPost({ payload }) {
-            await UserService.toggleMarkedPost(payload)
+            await UserService.toggleMarkedPost(payload.id, payload.note)
         },
         async toggleMarkComment({ payload }) {
             await UserService.toggleMarkedComment(payload)

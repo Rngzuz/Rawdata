@@ -14,6 +14,12 @@ so-word-cloud {
     display: block;
 }
 
+.card-list-note {
+    z-index: 2;
+    position: absolute;
+    max-width: 200px;
+}
+
 mark {
     padding: .02rem .4rem .1rem .4rem;
     font-size: 87.5%;

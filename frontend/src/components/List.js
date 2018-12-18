@@ -1,11 +1,18 @@
 import Store from '@/Store.js'
 import Router from '@/Router.js'
+import { observable } from 'knockout'
 
 class List {
     constructor(params = {}) {
         this.searchParams = Store.getters.searchParams
         this.isAuthenticated = Store.getters.isAuthenticated
         this.items = params.items
+
+        this.showNote = observable(false)
+        this.note = observable('')
+        this.focusedPost
+
+        this.postMarker = document.getElementById('post-marker')
     }
 
     navigate(event, routeName, params = {}) {
@@ -13,21 +20,45 @@ class List {
         Router.setRoute(routeName, params)
     }
 
-    toggleMarkPost(data) {
+    displayNoteOrToggle(data, event) {
+        this.focusedPost = data
+
+        if (data.marked) {
+            this.toggleMarkPost()
+        } else {
+            this.showNote(true)
+            this.postMarker.style.transform = `translate(${event.clientX - 290}px, ${event.clientY - 126}px)`
+        }
+    }
+
+    toggleMarkPost() {
         const newItems = this.items.peek().map(post => {
-            if (post.id === data.id) {
-                return { ...post, marked: !post.marked }
+            if (post.id === this.focusedPost.id) {
+                const marked = !post.marked
+                return { ...post, marked, note: marked ? this.note() : '' }
             }
 
             return post
         })
 
+        this.showNote(false)
         this.items(newItems)
-        Store.dispatch('toggleMarkPost', data.id)
+        Store.dispatch('toggleMarkPost', { id: this.focusedPost.id, note: this.note() })
     }
 }
 
 const template = /* html */ `
+<div id="post-marker" class="card card-list-note shadow" data-bind="visible: showNote">
+    <form data-bind="submit: () => $component.toggleMarkPost()" class="p-3">
+        <label class="mb-0">
+            <b class="d-block mb-2">Set optional note?</b>
+            <input type="text" class="form-control mb-2" placeholder="Enter optional note" data-bind="value: note">
+            <button type="submit" class="btn btn-primary btn-sm mr-2">OK</button>
+            <button type="button" class="btn btn-default btn-sm" data-bind="click: () => showNote(false)">Cancel</button>
+        </label>
+    </form>
+</div>
+
 <!-- ko foreach: items -->
 <article class="card mb-3">
     <div class="card-body">
@@ -48,7 +79,7 @@ const template = /* html */ `
             </div>
 
             <!-- ko if: $component.isAuthenticated() -->
-            <i class="flex-shrink-1 align-self-center ml-3 text-warning fa-star fa-2x" data-bind="click: () => $component.toggleMarkPost($data), css: { fas: $data.marked, far: !$data.marked }"></i>
+            <i class="flex-shrink-1 align-self-center ml-3 text-warning fa-star fa-2x" data-bind="click: (data, event) => $component.displayNoteOrToggle(data, event), css: { fas: $data.marked, far: !$data.marked }"></i>
             <!-- /ko -->
         </div>
     </div>
