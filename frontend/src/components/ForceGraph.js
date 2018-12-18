@@ -9,7 +9,8 @@ class ForceGraph extends Component {
         super(args)
 
         this.chart = echarts.init(document.getElementById('chart'))
-        this.initGraph()
+        // this.initGraph()
+        this.initCircularGraph()
 
         this.$store.subscribe('searchParams', value => {
             this.isLoading(true)
@@ -67,6 +68,39 @@ class ForceGraph extends Component {
         })
     }
 
+    initCircularGraph() {
+        this.chart.setOption({
+            title: {
+                subtext: '',
+                top: 'top',
+                left: 'right'
+            },
+            tooltip: {},
+            series: [{
+                type: 'graph',
+                layout: 'none',
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true,
+                    normal: {
+                        position: 'right'
+                    }
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.3
+                },
+                emphasis: {
+                    lineStyle: {
+                        width: 10
+                    }
+                },
+                zoom: 0.8
+            }]
+        })
+    }
+
     drawForceGraph(graphData, searchTerm) {
         this.isLoading(true)
 
@@ -93,7 +127,7 @@ class ForceGraph extends Component {
             node.itemStyle = {
                 color: randomColor.randomColor()
             }
-            node.symbolSize = 12
+            node.symbolSize = 20
             node.value = node.symbolSize
             node.category = 'Word'
             node.x = node.y = null
