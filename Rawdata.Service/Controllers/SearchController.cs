@@ -126,6 +126,7 @@ namespace Rawdata.Service.Controllers
                 var markedPost = markedPosts
                     .SingleOrDefault(mp => mp.PostId == item.PostId);
 
+                obj.Id = item.PostId;
                 obj.Body = item.Post.Body;
                 obj.Score = item.Post.Score;
                 obj.Rank = item.Rank;

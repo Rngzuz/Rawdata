@@ -5,6 +5,7 @@ namespace Rawdata.Service.Models
 {
     public class AnswerDto
     {
+        public int Id { get; set; }
         public int QuestionId { get; set; }
         public int Score { get; set; }
         public string Body { get; set; }

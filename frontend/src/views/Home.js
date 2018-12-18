@@ -32,7 +32,6 @@ class Home extends Component {
         if (currentPage > 1) {
             this.currentPage(currentPage - 1)
         }
-
     }
 
     nextPage() {
@@ -87,57 +86,17 @@ class Home extends Component {
             })
         }
 
+        console.log(posts)
+
         this.items(posts)
         this.isLoading(false)
-    }
-
-    navigate(event, routeName, params = {}) {
-        event.preventDefault()
-        this.$router.setRoute(routeName, params)
-    }
-
-    dispose() {
-        console.log('disposing home')
     }
 }
 
 const template = /* html */ `
 <!-- ko if: !isLoading() -->
 
-
-
-    <!-- ko foreach: items -->
-        <article class="card mb-3">
-            <div class="card-body">
-                <!-- ko if: $data.title -->
-                    <h5 class="card-title mb-2" data-bind="html: $data.title"></h5>
-                <!-- /ko -->
-                <div class="d-flex">
-                    <aside class="flex-shrink-1 mr-3">
-                        <div class="score text-center">
-                            <span class="d-block badge badge-primary" data-bind="text: $data.score"></span>
-                            <small class="d-block">score</small>
-                        </div>
-                    </aside>
-                    <div class="flex-grow-1" data-bind="html: $data.body + '...'"></div>
-
-                    <!-- ko if: $component.$store.getters.isAuthenticated() -->
-                        <i class="flex-shrink-1 align-self-center ml-3 text-warning fa-star fa-2x"
-                            data-bind="css: { fas: $data.marked, far: !$data.marked }"></i>
-                    <!-- /ko -->
-                </div>
-            </div>
-            <footer class="card-footer bg-white d-flex align-items-center justify-content-between">
-                <div class="text-muted">
-                    <span>by</span>
-                    <cite data-bind="text: $data.authorDisplayName"></cite>
-                    <span>on the <time data-bind="text: $data.creationDate"></time></span>
-                </div>
-                <button type="button" class="btn btn-outline-dark btn-sm"
-                        data-bind="click: (_, event) => $component.navigate(event, 'question', { id: $data.questionId })">Read more</button>
-            </footer>
-        </article>
-    <!-- /ko -->
+    <section data-bind="component: { name: 'so-list', params: { items } } "></section>
 
     <!-- ko if: (pageCount() > 1) -->
         <div class="text-center">

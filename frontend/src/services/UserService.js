@@ -9,7 +9,11 @@ class UserService extends BaseService {
         const endpoint = this.buildUrl({ path: '/profile' })
         const response = await fetch(endpoint, this.requestOptions)
 
-        return await response.json()
+        const a = await response.json()
+
+
+        console.log(a)
+        return  a
     }
 
     async toggleMarkedPost(postId, note) {

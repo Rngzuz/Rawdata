@@ -1,3 +1,4 @@
+import UserService from 'Services/UserService.js'
 import { observable, observableArray } from 'knockout'
 import { reduce } from 'lodash-es'
 
@@ -64,6 +65,12 @@ export default new Store({
         }
     },
     actions: {
+        async toggleMarkPost({ payload }) {
+            await UserService.toggleMarkedPost(payload)
+        },
+        async toggleMarkComment({ payload }) {
+            await UserService.toggleMarkedComment(payload)
+        },
         updateIsAuthenticated({ commit, payload }) {
             commit('SET_IS_AUTHENTICATED', payload)
         },

@@ -1,3 +1,4 @@
+import Store from '@/Store.js'
 import { observable, observableArray, computed } from 'knockout'
 import { Component, wrapComponent } from '../components/Component.js'
 import UserService from '../services/UserService.js'
@@ -17,7 +18,6 @@ class UserProfile extends Component {
 
     async fetchUserProfile() {
         let result = await UserService.getUserProfile()
-        console.log(result)
 
         this.profile(result)
         this.markedPosts(result.markedPosts)
@@ -28,17 +28,13 @@ class UserProfile extends Component {
     async unmarkPost(post, event) {
         event.preventDefault()
         this.markedPosts.destroy(post)
-
-        let result = await UserService.toggleMarkedPost(post.id)
-        console.log('Post Unmarked: ', post )
+        await Store.dispatch('toggleMarkPost', post.id)
     }
 
     async unmarkComment(comment, event) {
         event.preventDefault()
         this.markedComments.destroy(comment)
-
-        let result = await UserService.toggleMarkedComment(comment.id)
-        console.log('Comment Unmarked: ', comment )
+        await Store.dispatch('toggleMarkComment', comment.id)
     }
 }
 
@@ -63,9 +59,9 @@ const template = /* html */ `
                 </div>
                 <article class="flex-grow-1">
                     <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-                    
+
                     <h5 class="card-title" data-bind="visible: $data.title, text: $data.title"></h5>
-                    
+
                     <div data-bind="text: $data.body"></div>
 
                     <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
@@ -96,7 +92,7 @@ const template = /* html */ `
                         <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
                     </cite>
                 </article>
-                
+
                 <i class="fas fa-star fa-2x marked-star" data-bind="click: (comment, event) => $component.unmarkComment(comment, event)"></i>
             </li>
         </ul>
