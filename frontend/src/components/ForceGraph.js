@@ -33,7 +33,6 @@ class ForceGraph extends Component {
 
 
     async fetchGraphInput(word) {
-
         let result = await SearchService.getForceGraphInput(word)
         this.drawForceGraph(result, word)
     }
@@ -78,7 +77,7 @@ class ForceGraph extends Component {
             tooltip: {},
             series: [{
                 type: 'graph',
-                layout: 'none',
+                layout: 'circular',
                 roam: true,
                 focusNodeAdjacency: true,
                 label: {

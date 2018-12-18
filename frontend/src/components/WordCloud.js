@@ -111,6 +111,10 @@ class WordCloud extends Component {
             return word
         })
     }
+
+    dispose() {
+        this.chart.dispose()
+    }
 }
 
 const template = /* html */ `

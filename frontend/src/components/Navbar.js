@@ -1,4 +1,5 @@
 import Store from '@/Store.js'
+import Router from '@/Router.js'
 import { observable } from 'knockout'
 import { Component, wrapComponent } from './Component.js'
 
@@ -6,12 +7,12 @@ class Navbar extends Component {
     constructor(args) {
         super(args)
         this.rawSearch = observable('')
-        this.collapsible = this.$el.querySelector('#collapse')
+        this.collapsible = document.getElementById('navbarCollapse')
     }
 
     updateSearch() {
         const rawSearch = this.rawSearch()
-        // this.$router.setRoute('home')
+        // Router.setRoute('home')
         Store.dispatch('updateSearchParams', rawSearch)
     }
 
@@ -21,7 +22,7 @@ class Navbar extends Component {
 
     navigate(event, routeName, params = {}) {
         event.preventDefault()
-        this.$router.setRoute(routeName, params)
+        Router.setRoute(routeName, params)
     }
 }
 
@@ -32,7 +33,7 @@ const template = /* html */ `
         <button class="navbar-toggler" type="button" data-bind="click: toggleCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div id="collapse" class="collapse navbar-collapse">
+        <div id="navbarCollapse" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="/home" data-bind="click: (_, event) => navigate(event, 'home')">Home</a>
@@ -59,7 +60,7 @@ const template = /* html */ `
             <button class="btn btn-outline-danger"
                 data-bind="visible: $store.getters.isAuthenticated(), click: () => $store.dispatch('updateIsAuthenticated', false)"
                 type="button">Sign Out</button>
-                
+
             <button class="btn btn-outline-primary"
                 data-bind="visible: !$store.getters.isAuthenticated(), click: (_, event) => navigate(event, 'register')"
                 type="button">Register</button>
