@@ -112,6 +112,7 @@ namespace Rawdata.Service
 
             app.UseCors("AllowAll");
             app.UseAuthentication();
+            app.UseFileServer();
             app.UseMvc();
         }
 
