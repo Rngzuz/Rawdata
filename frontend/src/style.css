@@ -17,7 +17,8 @@ so-word-cloud {
 .card-list-note {
     z-index: 2;
     position: absolute;
-    max-width: 200px;
+    height: 143px;
+    width: 250px;
 }
 
 mark {

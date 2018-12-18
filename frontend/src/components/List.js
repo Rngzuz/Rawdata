@@ -27,7 +27,11 @@ class List {
             this.toggleMarkPost()
         } else {
             this.showNote(true)
-            this.postMarker.style.transform = `translate(${event.clientX - 290}px, ${event.clientY - 126}px)`
+
+            const { x, y } = event.srcElement.getBoundingClientRect()
+
+            this.postMarker.style.top = `${Math.abs(y - 60)}px`
+            this.postMarker.style.left = `${Math.abs(x - 260)}px`
         }
     }
 

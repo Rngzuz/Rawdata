@@ -86,8 +86,6 @@ class Home extends Component {
             })
         }
 
-        console.log(posts)
-
         this.items(posts)
         this.isLoading(false)
     }
@@ -95,6 +93,8 @@ class Home extends Component {
 
 const template = /* html */ `
 <!-- ko if: !isLoading() -->
+
+
     <section data-bind="component: { name: 'so-list', params: { items } } "></section>
 
     <!-- ko if: (pageCount() > 1) -->
