@@ -19,13 +19,18 @@ class Home extends Component {
             this.$store.getters.searchParams()
         )
 
-        this.$store.subscribe('searchParams', words => {
+        const searchParamsSub = this.$store.subscribe('searchParams', words => {
             this.fetchPosts(words, this.currentPage.peek())
         })
 
-        this.currentPage.subscribe(currentPage => {
+        const currentPageSub = this.currentPage.subscribe(currentPage => {
             this.fetchPosts(this.words.peek(), currentPage)
         })
+
+        this.dispose = function () {
+            searchParamsSub.dispose()
+            currentPageSub.dispose()
+        }
     }
 
     previousPage() {

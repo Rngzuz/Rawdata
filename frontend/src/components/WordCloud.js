@@ -13,14 +13,14 @@ class WordCloud extends Component {
         this.chart = echarts.init(document.getElementById('word-cloud'))
         this.initGraph()
 
-        this.$store.subscribe('searchParams', value => {
+        const searchParamsSub = this.$store.subscribe('searchParams', value => {
             this.isLoading(true)
             this.loadCloudInput(value[0])
         })
 
         let timeout
 
-        window.addEventListener('resize', () => {
+        const chartResize = () => {
             if (timeout !== undefined) {
                 clearTimeout(timeout)
             }
@@ -29,13 +29,21 @@ class WordCloud extends Component {
                     this.chart.resize()
                 }
             }, 300)
-        })
+        }
+
+        window.addEventListener('resize', chartResize)
+
+        this.dispose = function () {
+            searchParamsSub.dispose()
+            window.removeEventListener('resize', chartResize)
+            this.chart.dispose()
+        }
     }
 
     async loadCloudInput(word) {
         let result = await SearchService.getWords(word, 100)
         this.drawWordCloud(result, word)
-        console.log('result', result)
+        this.isLoading(false)
     }
 
     initGraph() {
@@ -110,10 +118,6 @@ class WordCloud extends Component {
             }
             return word
         })
-    }
-
-    dispose() {
-        this.chart.dispose()
     }
 }
 

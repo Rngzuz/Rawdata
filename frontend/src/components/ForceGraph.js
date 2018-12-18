@@ -12,14 +12,14 @@ class ForceGraph extends Component {
         // this.initGraph()
         this.initCircularGraph()
 
-        this.$store.subscribe('searchParams', value => {
+        const searchParamsSub = this.$store.subscribe('searchParams', value => {
             this.isLoading(true)
             this.fetchGraphInput(value[0])
         })
 
         let timeout
 
-        window.addEventListener('resize', () => {
+        const chartResize = () => {
             if (timeout !== undefined) {
                 clearTimeout(timeout)
             }
@@ -28,7 +28,15 @@ class ForceGraph extends Component {
                     this.chart.resize()
                 }
             }, 300)
-        })
+        }
+
+        window.addEventListener('resize', chartResize)
+
+        this.dispose = function () {
+            searchParamsSub.dispose()
+            window.removeEventListener('resize', chartResize)
+            this.chart.dispose()
+        }
     }
 
 
@@ -148,11 +156,6 @@ class ForceGraph extends Component {
 
             return link
         })
-    }
-
-    dispose() {
-        // Dispose chart when the component disposed
-        this.chart.dispose()
     }
 }
 
