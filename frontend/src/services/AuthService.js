@@ -38,6 +38,10 @@ class AuthService extends BaseService {
         }
     }
 
+    hasToken() {
+        return localStorage.getItem('token') !== null
+    }
+
     signOut() {
         localStorage.removeItem('token')
     }

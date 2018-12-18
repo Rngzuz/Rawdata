@@ -1,8 +1,13 @@
 import Store from './Store.js'
+import AuthService from 'Services/AuthService.js'
 import Router from './Router.js'
 
 class App {
     constructor() {
+        if (AuthService.hasToken()) {
+            Store.commit('SET_IS_AUTHENTICATED', true)
+        }
+
         this.isLoading = Store.getters.isLoading
     }
 

@@ -1,5 +1,6 @@
 import Store from '@/Store.js'
 import Router from '@/Router.js'
+import AuthService from 'Services/AuthService.js'
 import { observable } from 'knockout'
 import { Component, wrapComponent } from './Component.js'
 
@@ -23,6 +24,11 @@ class Navbar extends Component {
     navigate(event, routeName, params = {}) {
         event.preventDefault()
         Router.setRoute(routeName, params)
+    }
+
+    signOut() {
+        AuthService.signOut()
+        Store.commit('SET_IS_AUTHENTICATED', false)
     }
 }
 
@@ -58,7 +64,7 @@ const template = /* html */ `
                 type="button">Sign in</button>
 
             <button class="btn btn-outline-danger"
-                data-bind="visible: $store.getters.isAuthenticated(), click: () => $store.dispatch('updateIsAuthenticated', false)"
+                data-bind="visible: $store.getters.isAuthenticated(), click: signOut"
                 type="button">Sign Out</button>
 
             <button class="btn btn-outline-primary"
