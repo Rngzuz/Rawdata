@@ -69,7 +69,7 @@ export default new Store({
             await UserService.toggleMarkedPost(payload.id, payload.note)
         },
         async toggleMarkComment({ payload }) {
-            await UserService.toggleMarkedComment(payload)
+            await UserService.toggleMarkedComment(payload.id, payload.note)
         },
         updateIsAuthenticated({ commit, payload }) {
             commit('SET_IS_AUTHENTICATED', payload)

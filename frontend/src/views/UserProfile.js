@@ -2,6 +2,7 @@ import Store from '@/Store.js'
 import { observable, observableArray, computed } from 'knockout'
 import { Component, wrapComponent } from '../components/Component.js'
 import UserService from '../services/UserService.js'
+import {escapeHtml, getPlainExcerpt} from "@/bindings/highlightText"
 
 class UserProfile extends Component {
     constructor(args) {
@@ -10,8 +11,8 @@ class UserProfile extends Component {
         this.isLoading(true)
 
         this.profile = observable({});
-        this.markedPosts = observableArray();
-        this.markedComments = observableArray();
+        this.markedPosts = observableArray([]);
+        this.markedComments = observableArray([]);
 
         this.fetchUserProfile()
     }
@@ -19,28 +20,38 @@ class UserProfile extends Component {
     async fetchUserProfile() {
         let result = await UserService.getUserProfile()
 
+        result.markedPosts = result.markedPosts.map(post => {
+            const newPost = {
+                ...post,
+                body: getPlainExcerpt(post.body)
+            }
+
+            if (post.title) {
+                newPost.title = escapeHtml(post.title)
+            }
+
+            return newPost
+        })
+
+        // result.markedComments = result.markedComments.map(comment => {
+        //     const endIndex = comment.length > 200 ? 200 : comment.length
+        //
+        //     return {
+        //         ...comment,
+        //         text: comment.text.substring(0, endIndex) + "..."
+        //     }
+        // })
+
         this.profile(result)
         this.markedPosts(result.markedPosts)
         this.markedComments(result.markedComments)
         this.isLoading(false)
-    }
 
-    async unmarkPost(post, event) {
-        event.preventDefault()
-        this.markedPosts.destroy(post)
-        await Store.dispatch('toggleMarkPost', post.id)
-    }
-
-    async unmarkComment(comment, event) {
-        event.preventDefault()
-        this.markedComments.destroy(comment)
-        await Store.dispatch('toggleMarkComment', comment.id)
     }
 }
 
 const template = /* html */ `
 <div data-bind="visible: !isLoading()">
-    <so-loader id="loader" data-bind="visible: isLoading()" params="size: 200"></so-loader>
     <div class="card-user-profile">
         <div>
             <h2 class="display-4" data-bind="text: profile().displayName">User Name here</h2>
@@ -50,53 +61,10 @@ const template = /* html */ `
     </div>
 
     <h2 class="display-4">Marked Posts</h2>
-    <div class="card">
-        <ul class="list-group list-group-flush" data-bind="foreach: markedPosts">
-            <li class="list-group-item d-flex justify-content-between align-items-center py-4">
-                <div class="mr-3 text-center flex-shrink-1">
-                    <span class="d-block badge badge-primary badge-pill" data-bind="text: $data.score"></span>
-                    <small class="d-block text-muted">score</small>
-                </div>
-                <article class="flex-grow-1">
-                    <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-
-                    <h5 class="card-title" data-bind="visible: $data.title, text: $data.title"></h5>
-
-                    <div data-bind="text: $data.body"></div>
-
-                    <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
-                        <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
-                    </cite>
-                </article>
-                <div>
-                <i class="fas fa-star fa-2x marked-star" data-bind="click: (post, event) => $component.unmarkPost(post, event)"></i>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <section data-bind="component: { name: 'so-list', params: { items: markedPosts } } "></section>
 
     <h2 class="display-4 profile-title">Marked Comments</h2>
-    <div class="card">
-        <ul class="list-group list-group-flush" data-bind="foreach: markedComments">
-            <li class="list-group-item d-flex justify-content-between align-items-center py-4">
-                <div class="mr-3 text-center flex-shrink-1">
-                    <span class="d-block badge badge-primary badge-pill" data-bind="text: $data.score"></span>
-                    <small class="d-block text-muted">score</small>
-                </div>
-                <article class="flex-grow-1">
-                    <span class="profile-note" data-bind="visible: $data.note, text: 'Note: ' + $data.note"></span>
-
-                    <div data-bind="text: $data.text"> </div>
-
-                    <cite class="d-block mt-3" data-bind="attr: { title: $data.authorDisplayName }">
-                        <span class="text-muted" data-bind="text: ' - ' + $data.authorDisplayName"></span>
-                    </cite>
-                </article>
-
-                <i class="fas fa-star fa-2x marked-star" data-bind="click: (comment, event) => $component.unmarkComment(comment, event)"></i>
-            </li>
-        </ul>
-    </div>
+    <section data-bind="component: { name: 'so-comment-list', params: { items: markedComments } } "></section>
 </div>
 `
 

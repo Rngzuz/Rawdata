@@ -47,6 +47,10 @@ namespace Rawdata.Service.Profiles
                     opt => opt.MapFrom(src => src.CommentId)
                 )
                 .ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.CommentId)
+                )
+                .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Comment.Author.DisplayName)
                 )
@@ -61,6 +65,10 @@ namespace Rawdata.Service.Profiles
                 .ForMember(
                     dest => dest.Text,
                     opt => opt.MapFrom(src => src.Comment.Text)
+                )
+                .ForMember(
+                    dest => dest.Marked,
+                    opt => opt.MapFrom(src => true)
                 )
                  // For path is used for nested member variables
                 .ForPath(

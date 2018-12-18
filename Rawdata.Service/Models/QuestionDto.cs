@@ -16,6 +16,8 @@ namespace Rawdata.Service.Models
         public IList<string> Tags { get; set; }
         public string AuthorDisplayName { get; set; }
         public QuestionDtoLink Links { get; set; }
+        
+        public bool Marked { get; set; }
 
         public class QuestionDtoLink
         {

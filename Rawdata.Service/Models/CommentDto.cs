@@ -12,6 +12,8 @@ namespace Rawdata.Service.Models
         public DateTime CreationDate { get; set; }
         public string AuthorDisplayName { get; set; }
         public CommentDtoLinks Links { get; set; }
+        
+        public int QuestionId { get; set; }
 
         public class CommentDtoLinks
         {
@@ -23,5 +25,6 @@ namespace Rawdata.Service.Models
     public class MarkedCommentDto : CommentDto
     {
         public string Note { get; set; }
+        public bool Marked { get; set; }
     }
 }

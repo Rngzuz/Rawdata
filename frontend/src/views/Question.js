@@ -1,52 +1,57 @@
 import { observable } from 'knockout'
+import QuestionService from 'Services/QuestionService.js'
 import { Component, wrapComponent } from 'Components/Component.js'
 
 class Question extends Component {
     constructor(args) {
         super(args)
-        this.question = observable({
-            title: '',
-            authorDisplayName: '',
-            body: '',
-            answers: []
-        })
+        this.question = observable({})
+        this.answers = observable([])
 
         this.fetchQuestion()
     }
 
     async fetchQuestion() {
         this.isLoading(true)
-        const response = await fetch(`http://localhost:5000/api/questions/${this.$params.id}`)
-        this.question(await response.json())
+        // const response = await fetch(`http://localhost:5000/api/questions/${this.$params.id}`)
+        const response = await QuestionService.fetchQuestionById(this.$params.id)
+        this.question(response)
+
+        console.log('fetch question', this.question())
+        this.answers(this.question().answers)
         this.isLoading(false)
     }
 }
 
 const template = /* html */ `
-<section data="visible: !isLoading()">
-    <h2 class="mt-5 mb-3" data-bind="text: question().title"></h2>
+<!-- ko if: !isLoading() -->
+<section>
+    <!--<h2 class="mt-5 mb-3" data-bind="text: question().title"></h2>-->
 
-    <article class="card mb-5">
-        <section class="card-body" data-bind="html: question().body"></section>
-        <footer class="card-footer text-muted">
-            <cite data-bind="text: question().authorDisplayName"></cite>
-        </footer>
-    </article>
+    <section data-bind="component: { name: 'so-post', params: { post: question } } "></section>
 
-    <!-- ko foreach: question().answers -->
-        <div class="card mb-5">
-            <div class="card-body" data-bind="html: $data.body"></div>
+    <div class="ml-lg-3">
+            <h5>Answer</h5>
+            <section data-bind="component: { name: 'so-post-list', params: { items: answers } } "></section>
+       </div>
 
-            <footer class="card-footer text-muted">
-                <cite data-bind="text: $data.authorDisplayName"></cite>
-            </footer>
+    <!--&lt;!&ndash; ko foreach: question().answers &ndash;&gt;-->
+        <!--<div class="card mb-5">-->
+            <!--<div class="card-body" data-bind="html: $data.body"></div>-->
 
-            <ul class="list-group list-group-flush" data-bind="foreach: $data.comments">
-                <li class="list-group-item" data-bind="html: $data.text"></li>
-            </ul>
-        </div>
-    <!-- /ko -->
+            <!--<footer class="card-footer text-muted">-->
+                <!--<cite data-bind="text: $data.authorDisplayName"></cite>-->
+            <!--</footer>-->
+
+            <!--&lt;!&ndash;<ul class="list-group list-group-flush" data-bind="foreach: $data.comments">&ndash;&gt;-->
+                <!--&lt;!&ndash;<li class="list-group-item" data-bind="html: $data.text"></li>&ndash;&gt;-->
+            <!--&lt;!&ndash;</ul>&ndash;&gt;-->
+            <!--<h5>Comments</h5>-->
+            <!--<section data-bind="component: { name: 'so-comment-list', params: { items: $data.comments } } "></section>-->
+        <!--</div>-->
+    <!--&lt;!&ndash; /ko &ndash;&gt;-->
 </section>
+<!-- /ko -->
 `
 
 export default wrapComponent(Question, template)

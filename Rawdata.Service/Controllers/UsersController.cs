@@ -228,7 +228,7 @@ namespace Rawdata.Service.Controllers
         private dynamic MapMarkedPostToDto(MarkedPost markedPost)
         {
             dynamic dto = new ExpandoObject();
-
+        
             dto.id = markedPost.PostId;
             dto.body = markedPost.Post.Body;
             dto.Score = markedPost.Post.Score;
@@ -236,9 +236,11 @@ namespace Rawdata.Service.Controllers
             dto.CreationDate = markedPost.Post.CreationDate;
             dto.AuthorDisplayName = markedPost.Post.Author.DisplayName;
             dto.Note = markedPost.Note;
+            dto.marked = true;
 
             if (markedPost.Post is Question q)
             {
+                dto.questionId = q.Id;
                 dto.Title = q.Title;
 
                 dto.Links = new
@@ -248,7 +250,8 @@ namespace Rawdata.Service.Controllers
                 };
             }
             else if (markedPost.Post is Answer a)
-            {
+            {    
+                dto.QuestionId = a.ParentId;
                 dto.Links = new
                 {
                     Self = Url.Link(GET_ANSWER_BY_ID, new {Id = a.Id}),
