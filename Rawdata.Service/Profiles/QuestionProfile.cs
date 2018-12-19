@@ -24,7 +24,10 @@ namespace Rawdata.Service.Profiles
                 .ForMember(
                     dest => dest.QuestionId,
                     opt => opt.MapFrom(src => src.Id)
-                )
+                ).ForMember (
+                    dest => dest.AcceptedAnswerId,
+                    opt => opt.MapFrom(src => src.AcceptedAnswerId)
+                 )
                 .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)
@@ -46,6 +49,10 @@ namespace Rawdata.Service.Profiles
                 .ForMember(
                     dest => dest.QuestionId,
                     opt => opt.MapFrom(src => src.Id)
+                )
+                .ForMember (
+                    dest => dest.AcceptedAnswerId,
+                    opt => opt.MapFrom(src => src.AcceptedAnswerId)
                 )
                 .ForMember(
                     dest => dest.AuthorDisplayName,

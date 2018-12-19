@@ -242,7 +242,8 @@ namespace Rawdata.Service.Controllers
             {
                 dto.questionId = q.Id;
                 dto.Title = q.Title;
-
+                dto.accepterAnswerId = q.AcceptedAnswerId; 
+                
                 dto.Links = new
                 {
                     Self = Url.Link(GET_QUESTION_BY_ID, new {Id = q.Id}),
