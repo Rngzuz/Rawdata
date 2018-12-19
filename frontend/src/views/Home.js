@@ -1,7 +1,7 @@
 import Store from '@/Store.js'
 import SearchService from 'Services/SearchService.js'
 import { observable, observableArray } from 'knockout'
-import { getPlainExcerpt, getMarkedExcerpt, escapeHtmlAndMark, escapeHtml } from 'Bindings/highlightText.js'
+import { getPlainExcerpt, getMarkedExcerpt, escapeHtmlAndMark, escapeHtml } from 'Helpers/highlightText.js'
 
 class Home {
     constructor() {

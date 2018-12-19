@@ -1,17 +1,16 @@
 import * as echarts from 'echarts'
 import * as randomColor from 'randomcolor'
-import { Component } from './Component.js'
+import Store from '@/Store.js'
 import SearchService from '@/services/SearchService'
-import { wrapComponent } from '@/components/Component'
 
-class ForceGraph extends Component {
-    constructor(args) {
-        super(args)
+class ForceGraph {
+    constructor() {
+        this.isLoading = Store.getters.isLoading
 
         this.chart = echarts.init(document.getElementById('chart'))
         this.initCircularGraph()
 
-        const searchParamsSub = this.$store.subscribe('searchParams', value => {
+        const searchParamsSub = Store.subscribe('searchParams', value => {
             this.isLoading(true)
             this.fetchGraphInput(value[0])
         })
@@ -162,4 +161,4 @@ const template = /* html */ `
 <div id="chart" style="width:100%;height:80vh;"></div>
 `
 
-export default wrapComponent(ForceGraph, template)
+export default { viewModel: ForceGraph, template }

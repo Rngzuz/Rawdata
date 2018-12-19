@@ -1,7 +1,7 @@
 import Store from '@/Store.js'
 import { observable, observableArray } from 'knockout'
 import UserService from '../services/UserService.js'
-import { escapeHtml, getPlainExcerpt } from "@/bindings/highlightText"
+import { escapeHtml, getPlainExcerpt } from 'Helpers/highlightText'
 
 class UserProfile {
     constructor() {

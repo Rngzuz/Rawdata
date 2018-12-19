@@ -6,8 +6,8 @@
             "@/*": [
                 "./src/*"
             ],
-            "Bindings/*": [
-                "./src/bindings/*"
+            "Helpers/*": [
+                "./src/helpers/*"
             ],
             "Components/*": [
                 "./src/components/*"

@@ -17,7 +17,6 @@ import App from './App.js'
 import Loader from 'Components/Loader.js'
 import Navbar from 'Components/Navbar.js'
 import ForceGraph from 'Components/ForceGraph.js'
-import Search from 'Components/Search.js'
 import WordCloud from 'Components/WordCloud.js'
 import Post from 'Components/Post.js'
 
@@ -32,7 +31,6 @@ ko.components.register('so-app', App)
 ko.components.register('so-loader', Loader)
 ko.components.register('so-navbar', Navbar)
 ko.components.register('so-force-graph', ForceGraph)
-ko.components.register('so-search', Search)
 ko.components.register('so-word-cloud', WordCloud)
 ko.components.register('so-post', Post)
 
