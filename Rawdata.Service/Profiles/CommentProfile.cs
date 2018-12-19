@@ -41,6 +41,25 @@ namespace Rawdata.Service.Profiles
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Comment.Author.DisplayName)
                 )
+                .ForMember(
+                    dest => dest.Text,
+                    opt => opt.MapFrom(src => src.Comment.Text)
+                )
+                .ForMember(
+                    dest => dest.CreationDate,
+                    opt => opt.MapFrom(src => src.Comment.CreationDate)
+                )
+                .ForMember(
+                    dest => dest.Score,
+                    opt => opt.MapFrom(src => src.Comment.Score)
+                )
+                .ForPath(
+                    dest => dest.Marked,
+                    opt => opt.MapFrom(src => true)
+                ).ForPath(
+                    dest => dest.Note,
+                    opt => opt.MapFrom(src => src.Note)
+                )
                 // For path is used for nested member variables
                 .ForPath(
                     dest => dest.Links.Self,
@@ -51,12 +70,6 @@ namespace Rawdata.Service.Profiles
                     dest => dest.Links.Author,
                     // Generate absolute URL
                     opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.Comment.AuthorId }))
-                ).ForPath(
-                    dest => dest.Marked,
-                    opt => opt.MapFrom(src => true)
-                ).ForPath(
-                    dest => dest.Note,
-                    opt => opt.MapFrom(src => src.Note)
                 );
 
             // Allow mapping to an empty collection

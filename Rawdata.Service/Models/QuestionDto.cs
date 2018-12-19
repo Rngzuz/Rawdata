@@ -15,6 +15,7 @@ namespace Rawdata.Service.Models
         public DateTime? ClosedDate { get; set; }
         public IList<string> Tags { get; set; }
         public string AuthorDisplayName { get; set; }
+        public int? AcceptedAnswerId { get; set; }
         public QuestionDtoLink Links { get; set; }
         
         public bool Marked { get; set; }
