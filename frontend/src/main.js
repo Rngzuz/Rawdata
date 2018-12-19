@@ -19,6 +19,7 @@ import Navbar from 'Components/Navbar.js'
 import ForceGraph from 'Components/ForceGraph.js'
 import WordCloud from 'Components/WordCloud.js'
 import Post from 'Components/Post.js'
+import Prompt from 'Components/Prompt.js'
 
 ko.components.register('so-home', Home)
 ko.components.register('so-sign-in', SignIn)
@@ -33,5 +34,6 @@ ko.components.register('so-navbar', Navbar)
 ko.components.register('so-force-graph', ForceGraph)
 ko.components.register('so-word-cloud', WordCloud)
 ko.components.register('so-post', Post)
+ko.components.register('so-prompt', Prompt)
 
 ko.applyBindings()

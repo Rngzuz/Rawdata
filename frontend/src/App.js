@@ -1,6 +1,7 @@
 import Store from './Store.js'
 import AuthService from 'Services/AuthService.js'
 import Router from './Router.js'
+import { observable } from 'knockout'
 
 class App {
     constructor() {
@@ -8,6 +9,8 @@ class App {
             Store.commit('SET_IS_AUTHENTICATED', true)
         }
 
+        this.showPrompt = observable(false)
+        this.testValue = observable('test')
         this.isLoading = Store.getters.isLoading
     }
 

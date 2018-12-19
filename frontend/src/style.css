@@ -11,7 +11,8 @@ so-forcegraph,
 so-search,
 so-user-profile,
 so-word-cloud,
-so-post {
+so-post,
+so-prompt {
     display: block;
 }
 

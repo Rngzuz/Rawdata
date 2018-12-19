@@ -1,6 +1,6 @@
 import Store from '@/Store.js'
 import Router from '@/Router.js'
-import { observableArray } from 'knockout'
+import { observable, observableArray } from 'knockout'
 
 class Post {
     constructor(params = {}) {
@@ -11,9 +11,13 @@ class Post {
             showComments = false
         } = params
 
+        this.showPrompt = observable(false)
+        this.selectedComment = {}
+
+        this.postWasToggled = false
+
         if (showComments) {
             this.comments = observableArray(post.comments)
-            // this.comments.sort((left, right) => right.score - left.score)
         }
 
         this.post = post
@@ -25,14 +29,32 @@ class Post {
         this.isAuthenticated = Store.getters.isAuthenticated
     }
 
+    showPromptOnTogglePost(post) {
+        if (post.marked) {
+            this.toggle({ ...post, note: '' })
+        } else {
+            this.postWasToggled = true
+            this.showPrompt(true)
+        }
+    }
+
+    showPromptOnToggleComment(comment) {
+        if (comment.marked) {
+            this.toggleComment({ ...comment, note: '' })
+        } else {
+            this.selectedComment = comment
+            this.showPrompt(true)
+        }
+    }
+
     toggleComment(comment) {
         const oldComment = this.comments.peek()
             .find(item => item.id === comment.id)
 
-        const newComment = { ...oldComment, marked: !oldComment.marked }
+        const newComment = { ...oldComment, marked: !oldComment.marked, note: comment.note }
         this.comments.replace(oldComment, newComment)
 
-        Store.dispatch('toggleMarkComment', { id: comment.id, note: '' })
+        Store.dispatch('toggleMarkComment', { id: comment.id, note: comment.note })
     }
 
     navigateToQuestion() {
@@ -48,7 +70,7 @@ const template = /* html */ `
         <!-- /ko -->
         <aside class="float-left pr-3">
             <!-- ko if: $component.isAuthenticated() -->
-            <div class="card-star" data-bind="click: ({ post }, event) => toggle(post)">
+            <div class="card-star" data-bind="click: ({ post }, event) => { showPromptOnTogglePost(post) }">
                 <i class="fa-star" data-bind="css: { fas: post.marked, far: !post.marked }"></i>
                 <div class="card-star-title">mark</div>
             </div>
@@ -80,7 +102,7 @@ const template = /* html */ `
     <li class="list-group-item">
         <aside class="float-left pr-3">
             <!-- ko if: $component.isAuthenticated() -->
-            <div class="card-star" data-bind="click: (comment, event) => $component.toggleComment(comment)">
+            <div class="card-star" data-bind="click: (comment, event) => $component.showPromptOnToggleComment(comment)">
                 <i class="fas fa-star" data-bind="css: { fas: $data.marked, far: !$data.marked }"></i>
                 <div class="card-star-title">mark</div>
             </div>
@@ -92,6 +114,7 @@ const template = /* html */ `
         </aside>
 
         <p class="mb-1 clearfix" data-bind="text: $data.text"></p>
+        <p class="" data-bind="text: $data.note"></p>
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
@@ -100,6 +123,26 @@ const template = /* html */ `
     </li>
 </ul>
 <!-- /ko -->
+
+<!-- ko component: {
+    name: 'so-prompt',
+    params: {
+        showPrompt,
+        onAccept: value => {
+            showPrompt(false)
+
+            if (postWasToggled) {
+                toggle({ ...post, note: value })
+                postWasToggled = false
+            } else if (showComments) {
+                toggleComment({ ...selectedComment, note: value, marked: !selectedComment.marked })
+            }
+        },
+        onCancel: () => {
+            showPrompt(false)
+        }
+    }
+} --><!-- /ko -->
 `
 
 export default { viewModel: Post, template }
