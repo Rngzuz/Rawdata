@@ -67,15 +67,13 @@ namespace Rawdata.Service.Controllers
             User user;
             dynamic userDto;
 
-//            try {
-            //TODO fix this 2 request hack
-            user = await UserService.GetUserById(id);
-            IList<MarkedPost> markedPosts = await UserService.GetMarkedPosts(id).ToListAsync();
-            userDto = MapUserToDto(user, markedPosts);
-//            }
-//            catch {
-//                return StatusCode(500);
-//            }
+            try {
+                user = await UserService.GetUserById(id);
+                userDto = MapUserToDto(user);
+            }
+            catch {
+                    return StatusCode(500);
+            }
 
             return Ok(userDto);
         }
@@ -190,7 +188,7 @@ namespace Rawdata.Service.Controllers
             
         }
 
-        protected dynamic MapUserToDto(User user, ICollection<MarkedPost> markedPosts)
+        protected dynamic MapUserToDto(User user)
         {
             dynamic userDto = new ExpandoObject();
 
@@ -198,8 +196,7 @@ namespace Rawdata.Service.Controllers
             userDto.Email = user.Email;
             userDto.CreationDate = user.CreationDate;
             userDto.SearchHistory = DtoMapper.Map<ICollection<Search>, ICollection<SearchDto>>(user.Searches);
-            userDto.MarkedPosts = MapMarkedPostsToDto(markedPosts);
-//            userDto.MarkedPosts = await MapMarkedPostToDto(user.MarkedPosts);
+            userDto.MarkedPosts = MapMarkedPostsToDto(user.MarkedPosts);
             userDto.MarkedComments =
                 DtoMapper.Map<ICollection<MarkedComment>, ICollection<CommentDto>>(user.MarkedComments);
             ;
