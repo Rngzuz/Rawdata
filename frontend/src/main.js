@@ -19,10 +19,8 @@ import Navbar from 'Components/Navbar.js'
 import ForceGraph from 'Components/ForceGraph.js'
 import Search from 'Components/Search.js'
 import WordCloud from 'Components/WordCloud.js'
-import List from 'Components/List.js'
 import CommentList from 'Components/CommentList.js'
 import Post from 'Components/Post.js'
-import PostList from 'Components/PostList.js'
 
 ko.options.deferUpdates = true
 
@@ -40,8 +38,6 @@ ko.components.register('so-force-graph', ForceGraph)
 ko.components.register('so-search', Search)
 ko.components.register('so-word-cloud', WordCloud)
 ko.components.register('so-post', Post)
-ko.components.register('so-post-list', PostList)
-ko.components.register('so-list', List)
 ko.components.register('so-comment-list', CommentList)
 
 

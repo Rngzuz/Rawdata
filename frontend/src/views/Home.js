@@ -1,13 +1,12 @@
+import Store from '@/Store.js'
 import SearchService from 'Services/SearchService.js'
 import { observable, observableArray } from 'knockout'
-import { Component, wrapComponent } from 'Components/Component.js'
 import { getPlainExcerpt, getMarkedExcerpt, escapeHtmlAndMark, escapeHtml } from 'Bindings/highlightText.js'
 
-class Home extends Component {
-    constructor(args) {
-        super(args)
-
-        this.words = this.$store.getters.searchParams
+class Home {
+    constructor() {
+        this.isLoading = Store.getters.isLoading
+        this.words = Store.getters.searchParams
         this.items = observableArray([])
 
         this.currentPage = observable(1)
@@ -16,10 +15,10 @@ class Home extends Component {
         this.searchAlgo = observable('best')
 
         this.fetchPosts(
-            this.$store.getters.searchParams()
+            Store.getters.searchParams()
         )
 
-        const searchParamsSub = this.$store.subscribe('searchParams', words => {
+        const searchParamsSub = Store.subscribe('searchParams', words => {
             this.fetchPosts(words, this.currentPage.peek())
         })
 
@@ -31,6 +30,8 @@ class Home extends Component {
             searchParamsSub.dispose()
             currentPageSub.dispose()
         }
+
+        this.togglePost = this.togglePost.bind(this)
     }
 
     previousPage() {
@@ -110,6 +111,16 @@ class Home extends Component {
         this.items(posts)
         this.isLoading(false)
     }
+
+    togglePost(post) {
+        const oldPost = this.items.peek()
+            .find(item => item.id === post.id)
+
+        const newPost = { ...oldPost, marked: !oldPost.marked  }
+        this.items.replace(oldPost, newPost)
+
+        Store.dispatch('toggleMarkPost', { id: post.id, note: '' })
+    }
 }
 
 const template = /* html */ `
@@ -135,7 +146,9 @@ const template = /* html */ `
         </div>
     </div>
 
-    <section data-bind="component: { name: 'so-list', params: { items } } "></section>
+    <!-- ko foreach: items -->
+        <div class="mt-4" data-bind="component: { name: 'so-post', params: { post: $data, toggle: $component.togglePost, showLink: true } }"></div>
+    <!-- /ko -->
 
     <!-- ko if: (pageCount() > 1) -->
         <div class="text-center">
@@ -155,4 +168,4 @@ const template = /* html */ `
 <!-- /ko -->
 `
 
-export default wrapComponent(Home, template)
+export default { viewModel: Home, template }

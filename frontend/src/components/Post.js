@@ -1,100 +1,107 @@
 import Store from '@/Store.js'
 import Router from '@/Router.js'
-import { observable } from 'knockout'
+import { observableArray } from 'knockout'
 
 class Post {
     constructor(params = {}) {
-        this.post = params.post
-        this.isAuthenticated = Store.getters.isAuthenticated
+        const {
+            post = {},
+            toggle = () => { },
+            showLink = false,
+            showComments = false
+        } = params
 
-        this.showNote = observable(false)
-        this.note = observable('')
-
-        this.postMarker = document.getElementById('post-marker')
-    }
-
-    navigate(event, routeName, params = {}) {
-        event.preventDefault()
-        Router.setRoute(routeName, params)
-    }
-
-    displayNoteOrToggle(data, event) {
-        this.post = data
-
-        if (data.marked) {
-            this.toggleMarkPost()
-        } else {
-            this.showNote(true)
-
-            const { x, y } = event.srcElement.getBoundingClientRect()
-
-            this.postMarker.style.top = `${Math.abs(y - 60)}px`
-            this.postMarker.style.left = `${Math.abs(x - 260)}px`
+        if (showComments) {
+            this.comments = observableArray(post.comments)
         }
+
+        this.post = post
+
+        this.toggle = toggle
+        this.showLink = showLink
+        this.showComments = showComments
+
+        this.isAuthenticated = Store.getters.isAuthenticated
     }
 
-    toggleMarkPost() {
+    toggleComment(comment) {
+        const oldComment = this.comments.peek()
+            .find(item => item.id === comment.id)
 
-        const marked = !this.post().marked
-        this.post({ ...this.post(), marked, note: marked ? this.note() : '' })
+        const newComment = { ...oldComment, marked: !oldComment.marked  }
+        this.comments.replace(oldComment, newComment)
 
-        this.showNote(false)
-        // this.items(newItems)
-        Store.dispatch('toggleMarkPost', { id: this.post().id, note: this.note() })
+        Store.dispatch('toggleMarkComment', { id: comment.id, note: '' })
+    }
+
+    navigateToQuestion() {
+        Router.setRoute('question', { id: this.post.questionId })
     }
 }
 
 const template = /* html */ `
-<div id="post-marker" class="card card-list-note shadow" data-bind="visible: showNote">
-    <form data-bind="submit: () => $component.toggleMarkPost()" class="p-3">
-        <label class="mb-0">
-            <b class="d-block mb-2">Set optional note?</b>
-            <input type="text" class="form-control mb-2" placeholder="Enter optional note" data-bind="value: note">
-            <button type="submit" class="btn btn-primary btn-sm mr-2">OK</button>
-            <button type="button" class="btn btn-default btn-sm" data-bind="click: () => showNote(false)">Cancel</button>
-        </label>
-    </form>
-</div>
-
-
-<article >
+<article class="card card-post">
     <div class="card-body">
-        <!-- ko if: post().title -->
-        <h5 class="card-title mb-2" data-bind="html: post().title"></h5>
+        <!-- ko if: post.title -->
+        <h5 class="card-title text-truncate mb-3" data-bind="html: post.title"></h5>
         <!-- /ko -->
-        <div class="d-flex">
-            <aside class="flex-shrink-1 mr-3">
-                <div class="score text-center">
-                    <span class="d-block badge badge-primary" data-bind="text: post().score"></span>
-                    <small class="d-block">score</small>
-                </div>
-            </aside>
-
-            <div class="flex-grow-1">
-                <div data-bind="html: post().body"></div>
-                <div class="mt-2 text-info font-weight-bold" data-bind="visible: post().note, text: 'Note: ' + post().note"></div>
-            </div>
-
+        <aside class="float-left pr-3">
             <!-- ko if: $component.isAuthenticated() -->
-            <i class="flex-shrink-1 align-self-center ml-3 text-warning fa-star fa-2x" data-bind="click: (data, event) => $component.displayNoteOrToggle(data, event), css: { fas: post().marked, far: !post().marked }"></i>
+            <div class="card-star" data-bind="click: ({ post }, event) => toggle(post)">
+                <i class="fa-star" data-bind="css: { fas: post.marked, far: !post.marked }"></i>
+                <div class="card-star-title">mark</div>
+            </div>
             <!-- /ko -->
-        </div>
+            <div class="card-score">
+                <div class="card-score-count" data-bind="html: post.score"></div>
+                <div class="card-score-title">score</div>
+            </div>
+        </aside>
+        <div data-bind="html: post.body"></div>
+        <!-- ko if: post.note -->
+        <div class="mt-2 text-info font-weight-bold" data-bind="text: 'Note: ' + post.note"></div>
+        <!-- /ko -->
     </div>
-    <footer class="card-footer mb-2 bg-white d-flex align-items-center justify-content-between">
+    <footer class="card-footer bg-white d-flex justify-content-between align-items-center">
         <div class="text-muted">
             <span>by</span>
-            <cite data-bind="text: post().authorDisplayName"></cite>
-            <span>on the <time data-bind="text: post().creationDate"></time></span>
+            <cite data-bind="text: post.authorDisplayName"></cite>
+            <span>on the <time data-bind="text: post.creationDate"></time></span>
         </div>
-        <button type="button" class="btn btn-outline-dark btn-sm" data-bind="click: (_, event) => $component.navigate(event, 'question', { id: post().questionId })">Read
-            more</button>
+        <!-- ko if: showLink -->
+        <button type="button" class="btn btn-primary btn-sm" data-bind="click: navigateToQuestion">Read more</button>
+        <!-- /ko -->
     </footer>
-   
-        <div class="ml-lg-3">
-            <h5>Comments</h5>
-            <section data-bind="component: { name: 'so-comment-list', params: { items: post().comments } } "></section>
-        </div>
 </article>
+
+<!-- ko if: showComments -->
+<ul class="list-group mx-3 mx-lg-auto" data-bind="foreach: comments">
+    <li class="list-group-item">
+
+
+
+        <aside class="float-left pr-3">
+            <!-- ko if: $component.isAuthenticated() -->
+            <div class="card-star" data-bind="click: (comment, event) => $component.toggleComment(comment)">
+                <i class="fas fa-star" data-bind="css: { fas: $data.marked, far: !$data.marked }"></i>
+                <div class="card-star-title">mark</div>
+            </div>
+            <!-- /ko -->
+            <div class="card-score">
+                <div class="card-score-count" data-bind="text: $data.score"></div>
+                <div class="card-score-title">score</div>
+            </div>
+        </aside>
+
+        <p class="mb-1 clearfix" data-bind="text: $data.text"></p>
+        <footer class="text-muted text-right small">
+            <span>by</span>
+            <cite data-bind="text: $data.authorDisplayName"></cite>
+            <span>on the <time data-bind="text: $data.creationDate"></time></span>
+        </footer>
+    </li>
+</ul>
+<!-- /ko -->
 `
 
 export default { viewModel: Post, template }

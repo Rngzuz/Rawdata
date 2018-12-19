@@ -24,7 +24,7 @@ class App {
 const template = /* html */ `
 <so-navbar id="navbar"></so-navbar>
 
-<main id="content" class="container" data-bind="component: getComponent()"></main>
+<main class="container py-3 py-lg-5" data-bind="component: getComponent()"></main>
 
 <!-- ko if: isLoading -->
     <so-loader id="loader" params="size: 200"></so-loader>

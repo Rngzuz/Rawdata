@@ -10,8 +10,19 @@ so-navbar,
 so-forcegraph,
 so-search,
 so-user-profile,
-so-word-cloud {
+so-word-cloud,
+so-post {
     display: block;
+}
+
+.card-post + .list-group {
+    max-width: 800px;
+}
+
+.card-post + .list-group > .list-group-item:first-child  {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: -1px;
 }
 
 .card-list-note {
@@ -26,11 +37,6 @@ mark {
     font-size: 87.5%;
     background-color: #fff2b3;
     border-radius: .2rem;
-}
-
-#content {
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
 
 #loader {
@@ -140,4 +146,45 @@ pre:last-child, p:last-child {
     padding-right: 1.0rem;
     padding-left: 1.25rem;
     color: #007bff;
+}
+
+
+
+.card-score, .card-star {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    line-height: 1;
+    border-radius: .25rem;
+    font-weight: bold;
+}
+
+.card-star + .card-score {
+    margin-top: .75rem;
+}
+
+.card-score {
+    /* border: 2px solid #007bff; */
+    color: #007bff;
+}
+
+.card-score-count {
+    font-size: 1rem;
+}
+
+.card-score-title {
+    font-size: .75rem;
+}
+
+.card-star {
+    cursor: pointer;
+    /* border: 2px solid #ffc107; */
+    color: #ffc107;
+    font-size: 1.45rem;
+}
+
+.card-star-title {
+    font-size: .75rem;
 }

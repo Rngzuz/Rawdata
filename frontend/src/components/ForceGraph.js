@@ -9,7 +9,6 @@ class ForceGraph extends Component {
         super(args)
 
         this.chart = echarts.init(document.getElementById('chart'))
-        // this.initGraph()
         this.initCircularGraph()
 
         const searchParamsSub = this.$store.subscribe('searchParams', value => {

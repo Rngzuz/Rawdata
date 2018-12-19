@@ -1,57 +1,72 @@
-import { observable } from 'knockout'
+import Store from '@/Store.js'
 import QuestionService from 'Services/QuestionService.js'
-import { Component, wrapComponent } from 'Components/Component.js'
+import { observable, observableArray } from 'knockout'
 
-class Question extends Component {
-    constructor(args) {
-        super(args)
-        this.question = observable({})
-        this.answers = observable([])
+class Question {
+    constructor({ id }) {
+        this.postId = id
+        this.isLoading = Store.getters.isLoading
+        this.post = observable({})
+        this.answers = observableArray([])
 
         this.fetchQuestion()
+        this.toggleQuestion = this.toggleQuestion.bind(this)
+        this.toggleAnswer = this.toggleAnswer.bind(this)
     }
 
     async fetchQuestion() {
         this.isLoading(true)
-        // const response = await fetch(`http://localhost:5000/api/questions/${this.$params.id}`)
-        const response = await QuestionService.fetchQuestionById(this.$params.id)
-        this.question(response)
 
-        console.log('fetch question', this.question())
-        this.answers(this.question().answers)
+        const { answers, ...post } = await QuestionService
+            .fetchQuestionById(this.postId)
+
+        this.post(post)
+        this.answers(answers)
+
         this.isLoading(false)
+    }
+
+    toggleQuestion(post) {
+        this.post({
+            ...post,
+            marked: !post.marked
+        })
+
+        Store.dispatch('toggleMarkPost', { id: post.id, note: '' })
+    }
+
+    toggleAnswer(post) {
+        const oldAnswer = this.answers.peek()
+            .find(answer => answer.id === post.id)
+
+        const newAnswer = { ...oldAnswer, marked: !oldAnswer.marked  }
+        this.answers.replace(oldAnswer, newAnswer)
+
+        Store.dispatch('toggleMarkPost', { id: post.id, note: '' })
     }
 }
 
 const template = /* html */ `
-<!-- ko if: !isLoading() -->
-<section>
-    <!--<h2 class="mt-5 mb-3" data-bind="text: question().title"></h2>-->
-
-    <section data-bind="component: { name: 'so-post', params: { post: question } } "></section>
-
-    <div class="ml-lg-3">
-            <h5>Answer</h5>
-            <section data-bind="component: { name: 'so-post-list', params: { items: answers } } "></section>
-       </div>
-
-    <!--&lt;!&ndash; ko foreach: question().answers &ndash;&gt;-->
-        <!--<div class="card mb-5">-->
-            <!--<div class="card-body" data-bind="html: $data.body"></div>-->
-
-            <!--<footer class="card-footer text-muted">-->
-                <!--<cite data-bind="text: $data.authorDisplayName"></cite>-->
-            <!--</footer>-->
-
-            <!--&lt;!&ndash;<ul class="list-group list-group-flush" data-bind="foreach: $data.comments">&ndash;&gt;-->
-                <!--&lt;!&ndash;<li class="list-group-item" data-bind="html: $data.text"></li>&ndash;&gt;-->
-            <!--&lt;!&ndash;</ul>&ndash;&gt;-->
-            <!--<h5>Comments</h5>-->
-            <!--<section data-bind="component: { name: 'so-comment-list', params: { items: $data.comments } } "></section>-->
-        <!--</div>-->
-    <!--&lt;!&ndash; /ko &ndash;&gt;-->
-</section>
+<!-- ko ifnot: isLoading -->
+<div data-bind="component: {
+    name: 'so-post',
+    params: {
+        post: post(),
+        toggle: toggleQuestion,
+        showComments: true
+    }
+}"></div>
+<!-- ko foreach: answers -->
+<div class="mt-5" data-bind="component: {
+    name: 'so-post',
+    params: {
+        post: $data,
+        toggle: $component.toggleAnswer,
+        showComments: true
+    }
+}"></div>
+<!-- /ko -->
 <!-- /ko -->
 `
 
-export default wrapComponent(Question, template)
+export default { viewModel: Question, template }

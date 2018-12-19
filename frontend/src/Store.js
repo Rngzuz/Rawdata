@@ -46,12 +46,14 @@ export default new Store({
     state: {
         isAuthenticated: observable(false),
         isLoading: observable(false),
-        searchParams: observableArray([])
+        searchParams: observableArray([]),
+        selectedQuestion: observable({})
     },
     getters: {
         isAuthenticated: state => state.isAuthenticated,
         isLoading: state => state.isLoading,
-        searchParams: state => state.searchParams
+        searchParams: state => state.searchParams,
+        selectedQuestion: state => state.selectedQuestion
     },
     mutations: {
         SET_IS_AUTHENTICATED(state, payload) {
@@ -62,6 +64,9 @@ export default new Store({
         },
         SET_SEARCH_PARAMS(state, payload) {
             state.searchParams(payload)
+        },
+        SET_SELECTED_QUESTION(state, payload) {
+            state.selectedQuestion(payload)
         }
     },
     actions: {
