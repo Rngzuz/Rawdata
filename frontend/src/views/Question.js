@@ -39,7 +39,7 @@ class Question {
         const oldAnswer = this.answers.peek()
             .find(answer => answer.id === post.id)
 
-        const newAnswer = { ...oldAnswer, marked: !oldAnswer.marked  }
+        const newAnswer = { ...oldAnswer, marked: !oldAnswer.marked }
         this.answers.replace(oldAnswer, newAnswer)
 
         Store.dispatch('toggleMarkPost', { id: post.id, note: '' })

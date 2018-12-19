@@ -1,4 +1,4 @@
-import { observable} from 'knockout'
+import { observable } from 'knockout'
 import { Component, wrapComponent } from '../components/Component.js'
 import AuthService from '../services/AuthService.js'
 
@@ -6,24 +6,24 @@ class Register extends Component {
     constructor(args) {
         super(args)
 
-        this.username = observable("");
-        this.email = observable("");
-        this.password = observable("");
+        this.username = observable("")
+        this.email = observable("")
+        this.password = observable("")
     }
 
     async register() {
-        if(!this.inputFilledOut()) {
+        if (!this.inputFilledOut()) {
             alert('Please fill out all registration data')
-            return;
+            return
         }
 
         this.isLoading(true)
-        const userData = {"displayName": this.username(),"email": this.email(), "password": this.password()}
+        const userData = { "displayName": this.username(), "email": this.email(), "password": this.password() }
 
         let registerResult = await AuthService.register(userData)
 
-        if(registerResult.email !== undefined) {
-            const credentials = {"email": registerResult.email, "password":this.password()}
+        if (registerResult.email !== undefined) {
+            const credentials = { "email": registerResult.email, "password": this.password() }
             let signInResult = await AuthService.signIn(credentials)
 
             this.$store.dispatch('updateIsAuthenticated', true)
@@ -48,7 +48,7 @@ const template = /* html */ `
             <div class="form-group">
                 <label for="username">User Name</label>
                 <input type="text" class="form-control" id="username" data-bind="value: username">
-            </div>  
+            </div>
             <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control" id="email" data-bind="value: email">

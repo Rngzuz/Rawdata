@@ -9,22 +9,18 @@ class UserService extends BaseService {
         const endpoint = this.buildUrl({ path: '/profile' })
         const response = await fetch(endpoint, this.requestOptions)
 
-        const a = await response.json()
-
-
-        console.log(a)
-        return  a
+        return await response.json()
     }
 
     async toggleMarkedPost(postId, note) {
-        const endpoint = this.buildUrl({path: '/posts'})
+        const endpoint = this.buildUrl({ path: '/posts' })
         const response = await fetch(endpoint, {
             ...this.requestOptions,
             method: 'POST',
             body: JSON.stringify({ postId, note })
         })
 
-        if(response.status === 204) {
+        if (response.status === 204) {
             return response
         }
 
@@ -32,10 +28,10 @@ class UserService extends BaseService {
     }
 
     async updateMarkedPostNote(postId, note) {
-        const endpoint = this.buildUrl({path: '/posts/'+postId})
+        const endpoint = this.buildUrl({ path: '/posts/' + postId })
         const response = await fetch(endpoint, {
             method: 'POST',
-            body: {"postId": postId, "note": note},
+            body: { "postId": postId, "note": note },
             headers: { 'Content-Type': 'application/json' }
         })
 
@@ -43,14 +39,14 @@ class UserService extends BaseService {
     }
 
     async toggleMarkedComment(commentId, note) {
-        const endpoint = this.buildUrl({path: '/comments'})
+        const endpoint = this.buildUrl({ path: '/comments' })
         const response = await fetch(endpoint, {
             ...this.requestOptions,
             method: 'POST',
             body: JSON.stringify({ commentId, note })
         })
 
-        if(response.status === 204) {
+        if (response.status === 204) {
             return response
         }
 

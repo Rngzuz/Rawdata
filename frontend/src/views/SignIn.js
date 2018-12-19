@@ -11,16 +11,16 @@ class SignIn extends Component {
     }
 
     async signIn() {
-        if(!this.inputFilledOut()) {
+        if (!this.inputFilledOut()) {
             alert('Please fill out all sign in data')
-            return;
+            return
         }
 
-        const credentials = {"email": this.email(), "password":this.password()}
+        const credentials = { "email": this.email(), "password": this.password() }
 
         let response = await AuthService.signIn(credentials)
 
-        if(response !== undefined) {
+        if (response !== undefined) {
             this.$store.dispatch('updateIsAuthenticated', true)
             this.$router.setRoute('home')
 

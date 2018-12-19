@@ -62,15 +62,15 @@ class Home {
                 case 'best':
                     json = await SearchService
                         .getBestMatch(words, page, size)
-                    break;
+                    break
                 case 'exact':
                     json = await SearchService
                         .getExactMatch(words, page, size)
-                    break;
+                    break
                 case 'ranked':
                     json = await SearchService
                         .getRankedWeightedMatch(words, page, size)
-                    break;
+                    break
             }
 
             this.currentPage(json.currentPage)
@@ -116,7 +116,7 @@ class Home {
         const oldPost = this.items.peek()
             .find(item => item.id === post.id)
 
-        const newPost = { ...oldPost, marked: !oldPost.marked  }
+        const newPost = { ...oldPost, marked: !oldPost.marked }
         this.items.replace(oldPost, newPost)
 
         Store.dispatch('toggleMarkPost', { id: post.id, note: '' })

@@ -57,7 +57,6 @@ export default createStore({
             state.isAuthenticated(payload)
         },
         SET_IS_LOADING(state, payload) {
-            console.log(this)
             state.isLoading(payload)
         },
         SET_SEARCH_PARAMS(state, payload) {

@@ -44,7 +44,7 @@ class UserProfile {
         const oldPost = this.markedPosts.peek()
             .find(answer => answer.id === post.id)
 
-        const newPost = { ...oldPost, marked: !oldPost.marked  }
+        const newPost = { ...oldPost, marked: !oldPost.marked }
         this.markedPosts.replace(oldPost, newPost)
 
         Store.dispatch('toggleMarkPost', { id: post.id, note: '' })
@@ -54,7 +54,7 @@ class UserProfile {
         const oldComment = this.markedComments.peek()
             .find(item => item.id === comment.id)
 
-        const newComment = { ...oldComment, marked: !oldComment.marked  }
+        const newComment = { ...oldComment, marked: !oldComment.marked }
         this.markedComments.replace(oldComment, newComment)
 
         Store.dispatch('toggleMarkComment', { id: comment.id, note: '' })

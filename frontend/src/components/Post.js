@@ -29,7 +29,7 @@ class Post {
         const oldComment = this.comments.peek()
             .find(item => item.id === comment.id)
 
-        const newComment = { ...oldComment, marked: !oldComment.marked  }
+        const newComment = { ...oldComment, marked: !oldComment.marked }
         this.comments.replace(oldComment, newComment)
 
         Store.dispatch('toggleMarkComment', { id: comment.id, note: '' })

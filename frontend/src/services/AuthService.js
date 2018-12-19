@@ -26,7 +26,7 @@ class AuthService extends BaseService {
             headers: { 'Content-Type': 'application/json' }
         })
 
-        if(response.status !== 200) {
+        if (response.status !== 200) {
             return undefined
 
         } else {

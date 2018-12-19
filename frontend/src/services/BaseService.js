@@ -20,11 +20,9 @@ export class BaseService {
     }
 
     objectToSearchParams(object) {
-        const array = Object
-            .entries(object)
+        const array = Object.entries(object)
 
-        return this
-            .arrayToSearchParams(array)
+        return this.arrayToSearchParams(array)
     }
 
     arrayToSearchParams(array, query = '') {
@@ -44,8 +42,7 @@ export class BaseService {
             }
         }
 
-        return this
-            .arrayToSearchParams(array, query)
+        return this.arrayToSearchParams(array, query)
     }
 
     buildUrl({ path = '', searchParams = {}, fragment = '' }) {

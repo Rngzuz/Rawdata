@@ -21,8 +21,6 @@ import Search from 'Components/Search.js'
 import WordCloud from 'Components/WordCloud.js'
 import Post from 'Components/Post.js'
 
-ko.options.deferUpdates = true
-
 ko.components.register('so-home', Home)
 ko.components.register('so-sign-in', SignIn)
 ko.components.register('so-user-profile', UserProfile)
@@ -37,6 +35,5 @@ ko.components.register('so-force-graph', ForceGraph)
 ko.components.register('so-search', Search)
 ko.components.register('so-word-cloud', WordCloud)
 ko.components.register('so-post', Post)
-
 
 ko.applyBindings()

@@ -1,10 +1,10 @@
 import * as echarts from 'echarts'
 import * as cloud from 'echarts-wordcloud'
 import * as randomColor from 'randomcolor'
-import {Component} from './Component.js'
+import { Component } from './Component.js'
 
 import SearchService from '@/services/SearchService'
-import {wrapComponent} from '@/components/Component'
+import { wrapComponent } from '@/components/Component'
 
 class WordCloud extends Component {
     constructor(args) {
@@ -112,7 +112,7 @@ class WordCloud extends Component {
         return words.map(word => {
             word.name = word.word
             word.value = word.weight
-            word.textStyle =  {
+            word.textStyle = {
                 normal: {},
                 emphasis: {}
             }
