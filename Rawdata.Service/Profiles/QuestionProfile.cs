@@ -14,9 +14,20 @@ namespace Rawdata.Service.Profiles
         {
             CreateMap<PostTag, string>()
                 .ConvertUsing(source => source.TagName);
-            
+
 
             CreateMap<Question, QuestionListDto>()
+                .ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.Id)
+                )
+                .ForMember(
+                    dest => dest.QuestionId,
+                    opt => opt.MapFrom(src => src.Id)
+                ).ForMember (
+                    dest => dest.AcceptedAnswerId,
+                    opt => opt.MapFrom(src => src.AcceptedAnswerId)
+                 )
                 .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)
@@ -35,6 +46,14 @@ namespace Rawdata.Service.Profiles
                 );
 
             CreateMap<Question, QuestionDto>()
+                .ForMember(
+                    dest => dest.QuestionId,
+                    opt => opt.MapFrom(src => src.Id)
+                )
+                .ForMember (
+                    dest => dest.AcceptedAnswerId,
+                    opt => opt.MapFrom(src => src.AcceptedAnswerId)
+                )
                 .ForMember(
                     dest => dest.AuthorDisplayName,
                     opt => opt.MapFrom(src => src.Author.DisplayName)
@@ -59,44 +78,6 @@ namespace Rawdata.Service.Profiles
                     dest => dest.Links.Author,
                     opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.AuthorId }))
                 );
-        }
-    }
-
-    public class MarkedQuestionProfile : Profile
-    {
-        public MarkedQuestionProfile(IUrlHelper url)
-        {
-            CreateMap<MarkedPost, MarkedQuestionDto>()
-                .ForMember(
-                    dest => dest.AuthorDisplayName,
-                    opt => opt.MapFrom(src => src.Post.Author.DisplayName)
-                )
-                .ForMember(
-                    dest => dest.CreationDate,
-                    opt => opt.MapFrom(src => src.Post.CreationDate)
-                )
-                .ForMember(
-                    dest => dest.Score,
-                    opt => opt.MapFrom(src => src.Post.Score)
-                )
-                .ForMember(
-                    dest => dest.Body,
-                    opt => opt.MapFrom(src => src.Post.Body)
-                )
-                // For path is used for nested member variables
-                .ForPath(
-                    dest => dest.Links.Self,
-                    // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link(BaseController.GET_QUESTION_BY_ID, new { src.Post.Id }))
-                )
-                .ForPath(
-                    dest => dest.Links.Author,
-                    // Generate absolute URL
-                    opt => opt.MapFrom(src => url.Link(BaseController.GET_AUTHOR_BY_ID, new { Id = src.Post.AuthorId }))
-                );
-
-            // Allow mapping to an empty collection
-            AllowNullCollections = true;
         }
     }
 }

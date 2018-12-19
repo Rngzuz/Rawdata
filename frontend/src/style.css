@@ -1,0 +1,191 @@
+so-app {
+    padding-top: 56px;
+    min-height: 100vh;
+}
+
+so-app,
+so-home,
+so-loader,
+so-navbar,
+so-forcegraph,
+so-search,
+so-user-profile,
+so-word-cloud,
+so-post,
+so-prompt {
+    display: block;
+}
+
+.card-post + .list-group {
+    max-width: 800px;
+}
+
+.card-post + .list-group > .list-group-item:first-child  {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: -1px;
+}
+
+.card-list-note {
+    z-index: 2;
+    position: absolute;
+    height: 143px;
+    width: 250px;
+}
+
+mark {
+    padding: .02rem .4rem .1rem .4rem;
+    font-size: 87.5%;
+    background-color: #fff2b3;
+    border-radius: .2rem;
+}
+
+#loader {
+    z-index: 1;
+    position: absolute;
+    top: calc(50% + 56px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.navbar {
+    box-shadow: 0 0 4px rgba(0, 0, 0, .35);
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.navbar > .container {
+    position: relative;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+}
+
+.btn-sign-in {
+    padding-right: 5rem;
+}
+
+so-search {
+    padding-top: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .5)
+}
+
+.card-rounded-bottom {
+    border-radius: 0 0 .25rem .25rem;
+}
+
+.card-body-list {
+    padding: .75rem 1.25rem;
+}
+
+.card-body h1 {
+    font-size: 1.5rem;
+}
+
+.card-body h2 {
+    font-size: 1.3rem;
+}
+
+.card-body h3 {
+    font-size: 1.1rem;
+}
+
+.score {
+    margin-top: .3rem;
+    font-size: 1.1rem;
+}
+
+/* force graph stuff */
+.links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+
+.nodes circle {
+    stroke: rgb(2, 142, 235);
+    stroke-width: 1.5px;
+}
+
+text {
+    font-family: sans-serif;
+    font-size: 10px;
+}
+
+pre:last-child, p:last-child {
+    margin-bottom: 0;
+}
+
+.card-user-profile {
+    padding-top: 1.25rem;
+    padding-bottom: 1.75rem;
+
+    font-size: 25px;
+}
+
+.profile-title {
+    padding-top: 1.25rem;
+}
+
+.profile-note {
+    font-size: 25px;
+    font-style: italic;
+    padding-bottom: 1.5rem;
+    color: #007bff;
+}
+
+.marked-star {
+     padding-right: 1.25rem;
+     padding-left: 1.25rem;
+     color: #007bff;
+ }
+
+.marked-edit {
+    padding-right: 1.0rem;
+    padding-left: 1.25rem;
+    color: #007bff;
+}
+
+
+
+.card-score, .card-star {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    line-height: 1;
+    border-radius: .25rem;
+    font-weight: bold;
+}
+
+.card-star + .card-score {
+    margin-top: .75rem;
+}
+
+.card-score {
+    /* border: 2px solid #007bff; */
+    color: #007bff;
+}
+
+.card-score-count {
+    font-size: 1rem;
+}
+
+.card-score-title {
+    font-size: .75rem;
+}
+
+.card-star {
+    cursor: pointer;
+    /* border: 2px solid #ffc107; */
+    color: #ffc107;
+    font-size: 1.45rem;
+}
+
+.card-star-title {
+    font-size: .75rem;
+}

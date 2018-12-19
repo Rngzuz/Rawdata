@@ -18,17 +18,26 @@ namespace Rawdata.Data
         public DbSet<MarkedPost> MarkedPosts { get; set; }
         public DbSet<Search> Searches { get; set; }
 
+        public DbQuery<SearchResult> SearchResults { get; set; }
+        public DbQuery<WeightedKeyword> WeightedKeywords { get; set; }
+        public DbQuery<WordAssociation> WordAssociations { get; set; }
+        public DbQuery<ForceGraphInput> ForceGraphInputs { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            //            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
-            optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
+            // optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
+
+            BuildSearchResult(modelBuilder);
+            BuildWeightedKeywordConfig(modelBuilder);
+            BuilWordAssociationConfig(modelBuilder);
+            BuildForceGraphInputConfig(modelBuilder);
 
             //Stackover flow DB
             BuildAuthorConfig(modelBuilder);
@@ -43,6 +52,32 @@ namespace Rawdata.Data
             BuildMarkedCommentConfig(modelBuilder);
             BuildMarkedPostConfig(modelBuilder);
             BuildSearchConfig(modelBuilder);
+        }
+
+        private void BuildSearchResult(ModelBuilder builder)
+        {
+            builder.Query<SearchResult>().Property(m => m.PostId).HasColumnName("post_id");
+            builder.Query<SearchResult>().Property(m => m.Rank).HasColumnName("rank");
+            // builder.Query<SearchResult>().Property(m => m.Excerpts).HasColumnName("sentences");
+            builder.Query<SearchResult>().HasOne(m => m.Post);
+        }
+
+        private void BuildWeightedKeywordConfig(ModelBuilder builder)
+        {
+            builder.Query<WeightedKeyword>().Property(m => m.Word).HasColumnName("word");
+            builder.Query<WeightedKeyword>().Property(m => m.Weight).HasColumnName("freq");
+        }
+
+        private void BuilWordAssociationConfig(ModelBuilder builder)
+        {
+            builder.Query<WordAssociation>().Property(m => m.Word1).HasColumnName("word1");
+            builder.Query<WordAssociation>().Property(m => m.Word2).HasColumnName("word2");
+            builder.Query<WordAssociation>().Property(m => m.Grade).HasColumnName("grade");
+        }
+
+        private void BuildForceGraphInputConfig(ModelBuilder builder)
+        {
+            builder.Query<ForceGraphInput>().Property(m => m.Input).HasColumnName("input");
         }
 
         private void BuildAuthorConfig(ModelBuilder builder)
@@ -85,14 +120,16 @@ namespace Rawdata.Data
 
         private void BuildPostConfig(ModelBuilder builder)
         {
+            builder.Entity<Post>().ToTable("posts");
+
             builder.Entity<Post>()
-                .ToTable("posts")
-                .HasDiscriminator<int>("type_id")
+                .HasDiscriminator<int>("TypeId")
                 .HasValue<Question>(1)
                 .HasValue<Answer>(2);
 
             builder.Entity<Post>().HasKey(p => p.Id);
             builder.Entity<Post>().Property(p => p.Id).HasColumnName("id");
+            builder.Entity<Post>().Property(p => p.TypeId).HasColumnName("type_id");
             builder.Entity<Post>().Property(p => p.CreationDate).HasColumnName("creation_date");
             builder.Entity<Post>().Property(p => p.Score).HasColumnName("score");
             builder.Entity<Post>().Property(p => p.Body).HasColumnName("body");
@@ -131,7 +168,7 @@ namespace Rawdata.Data
         private void BuildPostTagConfig(ModelBuilder builder)
         {
             builder.Entity<PostTag>().ToTable("posts_tags");
-            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId});
+            builder.Entity<PostTag>().HasKey(pt => new { pt.TagName, pt.QuestionId });
 
             builder.Entity<PostTag>().Property(pt => pt.QuestionId).HasColumnName("post_id");
             builder.Entity<PostTag>().Property(pt => pt.TagName).HasColumnName("name");
@@ -150,7 +187,7 @@ namespace Rawdata.Data
         private void BuildPostLinkConfig(ModelBuilder builder)
         {
             builder.Entity<PostLink>().ToTable("post_links");
-            builder.Entity<PostLink>().HasKey(pl => new { pl.PostId, pl.LinkedId});
+            builder.Entity<PostLink>().HasKey(pl => new { pl.PostId, pl.LinkedId });
             builder.Entity<PostLink>().Property(pl => pl.PostId).HasColumnName("post_id");
             builder.Entity<PostLink>().Property(pl => pl.LinkedId).HasColumnName("link_id");
 
@@ -209,7 +246,7 @@ namespace Rawdata.Data
             builder.Entity<MarkedPost>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.MarkedPosts)
-                .HasForeignKey(c => c.PostId);
+                .HasForeignKey(c => c.UserId);
 
             builder.Entity<MarkedPost>()
                 .HasOne(mp => mp.Post)
@@ -220,7 +257,7 @@ namespace Rawdata.Data
         private void BuildSearchConfig(ModelBuilder builder)
         {
             builder.Entity<Search>().ToTable("searches");
-            
+
             builder.Entity<Search>().Property(u => u.UserId).HasColumnName("user_id");
             builder.Entity<Search>().Property(u => u.SearchText).HasColumnName("search_text");
             builder.Entity<Search>().HasKey(c => new { c.UserId, c.SearchText });

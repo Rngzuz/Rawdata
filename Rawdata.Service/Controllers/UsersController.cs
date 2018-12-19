@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -21,7 +22,8 @@ namespace Rawdata.Service.Controllers
         protected readonly IQuestionService QuestionService;
         protected readonly IAnswerService AnswerService;
 
-        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService, IQuestionService questionService, IAnswerService answerService) : base(dtoMapper)
+        public UsersController(IMapper dtoMapper, IUserService userService, ICommentService commentService,
+            IQuestionService questionService, IAnswerService answerService) : base(dtoMapper)
         {
             UserService = userService;
             CommentService = commentService;
@@ -34,41 +36,70 @@ namespace Rawdata.Service.Controllers
         {
             UserDto user;
 
-            try {
+            try
+            {
                 var result = await UserService.GetUserById(id);
                 user = DtoMapper.Map<UserDto>(result);
             }
-            catch {
+            catch
+            {
                 return StatusCode(500);
             }
 
-            if (user == null) {
+            if (user == null)
+            {
                 return NotFound();
             }
 
             return Ok(user);
         }
 
-        [Authorize, HttpGet("questions", Name = "GetQuestionsWithMarkedPosts")]
-        public async Task<IActionResult> GetQuestionsWithMarkedPosts([FromQuery] PagingDto paging)
+        [Authorize, HttpGet("profile", Name = GET_USER_PROFILE)]
+        public async Task<IActionResult> GetUserProfile()
         {
-            var result = await QuestionService
-                .GetQuestionsWithMarkedPosts(GetUserId(), paging.Page, paging.Size);
+            int? id = GetUserId();
 
-            return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
-            );
+            if (id == null)
+            {
+                return Unauthorized();
+            }
+
+            User user;
+            dynamic userDto;
+
+            try {
+                user = await UserService.GetUserById(id);
+                userDto = MapUserToDto(user);
+            }
+            catch {
+                    return StatusCode(500);
+            }
+
+            return Ok(userDto);
         }
 
-        [Authorize, HttpGet("comments", Name = "GetQuestionsWithMarkedComments")]
-        public async Task<IActionResult> GetQuestionsWithMarkedComments([FromQuery] PagingDto paging)
-        {
-            var result = await QuestionService
-                .GetQuestionsWithMarkedComments(GetUserId(), paging.Page, paging.Size);
 
-            return Ok(
-                DtoMapper.Map<IList<Question>, IList<QuestionListDto>>(result)
-            );
+        [Authorize, HttpGet("", Name = GET_USER_BY_EMAIL)]
+        public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+        {
+            UserDto user;
+
+            try
+            {
+                var result = await UserService.GetUserByEmail(email);
+                user = DtoMapper.Map<UserDto>(result);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
         [Authorize, HttpGet("{userId:int}/history", Name = GET_USER_HISTORY)]
@@ -77,8 +108,8 @@ namespace Rawdata.Service.Controllers
             IList<Search> searches = await UserService.GetUserHistory(userId);
 
             return Ok(
-                    DtoMapper.Map<IList<Search>, IList<SearchDto>>(searches)
-           );
+                DtoMapper.Map<IList<Search>, IList<SearchDto>>(searches)
+            );
         }
 
         [Consumes("application/json")]
@@ -88,17 +119,18 @@ namespace Rawdata.Service.Controllers
             var result = await CommentService
                 .ToggleMarkedComment(GetUserId(), commentDto.CommentId, commentDto.Note)
                 .Include(c => c.Comment)
-                    .ThenInclude(c => c.Author)
+                .ThenInclude(c => c.Author)
                 .SingleOrDefaultAsync();
 
             return Ok(
-                DtoMapper.Map<MarkedComment, MarkedCommentDto>(result)
+                DtoMapper.Map<MarkedComment, CommentDto>(result)
             );
         }
 
         [Consumes("application/json")]
         [Authorize, HttpPost("comments/{commentId:int}", Name = UPDATE_MARKED_COMMENT)]
-        public async Task<IActionResult> UpdateMarkedComment([FromRoute] int commentId, [FromBody] ToggleCommentDto commentDto)
+        public async Task<IActionResult> UpdateMarkedComment([FromRoute] int commentId,
+            [FromBody] ToggleCommentDto commentDto)
         {
             var result = await CommentService
                 .UpdateMarkedCommentNote(GetUserId(), commentId, commentDto.Note);
@@ -116,14 +148,34 @@ namespace Rawdata.Service.Controllers
             return result ? StatusCode(204) : NotFound();
         }
 
+
+        [Authorize, HttpGet("{userId:int}/posts", Name = GET_MARKED_POSTS)]
+        public async Task<IActionResult> GetMarkedPosts(int userId)
+        {
+            IList<MarkedPost> markedPosts = await UserService.GetMarkedPosts(userId).ToListAsync();
+
+            ICollection<dynamic> markedPostsDto = MapMarkedPostsToDto(markedPosts);
+
+            return Ok(
+                markedPostsDto
+            );
+        }
+
         [Consumes("application/json")]
         [Authorize, HttpPost("posts", Name = TOGGLE_MARKED_POST)]
         public async Task<IActionResult> ToggleMarkedPost([FromBody] TogglePostDto postDto)
         {
+            int? id = GetUserId();
+
+            if (id == null)
+            {
+                return Unauthorized();
+            }
+            
             var result = await UserService
-                .ToggleMarkedPost(GetUserId(), postDto.PostId, postDto.Note)
+                .ToggleMarkedPost(id, postDto.PostId, postDto.Note)
                 .Include(p => p.Post)
-                    .ThenInclude(p => p.Author)
+                .ThenInclude(p => p.Author)
                 .SingleOrDefaultAsync();
 
             //If nothing is returned - post is unmarked -> return empty
@@ -132,21 +184,81 @@ namespace Rawdata.Service.Controllers
                 return StatusCode(204);
             }
 
-            //Else check if question or not and return appropriate DTO
-            var question = await QuestionService.GetQuestionById(result.PostId);
-            if (question != null)
+            return Ok(MapMarkedPostToDto(result));
+            
+        }
+
+        protected dynamic MapUserToDto(User user)
+        {
+            dynamic userDto = new ExpandoObject();
+
+            userDto.DisplayName = user.DisplayName;
+            userDto.Email = user.Email;
+            userDto.CreationDate = user.CreationDate;
+            userDto.SearchHistory = DtoMapper.Map<ICollection<Search>, ICollection<SearchDto>>(user.Searches);
+            userDto.MarkedPosts = MapMarkedPostsToDto(user.MarkedPosts);
+            userDto.MarkedComments =
+                DtoMapper.Map<ICollection<MarkedComment>, ICollection<CommentDto>>(user.MarkedComments);
+            ;
+            userDto.Links = new
             {
-                return Ok(
-                        DtoMapper.Map<MarkedPost, MarkedQuestionDto>(result)
-                    );
-            }
-            else
+                Self = Url.Link(GET_USER_BY_ID, new {Id = user.Id})
+            };
+
+            return userDto;
+        }
+
+
+        private ICollection<dynamic> MapMarkedPostsToDto(ICollection<MarkedPost> result)
+        {
+            var items = new List<dynamic>();
+
+            foreach (var item in result)
             {
-                return Ok(
-                    DtoMapper.Map<MarkedPost, MarkedAnswerDto>(result)
-                );
+                dynamic obj = MapMarkedPostToDto(item);
+                items.Add(obj);
             }
 
+            return items;
+        }
+
+        private dynamic MapMarkedPostToDto(MarkedPost markedPost)
+        {
+            dynamic dto = new ExpandoObject();
+        
+            dto.id = markedPost.PostId;
+            dto.body = markedPost.Post.Body;
+            dto.Score = markedPost.Post.Score;
+            dto.Score = markedPost.Post.Score;
+            dto.CreationDate = markedPost.Post.CreationDate;
+            dto.AuthorDisplayName = markedPost.Post.Author.DisplayName;
+            dto.Note = markedPost.Note;
+            dto.marked = true;
+
+            if (markedPost.Post is Question q)
+            {
+                dto.questionId = q.Id;
+                dto.Title = q.Title;
+                dto.accepterAnswerId = q.AcceptedAnswerId; 
+                
+                dto.Links = new
+                {
+                    Self = Url.Link(GET_QUESTION_BY_ID, new {Id = q.Id}),
+                    Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = q.AuthorId})
+                };
+            }
+            else if (markedPost.Post is Answer a)
+            {    
+                dto.QuestionId = a.ParentId;
+                dto.Links = new
+                {
+                    Self = Url.Link(GET_ANSWER_BY_ID, new {Id = a.Id}),
+                    Parent = Url.Link(GET_QUESTION_BY_ID, new {Id = a.ParentId}),
+                    Author = Url.Link(GET_AUTHOR_BY_ID, new {Id = a.AuthorId})
+                };
+            }
+
+            return dto;
         }
     }
 }

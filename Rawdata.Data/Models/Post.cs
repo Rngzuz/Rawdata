@@ -8,6 +8,7 @@ namespace Rawdata.Data.Models
     {
         public int Id { get; set; }
         public int Score { get; set; }
+        public int TypeId { get; set; }
         public string Body { get; set; }
         public DateTime? CreationDate { get; set; }
 

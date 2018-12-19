@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "baseUrl": "./",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "Helpers/*": [
+                "./src/helpers/*"
+            ],
+            "Components/*": [
+                "./src/components/*"
+            ],
+            "Services/*": [
+                "./src/services/*"
+            ],
+            "Views/*": [
+                "./src/views/*"
+            ],
+        },
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true
+    }
+}

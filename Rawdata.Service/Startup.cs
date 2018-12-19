@@ -17,6 +17,7 @@ using Rawdata.Data.Services;
 using Rawdata.Data.Services.Interfaces;
 using Rawdata.Service.Profiles;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Cors;
 
 namespace Rawdata.Service
 {
@@ -32,6 +33,18 @@ namespace Rawdata.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => {
+                options.AddPolicy("AllowAll",
+                    builder => {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                    });
+            });
+
+
             services
                 .AddMvc()
                 .AddJsonOptions(options => {
@@ -70,6 +83,7 @@ namespace Rawdata.Service
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
             services.AddScoped<IAuthorService, AuthorService>();
+            services.AddScoped<ISearchResultService, SearchResultService>();
 
             // Create and inject DtoMapper
             services.AddScoped<IMapper>(p => CreateMapper(p));
@@ -96,7 +110,9 @@ namespace Rawdata.Service
                 options.RoutePrefix = "api";
             });
 
+            app.UseCors("AllowAll");
             app.UseAuthentication();
+            app.UseFileServer();
             app.UseMvc();
         }
 
@@ -113,9 +129,6 @@ namespace Rawdata.Service
                 cfg.AddProfile(new CommentProfile(url));
                 cfg.AddProfile(new QuestionProfile(url));
                 cfg.AddProfile(new UserProfile(url));
-                cfg.AddProfile(new MarkedCommentProfile(url));
-                cfg.AddProfile(new MarkedQuestionProfile(url));
-                cfg.AddProfile(new MarkedAnswerProfile(url));
             });
 
             return mapperCfg.CreateMapper();

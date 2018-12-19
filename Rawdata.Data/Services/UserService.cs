@@ -13,16 +13,25 @@ namespace Rawdata.Data.Services
         {
         }
 
-        public virtual Task<User> GetUserById(int id)
+        public virtual Task<User> GetUserById(int? id)
         {
             return Context.Users
-                .SingleOrDefaultAsync(u => u.Id == id);
+                .Where(u => u.Id == id)
+                .Include(u => u.MarkedComments)
+                    .ThenInclude(mc => mc.Comment)
+                        .ThenInclude(c => c.Author)
+                .Include(u => u.MarkedPosts)
+                    .ThenInclude(mp => mp.Post)
+                        .ThenInclude(p => p.Author)
+                .Include(u => u.Searches)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<User> GetUserByEmail(string email)
         {
             return await Context.Users
-                .SingleOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                .Where(u => u.Email.ToLower() == email.ToLower())
+                .SingleOrDefaultAsync();
         }
 
         public async Task<User> RegisterUser(User user)
@@ -36,21 +45,44 @@ namespace Rawdata.Data.Services
             return newUser;
         }
 
-        public async Task<IList<Search>> GetUserHistory(int userId)
+        public async Task<IList<Search>> GetUserHistory(int? userId)
         {
             return await Context.Searches.Where(search => search.UserId == userId).ToListAsync();
         }
-        
-        public IQueryable<MarkedPost> GetMarkedPosts(int userId)
+
+        public IQueryable<MarkedPost> GetMarkedPosts(int? userId)
         {
-            return Context.MarkedPosts.Where(mp => mp.UserId == userId);
+            return Context.MarkedPosts
+                .Where(mp => mp.UserId == userId)
+                .Include(mp => mp.Post)
+                .ThenInclude(p => p.Author)
+                .OrderByDescending(mp => mp.Post.Score);
         }
 
-        public IQueryable<MarkedComment> GetMarkedComments(int userId)
+        public IQueryable<MarkedComment> GetMarkedComments(int? userId)
         {
-            return Context.MarkedComments.Where(mc => mc.UserId == userId);
+            return Context.MarkedComments
+                .Where(mc => mc.UserId == userId)
+                .OrderByDescending(mp => mp.Comment.Score);;
         }
-        
+
+        public async Task SaveToSearchHistory(int? userId, string searchText)
+        {
+            if (userId.HasValue)
+            {
+                // using sql so we can ignore dupolicate conflicts
+                try
+                {
+                    await Context.Database
+                        .ExecuteSqlCommandAsync(
+                            $"insert into searches values ({userId}, {searchText}) on conflict do nothing");
+                }
+                catch
+                {
+                }
+            }
+        }
+
 
         public void DeleteUser(User user)
         {

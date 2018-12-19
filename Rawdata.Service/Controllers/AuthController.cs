@@ -88,7 +88,7 @@ namespace Rawdata.Service.Controllers
                         new Claim(ClaimTypes.Name, user.DisplayName),
                         new Claim(ClaimTypes.Email, user.Email)
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(30),
+                    Expires = DateTime.UtcNow.AddMonths(1),
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes("L0onhppuCM1lMTwiEYe8667BZ-Bd8C22ETjdsdRm5NU")),
                         SecurityAlgorithms.HmacSha384Signature
