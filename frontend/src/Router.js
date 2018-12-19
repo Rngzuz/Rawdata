@@ -14,10 +14,6 @@ class Router {
             this.currentRoute({ ...route, params })
         }
     }
-
-    getRoute() {
-        return this.currentRoute()
-    }
 }
 
 export default new Router([
