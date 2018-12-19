@@ -13,6 +13,7 @@ class Post {
 
         if (showComments) {
             this.comments = observableArray(post.comments)
+            // this.comments.sort((left, right) => right.score - left.score)
         }
 
         this.post = post
@@ -77,9 +78,6 @@ const template = /* html */ `
 <!-- ko if: showComments -->
 <ul class="list-group mx-3 mx-lg-auto" data-bind="foreach: comments">
     <li class="list-group-item">
-
-
-
         <aside class="float-left pr-3">
             <!-- ko if: $component.isAuthenticated() -->
             <div class="card-star" data-bind="click: (comment, event) => $component.toggleComment(comment)">
