@@ -246,7 +246,7 @@ namespace Rawdata.Data
             builder.Entity<MarkedPost>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.MarkedPosts)
-                .HasForeignKey(c => c.PostId);
+                .HasForeignKey(c => c.UserId);
 
             builder.Entity<MarkedPost>()
                 .HasOne(mp => mp.Post)
