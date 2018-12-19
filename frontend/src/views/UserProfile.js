@@ -100,7 +100,7 @@ const template = /* html */ `
                 <div class="card-score-title">score</div>
             </div>
         </aside>
-        <p class="mb-1 clearfix" data-bind="text: $data.body"></p>
+        <p class="mb-1 clearfix" data-bind="text: $data.text"></p>
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
