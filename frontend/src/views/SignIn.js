@@ -12,7 +12,6 @@ class SignIn extends Component {
 
     async signIn() {
         if (!this.inputFilledOut()) {
-            alert('Please fill out all sign in data')
             return
         }
 
@@ -40,12 +39,12 @@ const template = /* html */ `
         <form data-bind="submit: signIn">
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" data-bind="value: email">
+                <input type="email" class="form-control" id="email" data-bind="value: email" required>
                 <small class="form-text text-muted">We'll never share your email with anyone else.</small>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" data-bind="value: password">
+                <input type="password" class="form-control" id="password" data-bind="value: password" required pattern=".{8,}" title="Password should be atleast 8 characters long">
             </div>
             <button type="submit" class="btn btn-primary">Sign in</button>
         </form>

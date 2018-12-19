@@ -13,7 +13,6 @@ class Register extends Component {
 
     async register() {
         if (!this.inputFilledOut()) {
-            alert('Please fill out all registration data')
             return
         }
 
@@ -47,16 +46,16 @@ const template = /* html */ `
         <form data-bind="submit: register">
             <div class="form-group">
                 <label for="username">User Name</label>
-                <input type="text" class="form-control" id="username" data-bind="value: username">
+                <input type="text" class="form-control" id="username" data-bind="value: username" required pattern=".{2,}" title="User name should be atleast 2 characters long">
             </div>
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" data-bind="value: email">
+                <input type="email" class="form-control" id="email" data-bind="value: email" required>
                 <small class="form-text text-muted">We'll never share your email with anyone else.</small>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" data-bind="value: password">
+                <input type="password" class="form-control" id="password" data-bind="value: password" required pattern=".{8,}" title="Password should be atleast 8 characters long">
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
