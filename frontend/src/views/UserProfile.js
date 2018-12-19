@@ -10,6 +10,7 @@ class UserProfile {
         this.profile = observable({})
         this.markedPosts = observableArray([])
         this.markedComments = observableArray([])
+        this.searchHistory = observableArray([])
 
         this.fetchUserProfile()
         this.togglePost = this.togglePost.bind(this)
@@ -33,11 +34,12 @@ class UserProfile {
             return newPost
         })
 
-        console.log(result)
-
         this.profile(result)
         this.markedPosts(result.markedPosts)
         this.markedComments(result.markedComments)
+        this.searchHistory(result.searchHistory)
+
+        console.dir(this.searchHistory())
 
         this.isLoading(false)
     }
@@ -73,9 +75,15 @@ const template = /* html */ `
         <p><b>Email: </b><span data-bind="text: profile().email"></span></p>
         <p><b>Profile created: </b><span data-bind="text: profile().creationDate"></span></p>
     </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-light">
+            <b>Search history:</b>
+        </li>
+        <!-- ko foreach: searchHistory -->
+        <li class="list-group-item" data-bind="text: $data.searchText"></li>
+        <!-- /ko -->
+    </ul>
 </div>
-
-
 
 <h1 class="display-4 mb-2 mt-5">Marked posts</h1>
 <!-- ko foreach: markedPosts -->
