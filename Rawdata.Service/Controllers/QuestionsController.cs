@@ -31,7 +31,7 @@ namespace Rawdata.Service.Controllers
             if (result == null) {
                 return NotFound();
             }
-            
+
             var markedPosts = await UserService
                 .GetMarkedPosts(GetUserId())
                 .ToListAsync();
@@ -39,7 +39,7 @@ namespace Rawdata.Service.Controllers
             var markedComments = await UserService
                 .GetMarkedComments(GetUserId())
                 .ToListAsync();
-                
+
             //Check if the question is marked
             var markedPost = markedPosts
                 .SingleOrDefault(mp => mp.PostId == id);
@@ -51,7 +51,7 @@ namespace Rawdata.Service.Controllers
             {
                 questionDto.Note = markedPost.Note;
             }
-            
+
             //Check if question comments are marked
             foreach (var commentDto in questionDto.Comments )
             {
@@ -65,7 +65,7 @@ namespace Rawdata.Service.Controllers
                 }
             }
 
-            
+
             // for each answer check if it is marked and if the answer's comments are marked
             foreach (var answerDto in questionDto.Answers )
             {
@@ -82,7 +82,7 @@ namespace Rawdata.Service.Controllers
                 {
                     var markedComment = markedComments
                         .SingleOrDefault(mc => mc.CommentId == answerCommentDto.Id);
-                    
+
                     answerCommentDto.Marked = markedComment != null;
                     if (markedComment != null)
                     {
@@ -90,7 +90,7 @@ namespace Rawdata.Service.Controllers
                     }
                 }
             }
-           
+
             return Ok(
                 questionDto
             );
@@ -109,14 +109,14 @@ namespace Rawdata.Service.Controllers
             var markedPosts = await UserService
                 .GetMarkedPosts(GetUserId())
                 .ToListAsync();
-            
+
             var dtos = DtoMapper.Map<IList<Question>, IList<QuestionDto>>(result);
 
             foreach (var questionDto in dtos)
             {
                 var markedPost = markedPosts
                     .SingleOrDefault(mp => mp.PostId == questionDto.Id);
-                
+
                 questionDto.Marked = markedPost != null;
                 if (markedPost != null)
                 {
