@@ -2,16 +2,24 @@ import * as echarts from 'echarts'
 import * as randomColor from 'randomcolor'
 import Store from '@/Store.js'
 import SearchService from '@/services/SearchService'
+import {observable} from "knockout"
 
 class ForceGraph {
     constructor() {
         this.isLoading = Store.getters.isLoading
 
         this.chart = echarts.init(document.getElementById('chart'))
-        this.initCircularGraph()
+
+        this.graphType = observable('circular')
+
+        this.searchTerm = Store.getters.searchParams
 
         const searchParamsSub = Store.subscribe('searchParams', value => {
+            if(value[0] === undefined) {
+                return
+            }
             this.isLoading(true)
+            this.initGraph();
             this.fetchGraphInput(value[0])
         })
 
@@ -37,6 +45,9 @@ class ForceGraph {
         }
     }
 
+    searchTermEntered() {
+        return this.searchTerm()[0] !== undefined
+    }
 
     async fetchGraphInput(word) {
         let result = await SearchService.getForceGraphInput(word)
@@ -44,6 +55,17 @@ class ForceGraph {
     }
 
     initGraph() {
+        switch (this.graphType()) {
+            case 'circular':
+                this.initCircularGraph()
+                break
+            case 'force':
+                this.initForceGraph()
+                break
+            }
+    }
+
+    initForceGraph() {
         this.chart.setOption({
             title: {
                 subtext: '',
@@ -116,7 +138,7 @@ class ForceGraph {
         const edgeCount = links.length
         this.chart.setOption({
             title: {
-                text: `Force Graph for '${searchTerm}'\n\nWords: ${nodesCount}\nAssociations: ${edgeCount}`,
+                text: `${this.graphType()} graph for '${searchTerm}'\n\nWords: ${nodesCount}\nAssociations: ${edgeCount}`,
             },
             series: [{
                 data: nodes,
@@ -158,6 +180,25 @@ class ForceGraph {
 }
 
 const template = /* html */ `
+<div class="form-inline mb-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" value="circular" data-bind="checked: graphType" checked>
+                <span>Circular graph</span>
+            </label>
+        </div>
+        <div class="form-check mx-4">
+            <label class="form-check-label">
+                <input class="form-check-input" type="radio" value="force" data-bind="checked: graphType">
+                <span>Force graph</span>
+            </label>
+        </div>
+    </div>
+<!-- placeholder -->
+<!-- ko if: !searchTermEntered() -->
+    <h1 class="display-4 mt-0">Enter search term</h1>
+<!-- /ko -->
+    
 <div id="chart" style="width:100%;height:80vh;"></div>
 `
 
