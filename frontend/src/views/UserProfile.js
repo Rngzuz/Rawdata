@@ -121,7 +121,7 @@ const template = /* html */ `
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
-            <span>on the <time data-bind="text: $data.creationDate"></time></span>
+            <span>on <time data-bind="text: formatDate($data.creationDate)"></time></span>
         </footer>
     </li>
 </ul>
