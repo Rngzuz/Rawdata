@@ -63,6 +63,10 @@ class UserProfile {
 
         Store.dispatch('toggleMarkComment', { id: comment.id, note: '' })
     }
+
+    formatDate(date) {
+        return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric'})
+    }
 }
 
 const template = /* html */ `
@@ -73,7 +77,7 @@ const template = /* html */ `
 <div class="card">
     <div class="card-body">
         <p><b>Email: </b><span data-bind="text: profile().email"></span></p>
-        <p><b>Profile created: </b><span data-bind="text: profile().creationDate"></span></p>
+        <p><b>Profile created: </b><span data-bind="text: formatDate(profile().creationDate)"></span></p>
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item bg-light">
