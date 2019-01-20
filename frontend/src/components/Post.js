@@ -118,7 +118,9 @@ const template = /* html */ `
         </aside>
 
         <p class="mb-1 clearfix" data-bind="text: $data.text"></p>
-        <p class="" data-bind="text: $data.note"></p>
+        <!-- ko if: $data.note -->
+        <p class="mt-2 text-info font-weight-bold" data-bind="text: 'Note: ' + $data.note"></p>
+        <!-- /ko -->
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
