@@ -39,8 +39,6 @@ class UserProfile {
         this.markedComments(result.markedComments)
         this.searchHistory(result.searchHistory)
 
-        console.dir(this.searchHistory())
-
         this.isLoading(false)
     }
 
@@ -77,7 +75,7 @@ const template = /* html */ `
 <div class="card">
     <div class="card-body">
         <p><b>Email: </b><span data-bind="text: profile().email"></span></p>
-        <p><b>Profile created: </b><span data-bind="text: formatDate(profile().creationDate)"></span></p>
+        <p><b>Profile created: </b><span data-bind="text: $component.formatDate(profile().creationDate)"></span></p>
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item bg-light">
@@ -121,7 +119,7 @@ const template = /* html */ `
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
-            <span>on <time data-bind="text: formatDate($data.creationDate)"></time></span>
+            <span>on <time data-bind="text: $component.formatDate($data.creationDate)"></time></span>
         </footer>
     </li>
 </ul>
