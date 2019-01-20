@@ -7,7 +7,7 @@ class SearchService extends BaseService {
 
     async getNewest() {
         const endpoint = this.buildUrl({ path: '/questions' })
-        const response = await fetch(endpoint)
+        const response = await fetch(endpoint, this.requestOptions)
 
         return await response.json()
     }

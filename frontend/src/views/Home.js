@@ -116,11 +116,12 @@ class Home {
         const oldPost = this.items.peek()
             .find(item => item.id === post.id)
 
-        const newPost = { ...oldPost, marked: !oldPost.marked }
+        const newPost = { ...post, marked: !oldPost.marked }
         this.items.replace(oldPost, newPost)
 
-        Store.dispatch('toggleMarkPost', { id: post.id, note: '' })
+        Store.dispatch('toggleMarkPost', { id: post.id, note: newPost.note })
     }
+
 }
 
 const template = /* html */ `
