@@ -36,4 +36,22 @@ ko.components.register('so-word-cloud', WordCloud)
 ko.components.register('so-post', Post)
 ko.components.register('so-prompt', Prompt)
 
+ko.bindingHandlers.parseDate = {
+    init(element, valueAccessor) {
+        const value = valueAccessor()
+        const date = new Date(value)
+
+        if (!Number.isNaN(date)) {
+            element.textContent = date.toLocaleDateString('en-GB', {
+                timeZone: 'Europe/Copenhagen',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+                // hour: '2-digit',
+                // minute: '2-digit'
+            })
+        }
+    }
+}
+
 ko.applyBindings()

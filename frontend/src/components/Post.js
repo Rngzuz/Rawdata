@@ -29,10 +29,6 @@ class Post {
         this.isAuthenticated = Store.getters.isAuthenticated
     }
 
-    formatDate(date) {
-        return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric'})
-    }
-
     showPromptOnTogglePost(post) {
         if (post.marked) {
             this.toggle({ ...post, note: '' })
@@ -93,7 +89,7 @@ const template = /* html */ `
         <div class="text-muted">
             <span>by</span>
             <cite data-bind="text: post.authorDisplayName"></cite>
-            <span>on the <time data-bind="text: $component.formatDate(post.creationDate)"></time></span>
+            <span>on the <time data-bind="parseDate: post.creationDate"></time></span>
         </div>
         <!-- ko if: showLink -->
         <button type="button" class="btn btn-primary btn-sm" data-bind="click: navigateToQuestion">Read more</button>
@@ -124,7 +120,7 @@ const template = /* html */ `
         <footer class="text-muted text-right small">
             <span>by</span>
             <cite data-bind="text: $data.authorDisplayName"></cite>
-            <span>on the <time data-bind="text: $component.formatDate($data.creationDate) }"></time></span>
+            <span>on the <time data-bind="parseDate: $data.creationDate"></time></span>
         </footer>
     </li>
 </ul>
