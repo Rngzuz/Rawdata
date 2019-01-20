@@ -26,8 +26,8 @@ namespace Rawdata.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
-            // optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
+            // optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=stackoverflow;Username=postgres;Password=123");
+            optionsBuilder.UseNpgsql("Server=rawdata.ruc.dk;Port=5432;Database=raw3;Username=raw3;Password=ABAZEKAg");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
